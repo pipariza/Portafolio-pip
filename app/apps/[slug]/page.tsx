@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -47,9 +48,19 @@ export default async function AppDetailPage({
         </p>
 
         <div
-          className="w-full h-[45vh] rounded-2xl mb-14"
+          className="relative w-full h-[45vh] rounded-2xl mb-14 overflow-hidden"
           style={{ background: app.color }}
-        />
+        >
+          {app.image && (
+            <Image
+              src={app.image}
+              alt={app.name}
+              fill
+              sizes="(min-width: 768px) 56rem, 100vw"
+              className="object-cover"
+            />
+          )}
+        </div>
 
         <div className="grid grid-cols-3 gap-6 max-w-md mb-20">
           <div>

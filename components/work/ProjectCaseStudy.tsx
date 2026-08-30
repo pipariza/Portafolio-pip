@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Project } from "@/lib/data";
 
@@ -21,13 +22,33 @@ export default function ProjectCaseStudy({
   return (
     <div className="relative w-full h-screen shrink-0 grid grid-cols-1 md:grid-cols-2 overflow-hidden">
       <div
-        className="relative hidden md:block h-full"
+        className="relative hidden md:block h-full overflow-hidden"
         style={{ background: project.color }}
       >
-        <div className="absolute inset-0 tech-grid opacity-40" />
+        {project.image ? (
+          <Image
+            src={project.image}
+            alt={project.name}
+            fill
+            sizes="50vw"
+            className="object-cover"
+            priority={index === 0}
+          />
+        ) : (
+          <div className="absolute inset-0 tech-grid opacity-40" />
+        )}
       </div>
-      <div className="relative h-full md:hidden" style={{ background: project.color }}>
-        <div className="h-[38vh]" />
+      <div className="relative h-[38vh] md:hidden overflow-hidden" style={{ background: project.color }}>
+        {project.image && (
+          <Image
+            src={project.image}
+            alt={project.name}
+            fill
+            sizes="100vw"
+            className="object-cover"
+            priority={index === 0}
+          />
+        )}
       </div>
 
       <div className="relative flex-1 bg-paper text-ink h-full flex flex-col justify-end px-6 md:px-16 pb-24 pt-32">

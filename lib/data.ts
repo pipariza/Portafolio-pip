@@ -7,6 +7,8 @@ export type Project = {
   category: "diseno-web" | "aplicativos";
   summary: string;
   color: string;
+  /** Path under /public, e.g. "/work/proyecto-uno.jpg". Falls back to `color` when unset. */
+  image?: string;
 };
 
 export const projects: Project[] = [
@@ -73,6 +75,8 @@ export type AppProject = {
   stack: string;
   rotation: number;
   color: string;
+  /** Path under /public, e.g. "/apps/app-uno.jpg". Falls back to `color` when unset. */
+  image?: string;
 };
 
 export const apps: AppProject[] = [
