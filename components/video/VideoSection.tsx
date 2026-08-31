@@ -2,11 +2,15 @@
 
 import { useState } from "react";
 import { ThemeSection } from "@/lib/section-theme";
-import { videoClips, type VideoClip } from "@/lib/data";
+import { videoClips } from "@/lib/data";
+import VideoClipCard from "./VideoClipCard";
 import VideoModal from "./VideoModal";
 
 export default function VideoSection() {
-  const [active, setActive] = useState<VideoClip | null>(null);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const activeClip = activeIndex !== null ? videoClips[activeIndex] : null;
+
+  const wrap = (i: number) => (i + videoClips.length) % videoClips.length;
 
   return (
     <ThemeSection
@@ -26,38 +30,28 @@ export default function VideoSection() {
         <p className="italic font-medium text-2xl md:text-[26px]">Motion</p>
       </div>
 
-      <div className="relative md:absolute md:inset-0 flex justify-center">
-        <div className="relative w-[220px] md:w-[240px] md:-top-[10vh] md:h-[120vh] flex flex-col items-center">
+      <div className="relative md:absolute md:inset-0 flex justify-center overflow-hidden">
+        <div
+          className="relative md:-top-[10vh] flex flex-col items-center py-10"
+          style={{ perspective: 1400 }}
+        >
           {videoClips.map((clip, i) => (
-            <button
+            <VideoClipCard
               key={clip.id}
-              type="button"
-              onClick={() => setActive(clip)}
-              className={`relative w-full h-[220px] md:h-[240px] -mt-10 first:mt-0 transition-transform hover:scale-[1.03] ${
-                i % 2 === 0 ? "clip-trapezoid-a" : "clip-trapezoid-b"
-              }`}
-              style={{ background: clip.color, zIndex: videoClips.length - i }}
-              aria-label={`Ver ${clip.title}`}
-            >
-              <span className="absolute inset-0 flex items-center justify-center">
-                <svg
-                  width="28"
-                  height="28"
-                  viewBox="0 0 28 28"
-                  fill="none"
-                  className="text-white/80"
-                  aria-hidden="true"
-                >
-                  <circle cx="14" cy="14" r="13" stroke="currentColor" strokeWidth="1.2" />
-                  <path d="M11.5 9.5l7 4.5-7 4.5v-9Z" fill="currentColor" />
-                </svg>
-              </span>
-            </button>
+              clip={clip}
+              index={i}
+              onOpen={() => setActiveIndex(i)}
+            />
           ))}
         </div>
       </div>
 
-      <VideoModal clip={active} onClose={() => setActive(null)} />
+      <VideoModal
+        clip={activeClip}
+        onClose={() => setActiveIndex(null)}
+        onPrev={() => setActiveIndex((i) => (i === null ? null : wrap(i - 1)))}
+        onNext={() => setActiveIndex((i) => (i === null ? null : wrap(i + 1)))}
+      />
     </ThemeSection>
   );
 }

@@ -105,16 +105,6 @@ body {
   mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 40%, transparent 100%);
 }
 
-/* ---------- Video clip trapezoids ---------- */
-
-.clip-trapezoid-a {
-  clip-path: polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%);
-}
-
-.clip-trapezoid-b {
-  clip-path: polygon(0% 0%, 92% 0%, 100% 100%, 8% 100%);
-}
-
 /* ---------- Scrollbar (subtle) ---------- */
 
 ::-webkit-scrollbar {

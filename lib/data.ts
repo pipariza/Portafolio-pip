@@ -146,9 +146,14 @@ export type VideoClip = {
 };
 
 export const videoClips: VideoClip[] = [
-  { id: "clip-1", title: "Reel 01", vimeoId: "1186782588", color: "#5a5a52" },
-  { id: "clip-2", title: "Reel 02", vimeoId: null, color: "#3f3f39" },
-  { id: "clip-3", title: "Reel 03", vimeoId: null, color: "#6b6b60" },
-  { id: "clip-4", title: "Reel 04", vimeoId: null, color: "#47463f" },
-  { id: "clip-5", title: "Reel 05", vimeoId: null, color: "#565549" },
+  { id: "clip-1", title: "Tío Mao — Reverse", vimeoId: "1186782588", color: "#5a5a52" },
+  { id: "clip-2", title: "Ajisen — Trend 2", vimeoId: "1186781699", color: "#3f3f39" },
+  { id: "clip-3", title: "Bilongo — 2026", vimeoId: "1186781746", color: "#6b6b60" },
+  { id: "clip-4", title: "Ajisen — Amigos", vimeoId: "1186781697", color: "#47463f" },
+  { id: "clip-5", title: "Bilongo — Canciones que recuerdan", vimeoId: "1186781812", color: "#565549" },
+  { id: "clip-6", title: "Bilongo — Ritual", vimeoId: "1186781821", color: "#4d4c45" },
+  { id: "clip-7", title: "Bilongo — Síguelo", vimeoId: "1186782117", color: "#3a3934" },
+  { id: "clip-8", title: "Ajisen — Recap", vimeoId: "1186781696", color: "#605f54" },
+  { id: "clip-9", title: "Tío Mao — Caras", vimeoId: "1186782407", color: "#44433c" },
+  { id: "clip-10", title: "Tío Mao — Dim Sum Mix", vimeoId: "1186782573", color: "#57564c" },
 ];
