@@ -71,9 +71,16 @@ export default function VideoSection() {
     };
   }, []);
 
+  const centerOffset = Math.floor(VISIBLE_COUNT / 2);
+  const TILT_STEP = 8;
+
   const visible = Array.from({ length: VISIBLE_COUNT }, (_, offset) => {
     const clipIndex = wrap(startIndex + offset);
-    return { clip: videoClips[clipIndex], clipIndex, offset };
+    return {
+      clip: videoClips[clipIndex],
+      clipIndex,
+      tilt: (offset - centerOffset) * TILT_STEP,
+    };
   });
 
   return (
@@ -102,11 +109,11 @@ export default function VideoSection() {
       >
         <div className="relative flex flex-col items-center" style={{ perspective: 1400 }}>
           <AnimatePresence initial={false}>
-            {visible.map(({ clip, clipIndex, offset }) => (
+            {visible.map(({ clip, clipIndex, tilt }) => (
               <VideoClipCard
                 key={clip.id}
                 clip={clip}
-                slotOffset={offset}
+                tilt={tilt}
                 onOpen={() => setActiveIndex(clipIndex)}
               />
             ))}

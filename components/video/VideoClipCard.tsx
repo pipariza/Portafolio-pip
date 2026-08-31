@@ -5,21 +5,21 @@ import type { VideoClip } from "@/lib/data";
 
 export default function VideoClipCard({
   clip,
-  slotOffset,
+  tilt,
   onOpen,
 }: {
   clip: VideoClip;
-  slotOffset: number;
+  tilt: number;
   onOpen: () => void;
 }) {
-  const tilt = slotOffset % 2 === 0 ? -7 : 7;
+  const flungTilt = tilt === 0 ? -45 : tilt * 3;
 
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, rotateX: tilt * 7, y: -60 }}
+      initial={{ opacity: 0, rotateX: flungTilt, y: -60 }}
       animate={{ opacity: 1, rotateX: tilt, y: 0 }}
-      exit={{ opacity: 0, rotateX: tilt * 7, y: 60 }}
+      exit={{ opacity: 0, rotateX: flungTilt, y: 60 }}
       transition={{ duration: 0.7, ease: [0.16, 0.84, 0.44, 1] }}
       style={{ transformStyle: "preserve-3d" }}
       className="relative w-[260px] md:w-[380px] aspect-[16/10] -mt-6 md:-mt-10 first:mt-0 shrink-0"
