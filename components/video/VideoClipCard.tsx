@@ -6,10 +6,12 @@ import type { VideoClip } from "@/lib/data";
 export default function VideoClipCard({
   clip,
   tilt,
+  zIndex,
   onOpen,
 }: {
   clip: VideoClip;
   tilt: number;
+  zIndex: number;
   onOpen: () => void;
 }) {
   const flungTilt = tilt === 0 ? -45 : tilt * 3;
@@ -21,7 +23,7 @@ export default function VideoClipCard({
       animate={{ opacity: 1, rotateX: tilt, y: 0 }}
       exit={{ opacity: 0, rotateX: flungTilt, y: 60 }}
       transition={{ duration: 0.7, ease: [0.16, 0.84, 0.44, 1] }}
-      style={{ transformStyle: "preserve-3d" }}
+      style={{ transformStyle: "preserve-3d", zIndex }}
       className="relative w-[260px] md:w-[380px] aspect-[16/10] -mt-6 md:-mt-10 first:mt-0 shrink-0"
     >
       <button

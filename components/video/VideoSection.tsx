@@ -76,10 +76,12 @@ export default function VideoSection() {
 
   const visible = Array.from({ length: VISIBLE_COUNT }, (_, offset) => {
     const clipIndex = wrap(startIndex + offset);
+    const distance = Math.abs(offset - centerOffset);
     return {
       clip: videoClips[clipIndex],
       clipIndex,
       tilt: (offset - centerOffset) * TILT_STEP,
+      zIndex: VISIBLE_COUNT - distance,
     };
   });
 
@@ -109,11 +111,12 @@ export default function VideoSection() {
       >
         <div className="relative flex flex-col items-center" style={{ perspective: 650 }}>
           <AnimatePresence initial={false}>
-            {visible.map(({ clip, clipIndex, tilt }) => (
+            {visible.map(({ clip, clipIndex, tilt, zIndex }) => (
               <VideoClipCard
                 key={clip.id}
                 clip={clip}
                 tilt={tilt}
+                zIndex={zIndex}
                 onOpen={() => setActiveIndex(clipIndex)}
               />
             ))}
