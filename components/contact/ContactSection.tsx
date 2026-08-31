@@ -25,37 +25,71 @@ export default function ContactSection() {
       </div>
 
       <div className="relative w-full min-h-screen bg-void border-t border-bone/10 px-6 md:px-16 py-10 flex flex-col">
-        <div className="flex items-start justify-between text-[11px] font-medium uppercase tracking-[0.08em] text-bone/60">
-          <a href={CONTACT.linkedin.href} target="_blank" rel="noreferrer" data-cursor-hover>
-            {CONTACT.linkedin.label}
-          </a>
-          <a href={CONTACT.instagram.href} target="_blank" rel="noreferrer" data-cursor-hover>
-            {CONTACT.instagram.label}
-          </a>
-        </div>
-
-        <div className="relative flex-1 flex flex-col justify-center gap-10 md:gap-0 py-16">
-          <a
-            href={`mailto:${CONTACT.email}`}
-            data-cursor-hover
-            className="md:absolute md:left-[8%] md:top-[38%] text-3xl md:text-[56px] font-medium leading-none hover:text-bone/70 transition-colors break-all"
-          >
-            {CONTACT.email}
+        {/* Mobile: single stacked block */}
+        <div className="flex md:hidden flex-1 flex-col items-center justify-center gap-6 text-center text-xl font-medium">
+          <span className="text-bone/70">LinkedIn</span>
+          <span className="text-bone/70">{CONTACT.city}</span>
+          <a href={`mailto:${CONTACT.email}`} data-cursor-hover className="hover:text-bone/70 transition-colors">
+            Email
           </a>
           <a
             href={CONTACT.whatsapp.href}
             target="_blank"
             rel="noreferrer"
             data-cursor-hover
-            className="md:absolute md:right-[8%] md:top-[58%] text-3xl md:text-[56px] font-medium leading-none hover:text-bone/70 transition-colors"
+            className="hover:text-bone/70 transition-colors"
           >
-            {CONTACT.whatsapp.label}
+            WhatsApp
           </a>
+          <a
+            href={CONTACT.instagram.href}
+            target="_blank"
+            rel="noreferrer"
+            data-cursor-hover
+            className="hover:text-bone/70 transition-colors"
+          >
+            Instagram
+          </a>
+        </div>
+
+        {/* Desktop: scattered layout */}
+        <div className="hidden md:flex flex-1 flex-col">
+          <div className="flex items-start justify-between text-xl md:text-2xl font-medium">
+            <span className="text-bone/70">LinkedIn</span>
+            <span className="text-bone/70">{CONTACT.city}</span>
+          </div>
+
+          <div className="relative flex-1">
+            <a
+              href={`mailto:${CONTACT.email}`}
+              data-cursor-hover
+              className="absolute left-[8%] top-[38%] text-xl md:text-2xl font-medium hover:text-bone/70 transition-colors"
+            >
+              Email
+            </a>
+            <a
+              href={CONTACT.whatsapp.href}
+              target="_blank"
+              rel="noreferrer"
+              data-cursor-hover
+              className="absolute right-[8%] top-[58%] text-xl md:text-2xl font-medium hover:text-bone/70 transition-colors"
+            >
+              WhatsApp
+            </a>
+          </div>
         </div>
 
         <div className="flex items-center justify-between text-[11px] text-bone/40">
           <span>© {new Date().getFullYear()} Pip Ariza</span>
-          <span>{CONTACT.city}</span>
+          <a
+            href={CONTACT.instagram.href}
+            target="_blank"
+            rel="noreferrer"
+            data-cursor-hover
+            className="hidden md:inline text-xl md:text-2xl font-medium text-bone hover:text-bone/70 transition-colors"
+          >
+            Instagram
+          </a>
         </div>
       </div>
     </ThemeSection>
