@@ -146,7 +146,7 @@ export type VideoClip = {
 };
 
 export const videoClips: VideoClip[] = [
-  { id: "clip-1", title: "Reel 01", vimeoId: null, color: "#5a5a52" },
+  { id: "clip-1", title: "Reel 01", vimeoId: "1186782588", color: "#5a5a52" },
   { id: "clip-2", title: "Reel 02", vimeoId: null, color: "#3f3f39" },
   { id: "clip-3", title: "Reel 03", vimeoId: null, color: "#6b6b60" },
   { id: "clip-4", title: "Reel 04", vimeoId: null, color: "#47463f" },

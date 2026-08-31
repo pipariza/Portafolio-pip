@@ -28,7 +28,6 @@ export default function ContactSection() {
         {/* Mobile: single stacked block */}
         <div className="flex md:hidden flex-1 flex-col items-center justify-center gap-6 text-center text-xl font-medium">
           <span className="text-bone/70">LinkedIn</span>
-          <span className="text-bone/70">{CONTACT.city}</span>
           <a href={`mailto:${CONTACT.email}`} data-cursor-hover className="hover:text-bone/70 transition-colors">
             Email
           </a>
@@ -63,7 +62,7 @@ export default function ContactSection() {
             <a
               href={`mailto:${CONTACT.email}`}
               data-cursor-hover
-              className="absolute left-[8%] top-[38%] text-xl md:text-2xl font-medium hover:text-bone/70 transition-colors"
+              className="absolute left-[36%] top-[34%] text-xl md:text-2xl font-medium hover:text-bone/70 transition-colors"
             >
               Email
             </a>
@@ -72,7 +71,7 @@ export default function ContactSection() {
               target="_blank"
               rel="noreferrer"
               data-cursor-hover
-              className="absolute right-[8%] top-[58%] text-xl md:text-2xl font-medium hover:text-bone/70 transition-colors"
+              className="absolute right-[36%] top-[62%] text-xl md:text-2xl font-medium hover:text-bone/70 transition-colors"
             >
               WhatsApp
             </a>
@@ -91,6 +90,10 @@ export default function ContactSection() {
             Instagram
           </a>
         </div>
+
+        <p className="md:hidden text-center text-sm font-light text-bone/40 mt-4">
+          {CONTACT.city}
+        </p>
       </div>
     </ThemeSection>
   );
