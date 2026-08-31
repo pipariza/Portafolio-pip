@@ -1,28 +1,26 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import type { VideoClip } from "@/lib/data";
 
 export default function VideoClipCard({
   clip,
-  index,
+  slotOffset,
   onOpen,
 }: {
   clip: VideoClip;
-  index: number;
+  slotOffset: number;
   onOpen: () => void;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-15% 0px -15% 0px" });
-  const restTilt = index % 2 === 0 ? -7 : 7;
+  const tilt = slotOffset % 2 === 0 ? -7 : 7;
 
   return (
     <motion.div
-      ref={ref}
-      initial={{ opacity: 0, rotateX: restTilt * 6, y: 50 }}
-      animate={inView ? { opacity: 1, rotateX: restTilt, y: 0 } : {}}
-      transition={{ duration: 0.8, ease: [0.16, 0.84, 0.44, 1] }}
+      layout
+      initial={{ opacity: 0, rotateX: tilt * 7, y: -60 }}
+      animate={{ opacity: 1, rotateX: tilt, y: 0 }}
+      exit={{ opacity: 0, rotateX: tilt * 7, y: 60 }}
+      transition={{ duration: 0.7, ease: [0.16, 0.84, 0.44, 1] }}
       style={{ transformStyle: "preserve-3d" }}
       className="relative w-[260px] md:w-[380px] aspect-[16/10] -mt-6 md:-mt-10 first:mt-0 shrink-0"
     >
@@ -33,7 +31,7 @@ export default function VideoClipCard({
         className="group absolute inset-0 overflow-hidden shadow-xl"
         style={{ background: clip.color }}
       >
-        {inView && clip.vimeoId && (
+        {clip.vimeoId && (
           <iframe
             src={`https://player.vimeo.com/video/${clip.vimeoId}?background=1&autoplay=1&loop=1&muted=1&byline=0&title=0&portrait=0&badge=0`}
             className="absolute top-1/2 left-1/2 w-auto pointer-events-none -translate-x-1/2 -translate-y-1/2"

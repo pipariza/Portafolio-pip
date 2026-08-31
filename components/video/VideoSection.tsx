@@ -1,16 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import { ThemeSection } from "@/lib/section-theme";
 import { videoClips } from "@/lib/data";
 import VideoClipCard from "./VideoClipCard";
 import VideoModal from "./VideoModal";
 
+const VISIBLE_COUNT = 5;
+const CYCLE_MS = 3500;
+
 export default function VideoSection() {
+  const [startIndex, setStartIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const activeClip = activeIndex !== null ? videoClips[activeIndex] : null;
 
+  useEffect(() => {
+    if (paused || activeClip) return;
+    const timer = setInterval(() => {
+      setStartIndex((i) => (i + 1) % videoClips.length);
+    }, CYCLE_MS);
+    return () => clearInterval(timer);
+  }, [paused, activeClip]);
+
   const wrap = (i: number) => (i + videoClips.length) % videoClips.length;
+
+  const visible = Array.from({ length: VISIBLE_COUNT }, (_, offset) => {
+    const clipIndex = wrap(startIndex + offset);
+    return { clip: videoClips[clipIndex], clipIndex, offset };
+  });
 
   return (
     <ThemeSection
@@ -30,19 +49,22 @@ export default function VideoSection() {
         <p className="italic font-medium text-2xl md:text-[26px]">Motion</p>
       </div>
 
-      <div className="relative md:absolute md:inset-0 flex justify-center overflow-hidden">
-        <div
-          className="relative md:-top-[10vh] flex flex-col items-center py-10"
-          style={{ perspective: 1400 }}
-        >
-          {videoClips.map((clip, i) => (
-            <VideoClipCard
-              key={clip.id}
-              clip={clip}
-              index={i}
-              onOpen={() => setActiveIndex(i)}
-            />
-          ))}
+      <div
+        className="relative md:absolute md:inset-0 flex justify-center items-center overflow-hidden"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
+        <div className="relative flex flex-col items-center" style={{ perspective: 1400 }}>
+          <AnimatePresence initial={false}>
+            {visible.map(({ clip, clipIndex, offset }) => (
+              <VideoClipCard
+                key={clip.id}
+                clip={clip}
+                slotOffset={offset}
+                onOpen={() => setActiveIndex(clipIndex)}
+              />
+            ))}
+          </AnimatePresence>
         </div>
       </div>
 
