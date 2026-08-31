@@ -82,6 +82,7 @@ export default function VideoSection() {
       clipIndex,
       tilt: (offset - centerOffset) * TILT_STEP,
       zIndex: VISIBLE_COUNT - distance,
+      distance,
     };
   });
 
@@ -111,12 +112,13 @@ export default function VideoSection() {
       >
         <div className="relative flex flex-col items-center" style={{ perspective: 650 }}>
           <AnimatePresence initial={false}>
-            {visible.map(({ clip, clipIndex, tilt, zIndex }) => (
+            {visible.map(({ clip, clipIndex, tilt, zIndex, distance }) => (
               <VideoClipCard
                 key={clip.id}
                 clip={clip}
                 tilt={tilt}
                 zIndex={zIndex}
+                delay={distance * 0.07}
                 onOpen={() => setActiveIndex(clipIndex)}
               />
             ))}
