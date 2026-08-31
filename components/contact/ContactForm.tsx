@@ -85,6 +85,19 @@ export default function ContactForm() {
         </select>
       </div>
 
+      <div>
+        <label htmlFor="message" className="sr-only">
+          Mensaje (opcional)
+        </label>
+        <textarea
+          id="message"
+          name="message"
+          rows={3}
+          placeholder="Mensaje (opcional)"
+          className={`${inputClasses} resize-none`}
+        />
+      </div>
+
       <button
         type="submit"
         disabled={status === "loading"}
