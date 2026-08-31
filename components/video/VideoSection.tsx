@@ -72,7 +72,7 @@ export default function VideoSection() {
   }, []);
 
   const centerOffset = Math.floor(VISIBLE_COUNT / 2);
-  const TILT_STEP = 8;
+  const TILT_STEP = 20;
 
   const visible = Array.from({ length: VISIBLE_COUNT }, (_, offset) => {
     const clipIndex = wrap(startIndex + offset);
@@ -107,7 +107,7 @@ export default function VideoSection() {
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
-        <div className="relative flex flex-col items-center" style={{ perspective: 1400 }}>
+        <div className="relative flex flex-col items-center" style={{ perspective: 650 }}>
           <AnimatePresence initial={false}>
             {visible.map(({ clip, clipIndex, tilt }) => (
               <VideoClipCard
