@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { ThemeSection } from "@/lib/section-theme";
 import { videoClips } from "@/lib/data";
@@ -26,6 +26,51 @@ export default function VideoSection() {
 
   const wrap = (i: number) => (i + videoClips.length) % videoClips.length;
 
+  const stackRef = useRef<HTMLDivElement>(null);
+
+  // Scrolling (wheel or touch swipe) over the stack steps the carousel
+  // forward/back instead of scrolling the page — this route is a single
+  // full-viewport section, so there's nothing else to scroll to.
+  useEffect(() => {
+    const el = stackRef.current;
+    if (!el) return;
+
+    let cooling = false;
+    const step = (dir: 1 | -1) => {
+      if (cooling) return;
+      cooling = true;
+      setStartIndex((i) => wrap(i + dir));
+      window.setTimeout(() => {
+        cooling = false;
+      }, 700);
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      if (Math.abs(e.deltaY) < 10) return;
+      step(e.deltaY > 0 ? 1 : -1);
+    };
+
+    let touchStartY = 0;
+    const onTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    };
+    const onTouchEnd = (e: TouchEvent) => {
+      const dy = touchStartY - e.changedTouches[0].clientY;
+      if (Math.abs(dy) < 30) return;
+      step(dy > 0 ? 1 : -1);
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchend", onTouchEnd, { passive: true });
+    return () => {
+      el.removeEventListener("wheel", onWheel);
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchend", onTouchEnd);
+    };
+  }, []);
+
   const visible = Array.from({ length: VISIBLE_COUNT }, (_, offset) => {
     const clipIndex = wrap(startIndex + offset);
     return { clip: videoClips[clipIndex], clipIndex, offset };
@@ -50,6 +95,7 @@ export default function VideoSection() {
       </div>
 
       <div
+        ref={stackRef}
         className="relative md:absolute md:inset-0 flex justify-center items-center overflow-hidden"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
