@@ -1,4 +1,4 @@
-export const FORMSPREE_ENDPOINT = "https://formspree.io/f/REEMPLAZAR_CON_TU_ID";
+export const FORMSPREE_ENDPOINT = "https://formspree.io/f/moeqjekg";
 
 export const CONTACT = {
   linkedin: { label: "LinkedIn", href: "https://linkedin.com/in/pip-ariza" },
