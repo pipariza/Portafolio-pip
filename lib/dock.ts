@@ -262,7 +262,7 @@ export const dockItems: DockItem[] = [
           meta: "01",
           lead: "Diseñador digital que construye ecosistemas web orientados a negocio.",
           paragraphs: [
-            "Más de dos años combinando UX/UI, e-commerce, contenido audiovisual y pauta digital en Meta, para que cada elemento tenga una función dentro del recorrido del usuario.",
+            "Más de tres años combinando UX/UI, e-commerce, contenido audiovisual y pauta digital en Meta, para que cada elemento tenga una función dentro del recorrido del usuario.",
             "Hoy gestiono la tienda Shopify de Boho Chic SAS: creo productos de e-commerce con IA, automatizo procesos y mejoro la experiencia de compra.",
           ],
           stats: [
@@ -300,7 +300,7 @@ export const dockItems: DockItem[] = [
             {
               title: "Diseñador web y trafficker",
               org: "Visual Living",
-              period: "2024 – Presente",
+              period: "2024 – Julio 2026",
               points: [
                 "Desarrollo de sitios web para marcas de moda, restaurantes y diseño.",
                 "Campañas digitales en Meta.",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -22,6 +22,15 @@ export default function Nav() {
   const { theme } = useSectionTheme();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
 
   return (
     <header className="fixed top-5 inset-x-0 z-50 flex justify-center px-4">
@@ -63,7 +72,7 @@ export default function Nav() {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          aria-label="Abrir menú"
+          aria-label={open ? "Cerrar menú" : "Abrir menú"}
           aria-expanded={open}
           className="md:hidden flex flex-col justify-center items-center gap-[5px] w-10 h-10"
         >
@@ -87,12 +96,25 @@ export default function Nav() {
       <AnimatePresence>
         {open && (
           <motion.div
+            key="scrim"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setOpen(false)}
+            aria-hidden="true"
+            className="md:hidden fixed inset-0 -z-10 bg-black/40"
+          />
+        )}
+        {open && (
+          <motion.div
+            key="menu"
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
             data-theme={theme}
-            className="glass-pill md:hidden fixed top-20 inset-x-4 z-50 rounded-3xl border p-6 flex flex-col gap-5"
+            className="glass-menu md:hidden fixed top-20 inset-x-4 z-50 flex max-h-[calc(100dvh-6rem)] flex-col gap-5 overflow-y-auto rounded-3xl border p-6"
           >
             {LINKS.map((link) => (
               <Link
