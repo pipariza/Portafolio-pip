@@ -28,7 +28,7 @@ export default function AppsSection() {
         priority
         quality={85}
         sizes="(max-aspect-ratio: 16/9) 178vh, 100vw"
-        className="pointer-events-none select-none object-cover object-[52%_50%]"
+        className="pointer-events-none select-none object-cover object-[52%_50%] grayscale"
         aria-hidden="true"
       />
 
