@@ -26,7 +26,7 @@ export function DesktopAppIcon({
       data-cursor-hover
     >
       <div
-        className="relative h-20 w-20 overflow-hidden shadow-lg flex items-center justify-center text-bone/80 text-base font-medium"
+        className="relative h-20 w-20 overflow-hidden shadow-lg ring-1 ring-white/20 flex items-center justify-center text-bone/80 text-base font-medium"
         style={{ background: app.color }}
       >
         {app.image ? (
@@ -35,7 +35,7 @@ export function DesktopAppIcon({
           app.name.slice(0, 2).toUpperCase()
         )}
       </div>
-      <span className="text-[11px] font-medium uppercase tracking-[0.05em] text-ink">
+      <span className="text-[11px] font-medium uppercase tracking-[0.05em] text-white [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
         {app.label}
       </span>
     </motion.div>
@@ -50,7 +50,7 @@ export function GridAppIcon({ app }: { app: AppProject }) {
       data-cursor-hover
     >
       <div
-        className="relative h-16 w-16 overflow-hidden shadow-lg flex items-center justify-center text-bone/80 text-sm font-medium"
+        className="relative h-16 w-16 overflow-hidden shadow-lg ring-1 ring-white/20 flex items-center justify-center text-bone/80 text-sm font-medium"
         style={{ background: app.color }}
       >
         {app.image ? (
@@ -59,7 +59,7 @@ export function GridAppIcon({ app }: { app: AppProject }) {
           app.name.slice(0, 2).toUpperCase()
         )}
       </div>
-      <span className="text-[11px] font-medium uppercase tracking-[0.05em] text-ink text-center">
+      <span className="text-[11px] font-medium uppercase tracking-[0.05em] text-white [text-shadow:0_1px_8px_rgba(0,0,0,0.7)] text-center">
         {app.label}
       </span>
     </a>

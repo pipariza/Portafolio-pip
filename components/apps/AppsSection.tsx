@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ThemeSection } from "@/lib/section-theme";
 import { apps } from "@/lib/data";
 import { DesktopAppIcon, GridAppIcon } from "./AppIcon";
@@ -14,21 +15,25 @@ const POSITIONS = [
 export default function AppsSection() {
   return (
     <ThemeSection
-      theme="light"
+      theme="dark"
       id="aplicativos"
-      className="relative w-full min-h-screen bg-paper text-ink overflow-hidden pt-32 pb-40"
+      className="relative w-full min-h-screen bg-void text-bone overflow-hidden pt-32 pb-40"
     >
-      <div
-        className="pointer-events-none absolute -top-1/4 left-1/2 -translate-x-1/2 h-[70vh] w-[70vh] rounded-full opacity-40"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(140,140,132,0.5) 0%, rgba(140,140,132,0) 70%)",
-          filter: "blur(60px)",
-        }}
+      {/* Wallpaper: the subject sits near the horizontal middle (~52%), so on tall
+          phone screens the crop is centered on it. */}
+      <Image
+        src="/apps/wallpaper.jpg"
+        alt=""
+        fill
+        priority
+        quality={85}
+        sizes="(max-aspect-ratio: 16/9) 178vh, 100vw"
+        className="pointer-events-none select-none object-cover object-[52%_50%]"
         aria-hidden="true"
       />
+      <div className="pointer-events-none absolute inset-0 bg-black/25" aria-hidden="true" />
 
-      <p className="relative z-10 px-6 max-md:portrait:pl-[76px] md:px-16 text-[11px] uppercase tracking-[0.08em] text-ink/50">
+      <p className="relative z-10 px-6 max-md:portrait:pl-[76px] md:px-16 text-[11px] uppercase tracking-[0.08em] text-white/60">
         Arrastrá los íconos · Click para abrir
       </p>
 
