@@ -7,7 +7,7 @@ import { dockItems, type DockItem } from "@/lib/dock";
 import MacWindow, { type ExitMode } from "./MacWindow";
 
 const iconClasses =
-  "h-9 w-9 min-[400px]:h-10 min-[400px]:w-10 md:h-14 md:w-14 object-contain transition-transform duration-200 group-hover:-translate-y-1.5 group-hover:scale-110";
+  "h-8 w-8 min-[400px]:h-9 min-[400px]:w-9 md:h-12 md:w-12 object-contain transition-transform duration-200 group-hover:-translate-y-1.5 group-hover:scale-110";
 
 function Tooltip({ label }: { label: string }) {
   return (
@@ -81,14 +81,14 @@ export default function Dock() {
 
       {/* Horizontal, centered at the bottom by default (tablets, laptops, landscape phones).
           Portrait phones: vertical bar on the left edge. Anchored to the screen, not the page. */}
-      <div className="fixed bottom-3 left-1/2 z-[60] flex w-max max-w-[calc(100vw-12px)] -translate-x-1/2 flex-row items-end gap-1.5 rounded-[22px] border border-white/50 bg-white/30 px-2 pb-2 pt-2 shadow-[0_10px_40px_rgba(0,0,0,0.18)] backdrop-blur-2xl md:bottom-8 md:gap-2 md:px-3 md:pb-2.5 max-md:portrait:bottom-auto max-md:portrait:left-2 max-md:portrait:top-1/2 max-md:portrait:max-h-[calc(100svh-6rem)] max-md:portrait:translate-x-0 max-md:portrait:-translate-y-1/2 max-md:portrait:flex-col max-md:portrait:items-center max-md:portrait:overflow-y-auto max-md:portrait:px-2 max-md:portrait:py-3">
+      <div className="fixed bottom-3 left-1/2 z-[60] flex w-max max-w-[calc(100vw-12px)] -translate-x-1/2 flex-row items-end gap-1.5 rounded-[20px] border border-white/40 bg-white/10 px-2 pb-1.5 pt-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-xl backdrop-saturate-150 md:bottom-8 md:gap-2 md:px-3 md:pb-2.5 max-md:portrait:bottom-auto max-md:portrait:left-2 max-md:portrait:top-1/2 max-md:portrait:max-h-[calc(100svh-6rem)] max-md:portrait:translate-x-0 max-md:portrait:-translate-y-1/2 max-md:portrait:flex-col max-md:portrait:items-center max-md:portrait:overflow-y-auto max-md:portrait:px-2 max-md:portrait:py-3">
         {dockItems.map((item, i) => {
           const newGroup = i > 0 && dockItems[i - 1].group !== item.group;
           return (
             <Fragment key={item.id}>
               {newGroup && (
                 <span
-                  className="mx-0.5 mb-1 h-8 w-px self-center bg-black/20 md:mx-1 md:h-12 max-md:portrait:mx-0 max-md:portrait:my-0.5 max-md:portrait:mb-0 max-md:portrait:h-px max-md:portrait:w-7"
+                  className="mx-0.5 mb-1 h-7 w-px self-center bg-black/15 md:mx-1 md:h-10 max-md:portrait:mx-0 max-md:portrait:my-0.5 max-md:portrait:mb-0 max-md:portrait:h-px max-md:portrait:w-6"
                   aria-hidden="true"
                 />
               )}
