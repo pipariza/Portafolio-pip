@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { FORMSPREE_ENDPOINT } from "@/lib/config";
+import { CONTACT, FORMSPREE_ENDPOINT } from "@/lib/config";
 
 type Status = "idle" | "loading" | "success" | "error";
 
@@ -113,8 +113,8 @@ export default function ContactForm() {
       {status === "error" && (
         <p className="text-sm text-bone/70">
           Algo falló. Escribime directo a {" "}
-          <a href="mailto:hola@piparizaa.com" className="underline">
-            hola@piparizaa.com
+          <a href={`mailto:${CONTACT.email}`} className="underline">
+            {CONTACT.email}
           </a>
           .
         </p>

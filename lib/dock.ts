@@ -1,9 +1,13 @@
+import { CONTACT } from "@/lib/config";
+
 export type WindowTab = {
   label: string;
   meta?: string;
   paragraphs?: string[];
   listTitle?: string;
   list?: string[];
+  /** Shown as a mailto link with a copy button. */
+  email?: string;
 };
 
 export type DockWindow = {
@@ -170,8 +174,9 @@ export const dockItems: DockItem[] = [
         {
           label: "Correo",
           paragraphs: [
-            "Texto de prueba: aquí va tu correo y cómo prefieres que te contacten.",
+            "¿Tienes un proyecto, una oferta o solo quieres saludar? Escríbeme.",
           ],
+          email: CONTACT.email,
         },
       ],
     },

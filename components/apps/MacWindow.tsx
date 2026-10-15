@@ -53,6 +53,31 @@ function TrafficButton({
   );
 }
 
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      // Clipboard can be blocked; the mailto link above still works.
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      data-cursor-hover
+      onClick={copy}
+      className="rounded-full border border-black/15 px-3 py-1 text-xs font-medium transition-colors hover:bg-black/5"
+    >
+      {copied ? "Copiado ✓" : "Copiar"}
+    </button>
+  );
+}
+
 export default function MacWindow({
   win,
   index,
@@ -169,6 +194,18 @@ export default function MacWindow({
                 {p}
               </p>
             ))}
+            {current.email && (
+              <div className="flex flex-wrap items-center gap-3">
+                <a
+                  href={`mailto:${current.email}`}
+                  data-cursor-hover
+                  className="break-all text-base font-medium underline underline-offset-4 md:text-lg"
+                >
+                  {current.email}
+                </a>
+                <CopyButton text={current.email} />
+              </div>
+            )}
             {current.listTitle && <p className="mb-3">{current.listTitle}</p>}
             {current.list && (
               <ul className="space-y-2.5">
