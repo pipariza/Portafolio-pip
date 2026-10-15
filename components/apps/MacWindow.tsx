@@ -189,23 +189,16 @@ export default function MacWindow({
           )}
 
           <div className="min-w-0 flex-1 overflow-y-auto p-4 text-sm leading-snug md:p-6 md:text-[15px]">
+            {current.lead && (
+              <p className="mb-4 max-w-xl text-lg font-semibold leading-tight md:text-xl">
+                {current.lead}
+              </p>
+            )}
             {current.paragraphs?.map((p) => (
               <p key={p} className="mb-5 max-w-xl">
                 {p}
               </p>
             ))}
-            {current.email && (
-              <div className="flex flex-wrap items-center gap-3">
-                <a
-                  href={`mailto:${current.email}`}
-                  data-cursor-hover
-                  className="break-all text-base font-medium underline underline-offset-4 md:text-lg"
-                >
-                  {current.email}
-                </a>
-                <CopyButton text={current.email} />
-              </div>
-            )}
             {current.listTitle && <p className="mb-3">{current.listTitle}</p>}
             {current.list && (
               <ul className="space-y-2.5">
@@ -220,6 +213,18 @@ export default function MacWindow({
                   </li>
                 ))}
               </ul>
+            )}
+            {current.email && (
+              <div className={`flex flex-wrap items-center gap-3 ${current.list ? "mt-6" : ""}`}>
+                <a
+                  href={`mailto:${current.email}`}
+                  data-cursor-hover
+                  className="break-all text-base font-medium underline underline-offset-4 md:text-lg"
+                >
+                  {current.email}
+                </a>
+                <CopyButton text={current.email} />
+              </div>
             )}
           </div>
         </div>

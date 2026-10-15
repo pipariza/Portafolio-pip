@@ -3,6 +3,8 @@ import { CONTACT } from "@/lib/config";
 export type WindowTab = {
   label: string;
   meta?: string;
+  /** Larger opening line shown above the paragraphs. */
+  lead?: string;
   paragraphs?: string[];
   listTitle?: string;
   list?: string[];
@@ -86,9 +88,17 @@ export const dockItems: DockItem[] = [
       tabs: [
         {
           label: "Aviso",
+          lead: "Atención: este portafolio puede provocar ganas de contratar a su autor.",
           paragraphs: [
-            "Texto de prueba: este portafolio sigue en construcción, pronto habrá más proyectos.",
+            `Disponible para trabajo full-time en agencias digitales y de diseño. Desde ${CONTACT.city}.`,
           ],
+          listTitle: "Lo que hago:",
+          list: [
+            "Diseño y desarrollo web",
+            "Aplicativos con IA",
+            "Edición de video vertical",
+          ],
+          email: CONTACT.email,
         },
       ],
     },
