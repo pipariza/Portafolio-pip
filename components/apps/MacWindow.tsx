@@ -10,6 +10,9 @@ import {
 } from "framer-motion";
 import type { DockWindow } from "@/lib/dock";
 import TrashView from "./TrashView";
+import BeforeAfter from "./BeforeAfter";
+import VectorToggle from "./VectorToggle";
+import WorkGrid from "./WorkGrid";
 
 export type ExitMode = "close" | "minimize";
 
@@ -207,6 +210,8 @@ export default function MacWindow({
                 {p}
               </p>
             ))}
+            {current.beforeAfter && <BeforeAfter {...current.beforeAfter} />}
+            {current.vector && <VectorToggle />}
             {current.listTitle && <p className="mb-3">{current.listTitle}</p>}
             {current.list && (
               <ul className="space-y-2.5">
@@ -221,6 +226,12 @@ export default function MacWindow({
                   </li>
                 ))}
               </ul>
+            )}
+            {current.works && <WorkGrid works={current.works} />}
+            {current.stat && (
+              <p className="mt-5 max-w-xl rounded-lg bg-[#f6efe0] px-3 py-2 text-xs">
+                {current.stat}
+              </p>
             )}
             {current.email && (
               <div className={`flex flex-wrap items-center gap-3 ${current.list ? "mt-6" : ""}`}>

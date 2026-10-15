@@ -14,9 +14,31 @@ export type TrashItem = {
   learned: string;
 };
 
+/** A featured piece shown as a captioned thumbnail. */
+export type WorkThumb = {
+  title: string;
+  caption: string;
+  /** Path under /public. Falls back to a colored tile. */
+  image?: string;
+  color: string;
+};
+
 export type WindowTab = {
   label: string;
   meta?: string;
+  /** Photoshop: before/after comparison slider. Without images it shows colored tiles. */
+  beforeAfter?: {
+    before?: string;
+    after?: string;
+    beforeColor: string;
+    afterColor: string;
+  };
+  /** Illustrator: toggle between the finished mark and its outline (paths and anchor points). */
+  vector?: boolean;
+  /** Captioned thumbnails of featured pieces. */
+  works?: WorkThumb[];
+  /** Small humorous stat shown in a callout. */
+  stat?: string;
   /** Renders a Finder-style grid of discarded projects instead of text. */
   trash?: { items: TrashItem[]; emptyReply: string };
   /** Larger opening line shown above the paragraphs. */
@@ -69,9 +91,48 @@ export const dockItems: DockItem[] = [
       title: "Photoshop",
       tabs: [
         {
-          label: "Photoshop",
+          label: "Resumen",
+          meta: "01",
+          lead: "Aquí dejo la realidad un poco mejor de lo que era.",
           paragraphs: [
             "Texto de prueba: retoque, composición y piezas gráficas.",
+          ],
+          listTitle: "Lo uso para:",
+          list: [
+            "Retoque fotográfico",
+            "Composición de imágenes",
+            "Mockups",
+            "Piezas para redes",
+          ],
+          stat: "Capas en mi archivo más grande: 214. Con nombre: 3. (dato de prueba)",
+        },
+        {
+          label: "Antes / Después",
+          meta: "02",
+          paragraphs: [
+            "Arrastra la línea para comparar. (Imagen de prueba: aquí irá un retoque tuyo.)",
+          ],
+          beforeAfter: { beforeColor: "#bdb9b0", afterColor: "#f2b63c" },
+        },
+        {
+          label: "Trabajos",
+          meta: "03",
+          works: [
+            {
+              title: "Retoque de retrato",
+              caption: "Texto de prueba: piel, luz y color.",
+              color: "#e7d9c4",
+            },
+            {
+              title: "Mockup de empaque",
+              caption: "Texto de prueba: una marca sobre producto real.",
+              color: "#d9dde3",
+            },
+            {
+              title: "Pieza para redes",
+              caption: "Texto de prueba: campaña en formato vertical.",
+              color: "#e6d3d3",
+            },
           ],
         },
       ],
@@ -86,9 +147,48 @@ export const dockItems: DockItem[] = [
       title: "Illustrator",
       tabs: [
         {
-          label: "Illustrator",
+          label: "Resumen",
+          meta: "01",
+          lead: "Puntos de ancla suficientes para perder la paciencia.",
           paragraphs: [
             "Texto de prueba: ilustración vectorial, logotipos y sistemas gráficos.",
+          ],
+          listTitle: "Lo uso para:",
+          list: [
+            "Logotipos",
+            "Íconos",
+            "Ilustración vectorial",
+            "Sistemas gráficos",
+          ],
+          stat: "Veces que usé Ctrl+Z en un solo logo: 1.204. (dato de prueba)",
+        },
+        {
+          label: "Trazado",
+          meta: "02",
+          paragraphs: [
+            "Alterna entre el diseño terminado y sus trazos. (Dibujo de prueba: aquí irá uno de tus logos.)",
+          ],
+          vector: true,
+        },
+        {
+          label: "Trabajos",
+          meta: "03",
+          works: [
+            {
+              title: "Logotipo",
+              caption: "Texto de prueba: identidad para una marca.",
+              color: "#e4dcc9",
+            },
+            {
+              title: "Set de íconos",
+              caption: "Texto de prueba: una familia de íconos coherente.",
+              color: "#d6e2d8",
+            },
+            {
+              title: "Ilustración",
+              caption: "Texto de prueba: vector con carácter propio.",
+              color: "#dcd6e6",
+            },
           ],
         },
       ],

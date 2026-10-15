@@ -1,40 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import type { TrashItem } from "@/lib/dock";
+import Thumb from "./Thumb";
 
-function Thumb({
+function ItemThumb({
   item,
   large = false,
 }: {
   item: TrashItem;
   large?: boolean;
 }) {
-  const ext = item.file.split(".").pop()?.toUpperCase();
-
   return (
-    <div
-      className={`relative aspect-[4/3] w-full overflow-hidden rounded-md shadow-md ring-1 ring-black/10 ${
-        large ? "max-w-md" : ""
-      }`}
-      style={{ background: item.color }}
-    >
-      {item.image ? (
-        <Image
-          src={item.image}
-          alt={item.file}
-          fill
-          sizes={large ? "(min-width: 768px) 448px, 90vw" : "(min-width: 768px) 220px, 45vw"}
-          className="object-cover"
-        />
-      ) : (
-        <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold tracking-wide text-black/35">
-          {ext}
-        </span>
-      )}
-    </div>
+    <Thumb
+      image={item.image}
+      color={item.color}
+      alt={item.file}
+      label={item.file.split(".").pop()?.toUpperCase()}
+      large={large}
+    />
   );
 }
 
@@ -68,7 +53,7 @@ export default function TrashView({
         >
           ← Volver a la papelera
         </button>
-        <Thumb item={item} large />
+        <ItemThumb item={item} large />
         <p className="mt-4 break-all text-[11px] text-black/50">{item.file}</p>
         <p className="mt-3 max-w-xl">
           <span className="font-semibold">Qué era: </span>
@@ -124,7 +109,7 @@ export default function TrashView({
             onClick={() => setSelected(i)}
             className="group flex flex-col items-center gap-2 text-center"
           >
-            <Thumb item={it} />
+            <ItemThumb item={it} />
             <span className="max-w-full break-all rounded px-1.5 py-0.5 text-[11px] leading-tight group-hover:bg-[#2f6fe4] group-hover:text-white group-focus-visible:bg-[#2f6fe4] group-focus-visible:text-white">
               {it.file}
             </span>
