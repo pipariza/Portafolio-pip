@@ -39,6 +39,13 @@ export type WindowTab = {
   works?: WorkThumb[];
   /** Small humorous stat shown in a callout. */
   stat?: string;
+  /**
+   * Project links. An empty array renders the "coming soon" message;
+   * add { label, href } entries once the projects are live.
+   */
+  links?: { label: string; href: string }[];
+  linksTitle?: string;
+  linksEmptyText?: string;
   /** Renders a Finder-style grid of discarded projects instead of text. */
   trash?: { items: TrashItem[]; emptyReply: string };
   /** Larger opening line shown above the paragraphs. */
@@ -75,9 +82,20 @@ export const dockItems: DockItem[] = [
       tabs: [
         {
           label: "Claude",
+          lead: "Uso Claude para resolver problemas y ahorrarle tiempo y dinero a mis clientes.",
           paragraphs: [
-            "Texto de prueba: aquí va una descripción de cómo trabajas con IA en tus aplicativos.",
+            "Con él convierto ideas en aplicativos que funcionan, automatizo lo repetitivo y entrego soluciones más rápido y a un menor costo.",
           ],
+          listTitle: "Lo uso para:",
+          list: [
+            "Automatizar tareas repetitivas",
+            "Prototipar aplicativos con IA",
+            "Resolver problemas de código y de diseño",
+          ],
+          linksTitle: "Proyectos hechos con Claude:",
+          linksEmptyText: "Pronto estarán aquí los enlaces a los proyectos terminados.",
+          // Add { label: "Nombre del proyecto", href: "https://..." } when each one is live.
+          links: [],
         },
       ],
     },

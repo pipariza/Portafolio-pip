@@ -228,6 +228,33 @@ export default function MacWindow({
               </ul>
             )}
             {current.works && <WorkGrid works={current.works} />}
+            {current.links && (
+              <div className="mt-6 max-w-xl">
+                {current.linksTitle && <p className="mb-3">{current.linksTitle}</p>}
+                {current.links.length > 0 ? (
+                  <ul className="space-y-2">
+                    {current.links.map((l) => (
+                      <li key={l.href}>
+                        <a
+                          href={l.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          data-cursor-hover
+                          className="flex items-center justify-between gap-3 rounded-lg border border-black/10 px-3 py-2 font-medium transition-colors hover:bg-black/5"
+                        >
+                          {l.label}
+                          <span aria-hidden="true">↗</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="rounded-lg border border-dashed border-black/20 px-3 py-2 text-black/55">
+                    {current.linksEmptyText ?? "Próximamente."}
+                  </p>
+                )}
+              </div>
+            )}
             {current.stat && (
               <p className="mt-5 max-w-xl rounded-lg bg-[#f6efe0] px-3 py-2 text-xs">
                 {current.stat}
