@@ -37,6 +37,13 @@ export type WindowTab = {
   vector?: boolean;
   /** Captioned thumbnails of featured pieces. */
   works?: WorkThumb[];
+  /** CV-style entries: role, organization, period and bullet points. */
+  entries?: { title: string; org: string; period: string; points: string[] }[];
+  /** Titled groups of short items (skills), laid out in columns when there is room. */
+  groups?: { title: string; items: string[] }[];
+  /** Small tags (tools), with an optional heading. */
+  chipsTitle?: string;
+  chips?: string[];
   /** Small humorous stat shown in a callout. */
   stat?: string;
   /**
@@ -243,41 +250,131 @@ export const dockItems: DockItem[] = [
     icon: "/dock/notas.avif",
     group: 1,
     window: {
-      title: "Información sobre: Pip Ariza",
+      title: "Información sobre: Felipe (Pip) Ariza",
       tabs: [
         {
           label: "Sobre mí",
           meta: "01",
+          lead: "Diseñador digital que construye ecosistemas web orientados a negocio.",
           paragraphs: [
-            "Texto de prueba: diseño y desarrollo web con foco en aplicativos con IA, y edición de video como diferencial. Aquí va tu presentación real.",
+            "Más de dos años combinando UX/UI, e-commerce, contenido audiovisual y pauta digital en Meta, para que cada elemento tenga una función dentro del recorrido del usuario.",
+            "Hoy gestiono la tienda Shopify de Boho Chic SAS: la administro, mejoro su UX/UI, creo productos de e-commerce con IA y automatizo tareas de la web.",
           ],
           listTitle: "Puedo hacer...",
           list: [
-            "Diseño web",
-            "Desarrollo front-end",
-            "Aplicativos con IA",
-            "Edición de video vertical",
-            "Motion",
-            "Reels",
+            "Sitios web y e-commerce (Shopify, Squarespace, WordPress)",
+            "Diseño de interfaces UX/UI",
+            "Edición de video y contenido para redes",
+            "Pauta digital en Meta",
+            "Automatización y productos con IA",
           ],
         },
         {
-          label: "CV",
+          label: "Experiencia",
           meta: "02",
-          paragraphs: [
-            "Texto de prueba: aquí va tu experiencia, estudios y herramientas.",
+          entries: [
+            {
+              title: "Gestor Shopify",
+              org: "Boho Chic SAS",
+              period: "Julio 2026 – Presente",
+              points: [
+                "Administro la tienda Shopify y la mejoro de forma continua.",
+                "Rediseño la UX/UI para que comprar sea más fácil.",
+                "Creo productos para e-commerce con ayuda de IA.",
+                "Automatizo tareas de la web para ahorrar tiempo operativo.",
+              ],
+            },
+            {
+              title: "Diseñador web y trafficker",
+              org: "Visual Living",
+              period: "2024 – Presente",
+              points: [
+                "Desarrollo de sitios web para marcas de moda, restaurantes y diseño.",
+                "Campañas digitales en Meta.",
+                "Edición de contenido audiovisual.",
+              ],
+            },
+            {
+              title: "Proyectos web",
+              org: "Freelance",
+              period: "2023 – Actual",
+              points: [
+                "Sitios para marcas como Feria EVA, Culto, El Departamento TV y Cloud&Butter.",
+                "Estructuración de portafolios y e-commerce en Squarespace, Shopify y WordPress.",
+              ],
+            },
+            {
+              title: "Diseñador en marketing",
+              org: "Up Strategy",
+              period: "2023 · 6 meses",
+              points: [
+                "Conceptualización de marca.",
+                "Creación de contenido gráfico, video y banners.",
+                "Diseño de interfaces web.",
+              ],
+            },
           ],
-          list: [
-            "2025 — Cargo / Empresa (prueba)",
-            "2024 — Cargo / Empresa (prueba)",
-            "2023 — Estudios / Institución (prueba)",
+        },
+        {
+          label: "Skills",
+          meta: "03",
+          groups: [
+            {
+              title: "Web y e-commerce",
+              items: ["UX / UI", "Arquitectura web", "Shopify, Squarespace, WordPress"],
+            },
+            {
+              title: "IA y automatización",
+              items: [
+                "Productos de e-commerce con IA",
+                "Automatización de tareas web",
+                "Desarrollo con IA",
+              ],
+            },
+            {
+              title: "Contenido",
+              items: ["Edición de video", "Diseño gráfico", "Creación de contenido con IA"],
+            },
+            {
+              title: "Digital",
+              items: ["Pauta digital en Meta", "Estrategia", "Implementación"],
+            },
+          ],
+          chipsTitle: "Herramientas:",
+          chips: [
+            "Shopify",
+            "Squarespace",
+            "WordPress",
+            "Figma",
+            "Adobe Creative Cloud",
+            "CapCut",
+            "Facebook Ads",
+            "Google Analytics",
+            "Claude",
+          ],
+        },
+        {
+          label: "Educación",
+          meta: "04",
+          entries: [
+            {
+              title: "Pregrado en Diseño Digital y Multimedia",
+              org: "Universidad Colegio Mayor de Cundinamarca",
+              period: "2019 – 2025",
+              points: [],
+            },
           ],
         },
         {
           label: "Intereses",
           meta: "∞",
-          paragraphs: [
-            "Texto de prueba: música, cine, tecnología y todo lo que inspira tu trabajo.",
+          paragraphs: ["Lo que hago cuando no estoy diseñando:"],
+          list: [
+            "Escribir poesía y cuentos",
+            "Hacer hiking",
+            "Ilustrar",
+            "Cocinar",
+            "Cat lover",
           ],
         },
       ],

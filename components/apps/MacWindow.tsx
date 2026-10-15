@@ -13,6 +13,7 @@ import TrashView from "./TrashView";
 import BeforeAfter from "./BeforeAfter";
 import VectorToggle from "./VectorToggle";
 import WorkGrid from "./WorkGrid";
+import { Chips, EntryList, GroupGrid } from "./CvBlocks";
 
 export type ExitMode = "close" | "minimize";
 
@@ -192,7 +193,7 @@ export default function MacWindow({
             </aside>
           )}
 
-          <div className="@container min-w-0 flex-1 overflow-y-auto p-4 text-[13px] leading-snug md:p-6">
+          <div className="@container min-w-0 flex-1 overflow-x-hidden overflow-y-auto p-4 text-[13px] leading-snug [overflow-wrap:anywhere] md:p-6">
             {current.trash && (
               <TrashView
                 key={current.label}
@@ -210,6 +211,13 @@ export default function MacWindow({
                 {p}
               </p>
             ))}
+            {current.entries && <EntryList entries={current.entries} />}
+            {current.groups && <GroupGrid groups={current.groups} />}
+            {current.chips && (
+              <div className={current.groups ? "mt-6" : ""}>
+                <Chips title={current.chipsTitle} chips={current.chips} />
+              </div>
+            )}
             {current.beforeAfter && <BeforeAfter {...current.beforeAfter} />}
             {current.vector && <VectorToggle />}
             {current.listTitle && <p className="mb-3">{current.listTitle}</p>}
