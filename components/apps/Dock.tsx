@@ -44,7 +44,7 @@ export default function Dock() {
         className={iconClasses}
       />
       {openIds.includes(item.id) && (
-        <span className="absolute -bottom-1.5 h-1 w-1 rounded-full bg-black/60 max-md:bottom-auto max-md:-left-1 max-md:top-1/2 max-md:-translate-y-1/2" />
+        <span className="absolute -bottom-1.5 h-1 w-1 rounded-full bg-black/60 max-md:portrait:bottom-auto max-md:portrait:-left-1 max-md:portrait:top-1/2 max-md:portrait:-translate-y-1/2" />
       )}
     </>
   );
@@ -56,7 +56,7 @@ export default function Dock() {
     <>
       <div
         ref={layerRef}
-        className="pointer-events-none absolute inset-0 z-40 overflow-hidden"
+        className="pointer-events-none fixed inset-0 z-40 overflow-hidden"
       >
         <AnimatePresence custom={exitMode}>
           {openIds.map((id, i) => {
@@ -79,15 +79,16 @@ export default function Dock() {
         </AnimatePresence>
       </div>
 
-      {/* Phones: vertical bar on the left. md+: horizontal, centered at the bottom. */}
-      <div className="absolute left-2 top-1/2 z-[60] flex w-max -translate-y-1/2 flex-col items-center gap-1.5 rounded-[22px] border border-white/50 bg-white/30 px-2 py-3 shadow-[0_10px_40px_rgba(0,0,0,0.18)] backdrop-blur-2xl max-md:max-h-[calc(100svh-6rem)] max-md:overflow-y-auto md:bottom-8 md:left-1/2 md:top-auto md:max-w-[calc(100vw-12px)] md:-translate-x-1/2 md:translate-y-0 md:flex-row md:items-end md:gap-2 md:px-3 md:pb-2.5 md:pt-2">
+      {/* Horizontal, centered at the bottom by default (tablets, laptops, landscape phones).
+          Portrait phones: vertical bar on the left edge. Anchored to the screen, not the page. */}
+      <div className="fixed bottom-3 left-1/2 z-[60] flex w-max max-w-[calc(100vw-12px)] -translate-x-1/2 flex-row items-end gap-1.5 rounded-[22px] border border-white/50 bg-white/30 px-2 pb-2 pt-2 shadow-[0_10px_40px_rgba(0,0,0,0.18)] backdrop-blur-2xl md:bottom-8 md:gap-2 md:px-3 md:pb-2.5 max-md:portrait:bottom-auto max-md:portrait:left-2 max-md:portrait:top-1/2 max-md:portrait:max-h-[calc(100svh-6rem)] max-md:portrait:translate-x-0 max-md:portrait:-translate-y-1/2 max-md:portrait:flex-col max-md:portrait:items-center max-md:portrait:overflow-y-auto max-md:portrait:px-2 max-md:portrait:py-3">
         {dockItems.map((item, i) => {
           const newGroup = i > 0 && dockItems[i - 1].group !== item.group;
           return (
             <Fragment key={item.id}>
               {newGroup && (
                 <span
-                  className="my-0.5 h-px w-7 self-center bg-black/20 md:mx-1 md:my-0 md:mb-1 md:h-12 md:w-px"
+                  className="mx-0.5 mb-1 h-8 w-px self-center bg-black/20 md:mx-1 md:h-12 max-md:portrait:mx-0 max-md:portrait:my-0.5 max-md:portrait:mb-0 max-md:portrait:h-px max-md:portrait:w-7"
                   aria-hidden="true"
                 />
               )}

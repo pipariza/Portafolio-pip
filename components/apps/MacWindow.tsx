@@ -75,8 +75,8 @@ export default function MacWindow({
   const [tab, setTab] = useState(0);
   const [zoomed, setZoomed] = useState(false);
   const controls = useDragControls();
-  // Cascade extra windows on desktop; keep a single window centered on phones.
-  const cascade = typeof window !== "undefined" && window.innerWidth >= 768;
+  // Cascade extra windows only on large screens; keep windows centered on phones and tablets.
+  const cascade = typeof window !== "undefined" && window.innerWidth >= 1024;
   const x = useMotionValue(cascade ? (index % 4) * 28 - 42 : 0);
   const y = useMotionValue(cascade ? (index % 4) * 28 - 40 : 0);
 
@@ -91,7 +91,7 @@ export default function MacWindow({
 
   return (
     <div
-      className="pointer-events-none absolute inset-0 flex items-center justify-center max-md:pl-[68px] max-md:pr-2"
+      className="pointer-events-none absolute inset-0 flex items-center justify-center max-md:landscape:px-2 max-md:landscape:pb-16 max-md:portrait:pl-[68px] max-md:portrait:pr-2"
       style={{ zIndex }}
     >
       <motion.div

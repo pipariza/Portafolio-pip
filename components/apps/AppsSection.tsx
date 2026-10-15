@@ -28,7 +28,7 @@ export default function AppsSection() {
         aria-hidden="true"
       />
 
-      <p className="relative z-10 pl-[76px] pr-6 md:px-16 text-[11px] uppercase tracking-[0.08em] text-ink/50">
+      <p className="relative z-10 px-6 max-md:portrait:pl-[76px] md:px-16 text-[11px] uppercase tracking-[0.08em] text-ink/50">
         Arrastrá los íconos · Click para abrir
       </p>
 
@@ -38,7 +38,7 @@ export default function AppsSection() {
         ))}
       </div>
 
-      <div className="relative z-10 md:hidden grid grid-cols-2 gap-x-6 gap-y-10 pl-[84px] pr-6 mt-12">
+      <div className="relative z-10 md:hidden grid grid-cols-2 gap-x-6 gap-y-10 px-8 max-md:portrait:pl-[84px] max-md:portrait:pr-6 mt-12">
         {apps.map((app) => (
           <GridAppIcon key={app.slug} app={app} />
         ))}
