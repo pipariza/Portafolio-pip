@@ -15,14 +15,14 @@ const POSITIONS = [
 export default function AppsSection() {
   return (
     <ThemeSection
-      theme="dark"
+      theme="light"
       id="aplicativos"
-      className="relative w-full min-h-screen bg-void text-bone overflow-hidden pt-32 pb-40"
+      className="relative w-full min-h-screen bg-paper text-ink overflow-hidden pt-32 pb-40"
     >
       {/* Wallpaper: the subject sits near the horizontal middle (~52%), so on tall
           phone screens the crop is centered on it. */}
       <Image
-        src="/apps/wallpaper.jpg"
+        src="/apps/wallpaper.png"
         alt=""
         fill
         priority
@@ -31,9 +31,8 @@ export default function AppsSection() {
         className="pointer-events-none select-none object-cover object-[52%_50%]"
         aria-hidden="true"
       />
-      <div className="pointer-events-none absolute inset-0 bg-black/25" aria-hidden="true" />
 
-      <p className="relative z-10 px-6 max-md:portrait:pl-[76px] md:px-16 text-[11px] uppercase tracking-[0.08em] text-white/60">
+      <p className="relative z-10 px-6 max-md:portrait:pl-[76px] md:px-16 text-[11px] uppercase tracking-[0.08em] text-ink/60">
         Arrastrá los íconos · Click para abrir
       </p>
 

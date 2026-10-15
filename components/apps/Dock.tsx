@@ -4,6 +4,7 @@ import { Fragment, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence } from "framer-motion";
 import { dockItems, type DockItem } from "@/lib/dock";
+import { useSectionTheme } from "@/lib/section-theme";
 import MacWindow, { type ExitMode } from "./MacWindow";
 
 const iconClasses =
@@ -19,6 +20,7 @@ function Tooltip({ label }: { label: string }) {
 }
 
 export default function Dock() {
+  const { theme } = useSectionTheme();
   const [openIds, setOpenIds] = useState<string[]>([]);
   const [exitMode, setExitMode] = useState<ExitMode>("close");
   const layerRef = useRef<HTMLDivElement>(null);
@@ -44,7 +46,7 @@ export default function Dock() {
         className={iconClasses}
       />
       {openIds.includes(item.id) && (
-        <span className="absolute -bottom-1.5 h-1 w-1 rounded-full bg-black/60 max-md:portrait:bottom-auto max-md:portrait:-left-1 max-md:portrait:top-1/2 max-md:portrait:-translate-y-1/2" />
+        <span className="absolute -bottom-1.5 h-1 w-1 rounded-full bg-current/60 max-md:portrait:bottom-auto max-md:portrait:-left-1 max-md:portrait:top-1/2 max-md:portrait:-translate-y-1/2" />
       )}
     </>
   );
@@ -81,14 +83,14 @@ export default function Dock() {
 
       {/* Horizontal, centered at the bottom by default (tablets, laptops, landscape phones).
           Portrait phones: vertical bar on the left edge. Anchored to the screen, not the page. */}
-      <div className="fixed bottom-3 left-1/2 z-[60] flex w-max max-w-[calc(100vw-12px)] -translate-x-1/2 flex-row items-end gap-1.5 rounded-[20px] border border-white/40 bg-white/10 px-2 pb-1.5 pt-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-xl backdrop-saturate-150 md:bottom-8 md:gap-2 md:px-3 md:pb-2.5 max-md:portrait:bottom-auto max-md:portrait:left-2 max-md:portrait:top-1/2 max-md:portrait:max-h-[calc(100svh-6rem)] max-md:portrait:translate-x-0 max-md:portrait:-translate-y-1/2 max-md:portrait:flex-col max-md:portrait:items-center max-md:portrait:overflow-y-auto max-md:portrait:px-2 max-md:portrait:py-3">
+      <div data-theme={theme} className="glass-pill fixed bottom-3 left-1/2 z-[60] flex w-max max-w-[calc(100vw-12px)] -translate-x-1/2 flex-row items-end gap-1.5 rounded-full border px-3.5 pb-1.5 pt-1.5 md:bottom-8 md:gap-2 md:px-5 md:pb-2 max-md:portrait:bottom-auto max-md:portrait:left-2 max-md:portrait:top-1/2 max-md:portrait:max-h-[calc(100svh-6rem)] max-md:portrait:translate-x-0 max-md:portrait:-translate-y-1/2 max-md:portrait:flex-col max-md:portrait:items-center max-md:portrait:overflow-y-auto max-md:portrait:px-2 max-md:portrait:py-3">
         {dockItems.map((item, i) => {
           const newGroup = i > 0 && dockItems[i - 1].group !== item.group;
           return (
             <Fragment key={item.id}>
               {newGroup && (
                 <span
-                  className="mx-0.5 mb-1 h-7 w-px self-center bg-black/15 md:mx-1 md:h-10 max-md:portrait:mx-0 max-md:portrait:my-0.5 max-md:portrait:mb-0 max-md:portrait:h-px max-md:portrait:w-6"
+                  className="mx-0.5 mb-1 h-7 w-px self-center bg-current/20 md:mx-1 md:h-10 max-md:portrait:mx-0 max-md:portrait:my-0.5 max-md:portrait:mb-0 max-md:portrait:h-px max-md:portrait:w-6"
                   aria-hidden="true"
                 />
               )}
