@@ -33,7 +33,7 @@ export default function Nav() {
   }, [open]);
 
   return (
-    <header className="fixed top-5 inset-x-0 z-50 flex justify-center px-4">
+    <header className="fixed top-5 inset-x-0 z-[70] flex justify-center px-4">
       <nav
         data-theme={theme}
         className="glass-pill w-full max-w-2xl rounded-full border px-2 py-2 flex items-center justify-between"
