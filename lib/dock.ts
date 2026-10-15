@@ -90,7 +90,7 @@ export const dockItems: DockItem[] = [
           label: "Aviso",
           lead: "Atención: este portafolio puede provocar ganas de contratar a su autor.",
           paragraphs: [
-            `Disponible para trabajo full-time en agencias digitales y de diseño. Desde ${CONTACT.city}.`,
+            `Disponible para trabajo full-time en agencias digitales y de diseño. Si es trabajo remoto, mucho mejor. Desde ${CONTACT.city}.`,
           ],
           listTitle: "Lo que hago:",
           list: [
