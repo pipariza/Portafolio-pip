@@ -16,6 +16,12 @@ html {
   scroll-behavior: smooth;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   background: var(--color-void);
   color: var(--color-bone);
@@ -41,11 +47,18 @@ body {
   pointer-events: none;
   z-index: 9999;
   transform: translate(-50%, -50%);
+  /* Hidden until the first mouse move so it never sits in the top-left corner. */
+  opacity: 0;
   transition:
     width 0.18s var(--ease-panel),
     height 0.18s var(--ease-panel),
-    border-color 0.18s ease;
+    border-color 0.18s ease,
+    opacity 0.18s ease;
   will-change: transform, width, height;
+}
+
+.cursor-ring[data-ready="true"] {
+  opacity: 1;
 }
 
 .cursor-ring[data-hover="true"] {

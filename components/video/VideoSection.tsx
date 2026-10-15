@@ -18,6 +18,8 @@ export default function VideoSection() {
 
   useEffect(() => {
     if (paused || activeClip) return;
+    // People who ask for less motion get a manual carousel (wheel / swipe) only.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const timer = setInterval(() => {
       setStartIndex((i) => (i + 1) % videoClips.length);
     }, CYCLE_MS);

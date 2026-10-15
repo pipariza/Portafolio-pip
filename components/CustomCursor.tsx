@@ -12,8 +12,12 @@ export default function CustomCursor() {
     if (!ring) return;
 
     const moveRing = (event: PointerEvent) => {
+      if (event.pointerType === "touch") return;
       ring.style.transform = `translate(${event.clientX}px, ${event.clientY}px) translate(-50%, -50%)`;
+      ring.setAttribute("data-ready", "true");
     };
+
+    const hideRing = () => ring.removeAttribute("data-ready");
 
     const setHover = (isHover: boolean) => {
       if (isHover) {
@@ -36,11 +40,13 @@ export default function CustomCursor() {
     window.addEventListener("pointermove", moveRing);
     window.addEventListener("pointerover", onOver);
     window.addEventListener("pointerout", onOut);
+    document.documentElement.addEventListener("pointerleave", hideRing);
 
     return () => {
       window.removeEventListener("pointermove", moveRing);
       window.removeEventListener("pointerover", onOver);
       window.removeEventListener("pointerout", onOut);
+      document.documentElement.removeEventListener("pointerleave", hideRing);
     };
   }, []);
 

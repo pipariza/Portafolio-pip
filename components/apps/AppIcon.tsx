@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import type { AppProject } from "@/lib/data";
@@ -44,7 +45,7 @@ export function DesktopAppIcon({
 
 export function GridAppIcon({ app }: { app: AppProject }) {
   return (
-    <a
+    <Link
       href={`/apps/${app.slug}`}
       className="flex flex-col items-center gap-2"
       data-cursor-hover
@@ -62,6 +63,6 @@ export function GridAppIcon({ app }: { app: AppProject }) {
       <span className="text-[11px] font-medium uppercase tracking-[0.05em] text-ink [text-shadow:0_0_4px_rgba(255,255,255,0.95),0_0_12px_rgba(255,255,255,0.85)] text-center">
         {app.label}
       </span>
-    </a>
+    </Link>
   );
 }

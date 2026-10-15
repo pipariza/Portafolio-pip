@@ -13,7 +13,7 @@ import TrashView from "./TrashView";
 import BeforeAfter from "./BeforeAfter";
 import VectorToggle from "./VectorToggle";
 import WorkGrid from "./WorkGrid";
-import { Chips, EntryList, GroupGrid } from "./CvBlocks";
+import { Chips, EntryList, GroupGrid, StatRow } from "./CvBlocks";
 
 export type ExitMode = "close" | "minimize";
 
@@ -211,6 +211,7 @@ export default function MacWindow({
                 {p}
               </p>
             ))}
+            {current.stats && <StatRow stats={current.stats} />}
             {current.entries && <EntryList entries={current.entries} />}
             {current.groups && <GroupGrid groups={current.groups} />}
             {current.chips && (
@@ -268,16 +269,34 @@ export default function MacWindow({
                 {current.stat}
               </p>
             )}
-            {current.email && (
-              <div className={`flex flex-wrap items-center gap-3 ${current.list ? "mt-6" : ""}`}>
-                <a
-                  href={`mailto:${current.email}`}
-                  data-cursor-hover
-                  className="break-all text-sm font-medium underline underline-offset-4 md:text-base"
-                >
-                  {current.email}
-                </a>
-                <CopyButton text={current.email} />
+            {(current.email || current.phone) && (
+              <div className={`flex flex-col gap-3 ${current.list ? "mt-6" : ""}`}>
+                {current.email && (
+                  <div className="flex flex-wrap items-center gap-3">
+                    <a
+                      href={`mailto:${current.email}`}
+                      data-cursor-hover
+                      className="break-all text-sm font-medium underline underline-offset-4 md:text-base"
+                    >
+                      {current.email}
+                    </a>
+                    <CopyButton text={current.email} />
+                  </div>
+                )}
+                {current.phone && (
+                  <div className="flex flex-wrap items-center gap-3">
+                    <a
+                      href={current.phone.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-cursor-hover
+                      className="text-sm font-medium underline underline-offset-4 md:text-base"
+                    >
+                      WhatsApp · {current.phone.label}
+                    </a>
+                    <CopyButton text={current.phone.label} />
+                  </div>
+                )}
               </div>
             )}
           </div>

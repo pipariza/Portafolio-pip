@@ -37,6 +37,8 @@ export type WindowTab = {
   vector?: boolean;
   /** Captioned thumbnails of featured pieces. */
   works?: WorkThumb[];
+  /** Big highlighted numbers, e.g. { value: "500+", label: "productos" }. */
+  stats?: { value: string; label: string }[];
   /** CV-style entries: role, organization, period and bullet points. */
   entries?: { title: string; org: string; period: string; points: string[] }[];
   /** Titled groups of short items (skills), laid out in columns when there is room. */
@@ -62,6 +64,8 @@ export type WindowTab = {
   list?: string[];
   /** Shown as a mailto link with a copy button. */
   email?: string;
+  /** Shown as a WhatsApp link with a copy button, under the email. */
+  phone?: { label: string; href: string };
 };
 
 export type DockWindow = {
@@ -240,6 +244,7 @@ export const dockItems: DockItem[] = [
             "Edición de video vertical",
           ],
           email: CONTACT.email,
+          phone: CONTACT.whatsapp,
         },
       ],
     },
@@ -258,7 +263,12 @@ export const dockItems: DockItem[] = [
           lead: "Diseñador digital que construye ecosistemas web orientados a negocio.",
           paragraphs: [
             "Más de dos años combinando UX/UI, e-commerce, contenido audiovisual y pauta digital en Meta, para que cada elemento tenga una función dentro del recorrido del usuario.",
-            "Hoy gestiono la tienda Shopify de Boho Chic SAS: la administro, mejoro su UX/UI, creo productos de e-commerce con IA y automatizo tareas de la web.",
+            "Hoy gestiono la tienda Shopify de Boho Chic SAS: creo productos de e-commerce con IA, automatizo procesos y mejoro la experiencia de compra.",
+          ],
+          stats: [
+            { value: "500+", label: "productos creados con IA" },
+            { value: "10+", label: "tareas automatizadas" },
+            { value: "20%", label: "de crecimiento en ventas" },
           ],
           listTitle: "Puedo hacer...",
           list: [
@@ -268,6 +278,8 @@ export const dockItems: DockItem[] = [
             "Pauta digital en Meta",
             "Automatización y productos con IA",
           ],
+          email: CONTACT.email,
+          phone: CONTACT.whatsapp,
         },
         {
           label: "Experiencia",
@@ -279,9 +291,10 @@ export const dockItems: DockItem[] = [
               period: "Julio 2026 – Presente",
               points: [
                 "Administro la tienda Shopify y la mejoro de forma continua.",
-                "Rediseño la UX/UI para que comprar sea más fácil.",
-                "Creo productos para e-commerce con ayuda de IA.",
-                "Automatizo tareas de la web para ahorrar tiempo operativo.",
+                "Creé más de 500 productos para el e-commerce con ayuda de IA.",
+                "Automaticé más de 10 tareas, desde correos hasta flows que mejoraron los procesos del negocio.",
+                "Diseñé secciones modernas y optimizadas para la tienda.",
+                "Mejoré la experiencia de compra (UX/UI) y las ventas crecieron un 20%.",
               ],
             },
             {
@@ -327,7 +340,7 @@ export const dockItems: DockItem[] = [
               title: "IA y automatización",
               items: [
                 "Productos de e-commerce con IA",
-                "Automatización de tareas web",
+                "Automatización de correos y flows",
                 "Desarrollo con IA",
               ],
             },
@@ -418,6 +431,7 @@ export const dockItems: DockItem[] = [
             "¿Tienes un proyecto, una oferta o solo quieres saludar? Escríbeme.",
           ],
           email: CONTACT.email,
+          phone: CONTACT.whatsapp,
         },
       ],
     },

@@ -3,6 +3,22 @@ import type { WindowTab } from "@/lib/dock";
 type Entries = NonNullable<WindowTab["entries"]>;
 type Groups = NonNullable<WindowTab["groups"]>;
 
+type Stats = NonNullable<WindowTab["stats"]>;
+
+/** Big numbers; stacked on narrow windows, three across when there is room. */
+export function StatRow({ stats }: { stats: Stats }) {
+  return (
+    <div className="mb-6 grid grid-cols-1 gap-2 @sm:grid-cols-3">
+      {stats.map((s) => (
+        <div key={s.label} className="rounded-lg bg-[#f6efe0] px-3 py-3">
+          <p className="text-xl font-semibold leading-none md:text-2xl">{s.value}</p>
+          <p className="mt-1.5 text-[11px] leading-snug text-black/60">{s.label}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /** Role / organization / period with bullet points, newest first. */
 export function EntryList({ entries }: { entries: Entries }) {
   return (

@@ -36,6 +36,16 @@ export default function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-lg flex flex-col gap-7">
+      {/* Honeypot: invisible to people, bots fill it and Formspree drops the submission. */}
+      <input
+        type="text"
+        name="_gotcha"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="hidden"
+      />
+
       <div>
         <label htmlFor="name" className="sr-only">
           Nombre
@@ -44,6 +54,7 @@ export default function ContactForm() {
           id="name"
           name="name"
           type="text"
+          autoComplete="name"
           required
           placeholder="Nombre"
           className={inputClasses}
@@ -58,6 +69,7 @@ export default function ContactForm() {
           id="email"
           name="email"
           type="email"
+          autoComplete="email"
           required
           placeholder="Correo"
           className={inputClasses}
@@ -112,9 +124,18 @@ export default function ContactForm() {
       )}
       {status === "error" && (
         <p className="text-sm text-bone/70">
-          Algo falló. Escribime directo a {" "}
+          Algo falló. Escríbeme directo a{" "}
           <a href={`mailto:${CONTACT.email}`} className="underline">
             {CONTACT.email}
+          </a>{" "}
+          o por{" "}
+          <a
+            href={CONTACT.whatsapp.href}
+            target="_blank"
+            rel="noreferrer"
+            className="underline"
+          >
+            WhatsApp
           </a>
           .
         </p>
