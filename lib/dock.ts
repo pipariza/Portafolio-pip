@@ -1,8 +1,24 @@
 import { CONTACT } from "@/lib/config";
 
+/** A discarded piece shown in the Trash window. */
+export type TrashItem = {
+  /** Funny file name shown under the thumbnail, e.g. "logo_v14_FINAL_final.png". */
+  file: string;
+  /** Path under /public (e.g. "/papelera/logo.jpg"). Falls back to a colored tile. */
+  image?: string;
+  /** Placeholder tile color while there is no image. */
+  color: string;
+  /** What it was. */
+  what: string;
+  /** What it taught you. */
+  learned: string;
+};
+
 export type WindowTab = {
   label: string;
   meta?: string;
+  /** Renders a Finder-style grid of discarded projects instead of text. */
+  trash?: { items: TrashItem[]; emptyReply: string };
   /** Larger opening line shown above the paragraphs. */
   lead?: string;
   paragraphs?: string[];
@@ -201,7 +217,49 @@ export const dockItems: DockItem[] = [
       tabs: [
         {
           label: "Papelera",
-          paragraphs: ["Texto de prueba: la papelera está vacía."],
+          trash: {
+            emptyReply: "No puedo: aquí viven mis mejores lecciones.",
+            // Placeholder examples. To use a real image, drop it in /public/papelera
+            // and set `image: "/papelera/archivo.jpg"` on the item.
+            items: [
+              {
+                file: "logo_v14_FINAL_final.png",
+                color: "#e7d9c4",
+                what: "Texto de prueba: un logotipo que pasó por 14 versiones y nunca se usó.",
+                learned: "Texto de prueba: con la versión 3 ya sabía la respuesta.",
+              },
+              {
+                file: "propuesta_rechazada.jpg",
+                color: "#d9dde3",
+                what: "Texto de prueba: una propuesta de campaña que el cliente descartó en la primera reunión.",
+                learned: "Texto de prueba: entender el problema antes de dibujar la solución.",
+              },
+              {
+                file: "campana_que_nunca_salio.psd",
+                color: "#e6d3d3",
+                what: "Texto de prueba: una campaña terminada que jamás se publicó.",
+                learned: "Texto de prueba: no todo lo bueno sale, y está bien.",
+              },
+              {
+                file: "web_sin_terminar.fig",
+                color: "#d6e2d8",
+                what: "Texto de prueba: un sitio web abandonado a la mitad del diseño.",
+                learned: "Texto de prueba: acotar el alcance desde el día uno.",
+              },
+              {
+                file: "rediseno_marca_v2.ai",
+                color: "#e4dcc9",
+                what: "Texto de prueba: un rediseño de marca que se quedó en el cajón.",
+                learned: "Texto de prueba: me enamoré de la idea y no del problema.",
+              },
+              {
+                file: "primer_reel_ever.mov",
+                color: "#dcd6e6",
+                what: "Texto de prueba: el primer video vertical que edité. No envejeció bien.",
+                learned: "Texto de prueba: el ritmo del corte importa más que los efectos.",
+              },
+            ],
+          },
         },
       ],
     },

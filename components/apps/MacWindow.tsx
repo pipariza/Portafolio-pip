@@ -9,6 +9,7 @@ import {
   type Variants,
 } from "framer-motion";
 import type { DockWindow } from "@/lib/dock";
+import TrashView from "./TrashView";
 
 export type ExitMode = "close" | "minimize";
 
@@ -188,7 +189,14 @@ export default function MacWindow({
             </aside>
           )}
 
-          <div className="min-w-0 flex-1 overflow-y-auto p-4 text-sm leading-snug md:p-6 md:text-[15px]">
+          <div className="@container min-w-0 flex-1 overflow-y-auto p-4 text-sm leading-snug md:p-6 md:text-[15px]">
+            {current.trash && (
+              <TrashView
+                key={current.label}
+                items={current.trash.items}
+                emptyReply={current.trash.emptyReply}
+              />
+            )}
             {current.lead && (
               <p className="mb-4 max-w-xl text-lg font-semibold leading-tight md:text-xl">
                 {current.lead}
