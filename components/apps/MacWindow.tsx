@@ -72,7 +72,7 @@ function CopyButton({ text }: { text: string }) {
       type="button"
       data-cursor-hover
       onClick={copy}
-      className="rounded-full border border-black/15 px-3 py-1 text-xs font-medium transition-colors hover:bg-black/5"
+      className="rounded-full border border-black/15 px-3 py-1 text-[11px] font-medium transition-colors hover:bg-black/5"
     >
       {copied ? "Copiado ✓" : "Copiar"}
     </button>
@@ -166,7 +166,7 @@ export default function MacWindow({
               </svg>
             </TrafficButton>
           </div>
-          <p className="truncate text-[15px] font-medium">{win.title}</p>
+          <p className="truncate text-[13px] font-medium">{win.title}</p>
         </div>
 
         <div className="flex min-h-0 flex-1">
@@ -178,7 +178,7 @@ export default function MacWindow({
                   type="button"
                   data-cursor-hover
                   onClick={() => setTab(i)}
-                  className="flex w-full items-center justify-between border-b border-black/10 px-2 py-3 text-left text-sm last:border-b-0 md:px-3 md:text-[15px]"
+                  className="flex w-full items-center justify-between border-b border-black/10 px-2 py-3 text-left text-[13px] last:border-b-0 md:px-3"
                 >
                   <span className={i === tab ? "font-semibold" : "font-normal"}>
                     {t.label}
@@ -189,7 +189,7 @@ export default function MacWindow({
             </aside>
           )}
 
-          <div className="@container min-w-0 flex-1 overflow-y-auto p-4 text-sm leading-snug md:p-6 md:text-[15px]">
+          <div className="@container min-w-0 flex-1 overflow-y-auto p-4 text-[13px] leading-snug md:p-6">
             {current.trash && (
               <TrashView
                 key={current.label}
@@ -198,7 +198,7 @@ export default function MacWindow({
               />
             )}
             {current.lead && (
-              <p className="mb-4 max-w-xl text-lg font-semibold leading-tight md:text-xl">
+              <p className="mb-4 max-w-xl text-base font-semibold leading-tight md:text-lg">
                 {current.lead}
               </p>
             )}
@@ -227,7 +227,7 @@ export default function MacWindow({
                 <a
                   href={`mailto:${current.email}`}
                   data-cursor-hover
-                  className="break-all text-base font-medium underline underline-offset-4 md:text-lg"
+                  className="break-all text-sm font-medium underline underline-offset-4 md:text-base"
                 >
                   {current.email}
                 </a>

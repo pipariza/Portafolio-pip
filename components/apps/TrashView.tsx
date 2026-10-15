@@ -30,7 +30,7 @@ function Thumb({
           className="object-cover"
         />
       ) : (
-        <span className="absolute inset-0 flex items-center justify-center text-sm font-semibold tracking-wide text-black/35">
+        <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold tracking-wide text-black/35">
           {ext}
         </span>
       )}
@@ -64,12 +64,12 @@ export default function TrashView({
           type="button"
           data-cursor-hover
           onClick={() => setSelected(null)}
-          className="mb-4 text-xs font-medium underline-offset-4 hover:underline"
+          className="mb-4 text-[11px] font-medium underline-offset-4 hover:underline"
         >
           ← Volver a la papelera
         </button>
         <Thumb item={item} large />
-        <p className="mt-4 break-all text-xs text-black/50">{item.file}</p>
+        <p className="mt-4 break-all text-[11px] text-black/50">{item.file}</p>
         <p className="mt-3 max-w-xl">
           <span className="font-semibold">Qué era: </span>
           {item.what}
@@ -93,7 +93,7 @@ export default function TrashView({
             setShake((s) => s + 1);
             setReplyVisible(true);
           }}
-          className="rounded-full border border-black/15 px-3 py-1 text-xs font-medium transition-colors hover:bg-black/5"
+          className="rounded-full border border-black/15 px-3 py-1 text-[11px] font-medium transition-colors hover:bg-black/5"
         >
           Vaciar papelera
         </button>
@@ -103,7 +103,7 @@ export default function TrashView({
         <motion.p
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-4 rounded-lg bg-[#f6efe0] px-3 py-2 text-sm"
+          className="mb-4 rounded-lg bg-[#f6efe0] px-3 py-2 text-xs"
         >
           {emptyReply}
         </motion.p>
@@ -125,7 +125,7 @@ export default function TrashView({
             className="group flex flex-col items-center gap-2 text-center"
           >
             <Thumb item={it} />
-            <span className="max-w-full break-all rounded px-1.5 py-0.5 text-xs leading-tight group-hover:bg-[#2f6fe4] group-hover:text-white group-focus-visible:bg-[#2f6fe4] group-focus-visible:text-white">
+            <span className="max-w-full break-all rounded px-1.5 py-0.5 text-[11px] leading-tight group-hover:bg-[#2f6fe4] group-hover:text-white group-focus-visible:bg-[#2f6fe4] group-focus-visible:text-white">
               {it.file}
             </span>
           </button>
