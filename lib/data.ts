@@ -272,6 +272,7 @@ export const projects: Project[] = [
     color: "#e8e3d8",
     url: "https://www.elcosturerodememe.com.co/",
     tourPace: 1.5,
+    note: "El contenido audiovisual es propiedad de cada marca.",
     screens: [
       {
         id: "inicio",
@@ -298,8 +299,23 @@ export const projects: Project[] = [
         id: "nosotros",
         label: "Nosotros",
         path: "/pages/nosotros",
-        desktop: { src: "/work/el-costurero-de-meme/nosotros-desktop.jpg", width: 1440, height: 3533 },
-        mobile: { src: "/work/el-costurero-de-meme/nosotros-mobile.jpg", width: 600, height: 6812, pageWidth: 390 },
+        desktop: {
+          src: "/work/el-costurero-de-meme/nosotros-desktop.jpg",
+          width: 1440,
+          height: 3533,
+          videos: [
+            { src: "/work/el-costurero-de-meme/video/nosotros-desktop.mp4", x: 0, y: 164, w: 1440, h: 650, fit: "cover" },
+          ],
+        },
+        mobile: {
+          src: "/work/el-costurero-de-meme/nosotros-mobile.jpg",
+          width: 600,
+          height: 6812,
+          pageWidth: 390,
+          videos: [
+            { src: "/work/el-costurero-de-meme/video/nosotros-mobile.mp4", x: 0, y: 150, w: 390, h: 550, fit: "cover" },
+          ],
+        },
       },
     ],
   },
