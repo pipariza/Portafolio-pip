@@ -42,10 +42,6 @@ export default function AppsSection() {
         />
       </picture>
 
-      <p className="relative z-10 px-6 max-md:portrait:pl-[76px] md:px-16 text-[11px] uppercase tracking-[0.08em] text-ink/60">
-        Arrastrá los íconos · Click para abrir
-      </p>
-
       <div className="relative z-10 hidden md:block h-[60vh] mt-8">
         {apps.map((app, i) => (
           <DesktopAppIcon key={app.slug} app={app} style={POSITIONS[i % POSITIONS.length]} />
