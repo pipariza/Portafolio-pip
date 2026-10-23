@@ -1,8 +1,121 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect } from "react";
+import Image from "next/image";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { VideoClip } from "@/lib/data";
+
+const VIMEO_ORIGIN = "https://player.vimeo.com";
+
+/**
+ * Full player for one clip. The poster covers it until the player is ready
+ * (the slow part: player + config download), and if the browser only allows
+ * muted autoplay a button lets the viewer turn the sound on.
+ */
+function ModalPlayer({ clip }: { clip: VideoClip }) {
+  const ref = useRef<HTMLIFrameElement>(null);
+  const [ready, setReady] = useState(false);
+  const [playing, setPlaying] = useState(false);
+  const [muted, setMuted] = useState(false);
+
+  const send = useCallback((method: string, value?: unknown) => {
+    ref.current?.contentWindow?.postMessage(
+      JSON.stringify(value === undefined ? { method } : { method, value }),
+      VIMEO_ORIGIN,
+    );
+  }, []);
+
+  useEffect(() => {
+    const onMessage = (e: MessageEvent) => {
+      if (e.origin !== VIMEO_ORIGIN || e.source !== ref.current?.contentWindow) return;
+      let data;
+      try {
+        data = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
+      } catch {
+        return;
+      }
+      if (data?.event === "ready") {
+        setReady(true);
+      } else if (data?.event === "playing") {
+        setReady(true);
+        setPlaying(true);
+        send("getMuted");
+      } else if (data?.event === "volumechange") {
+        send("getMuted");
+      } else if (data?.method === "getMuted") {
+        setMuted(Boolean(data.value));
+      }
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [send]);
+
+  const unmute = () => {
+    send("setMuted", false);
+    send("setVolume", 1);
+    send("play");
+    setMuted(false);
+    // If the browser refuses, the player stays muted and the button comes back.
+    window.setTimeout(() => send("getMuted"), 500);
+  };
+
+  if (!clip.vimeoId) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center text-white/50 text-xs uppercase tracking-[0.08em]">
+        Video próximamente
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <iframe
+        ref={ref}
+        src={`${VIMEO_ORIGIN}/video/${clip.vimeoId}?autoplay=1&loop=1&title=0&byline=0&portrait=0&badge=0`}
+        onLoad={() => {
+          send("addEventListener", "playing");
+          send("addEventListener", "volumechange");
+        }}
+        className="absolute inset-0 h-full w-full"
+        allow="autoplay; fullscreen; picture-in-picture"
+        title={clip.title}
+      />
+      {clip.poster && (
+        <div
+          className={`pointer-events-none absolute inset-0 transition-opacity duration-500 ${
+            ready ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          <Image
+            src={clip.poster}
+            alt=""
+            fill
+            unoptimized
+            sizes="(min-width: 768px) 50vh, 80vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 flex items-center justify-center bg-black/25">
+            <span className="h-8 w-8 rounded-full border-2 border-white/30 border-t-white motion-safe:animate-spin" />
+          </div>
+        </div>
+      )}
+      {playing && muted && (
+        <button
+          type="button"
+          onClick={unmute}
+          data-cursor-hover
+          className="absolute left-3 top-3 z-10 flex items-center gap-2 rounded-full bg-black/60 px-3.5 py-2 text-[11px] font-medium uppercase tracking-[0.05em] text-white backdrop-blur-sm transition-colors hover:bg-black/80"
+        >
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M2 6v4h3l4 3V3L5 6H2Z" fill="currentColor" />
+            <path d="M11.5 5.5a3.5 3.5 0 0 1 0 5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+          </svg>
+          Activar sonido
+        </button>
+      )}
+    </>
+  );
+}
 
 export default function VideoModal({
   clip,
@@ -93,18 +206,7 @@ export default function VideoModal({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative h-full max-h-[88vh] aspect-[9/16] bg-black">
-              {clip.vimeoId ? (
-                <iframe
-                  src={`https://player.vimeo.com/video/${clip.vimeoId}?autoplay=1&loop=1&title=0&byline=0&portrait=0&badge=0`}
-                  className="absolute inset-0 h-full w-full"
-                  allow="autoplay; fullscreen; picture-in-picture"
-                  title={clip.title}
-                />
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center text-white/50 text-xs uppercase tracking-[0.08em]">
-                  Video próximamente
-                </div>
-              )}
+              <ModalPlayer clip={clip} />
             </div>
           </motion.div>
         </motion.div>
