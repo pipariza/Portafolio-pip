@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { Barlow } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
@@ -166,6 +166,15 @@ function ScrollShot({
   priority: boolean;
 }) {
   const reduce = useReducedMotion();
+  // The tour (and the videos) start only once the picture is on screen, so a slow
+  // connection never shows a page that is already half way down.
+  const [loaded, setLoaded] = useState(false);
+  // An image that came from the cache can finish before React attaches onLoad.
+  const imageRef = useCallback((img: HTMLImageElement | null) => {
+    if (img?.complete && img.naturalWidth > 0) setLoaded(true);
+  }, []);
+  const tour = !reduce && loaded;
+
   // Longer pages take longer, so the speed feels the same on every page.
   const seconds = Math.min(24, Math.max(6, (shot.height / shot.width - viewportRatio) * 7)) * pace;
 
@@ -182,20 +191,30 @@ function ScrollShot({
     >
       <div
         className={`relative ${
-          reduce ? "" : "shot-scroll group-hover/device:[animation-play-state:paused]"
+          tour ? "shot-scroll group-hover/device:[animation-play-state:paused]" : ""
         }`}
-        style={reduce ? undefined : ({ "--shot-seconds": `${seconds}s` } as CSSProperties)}
+        style={{
+          // Blurred stand-in for the real picture while it downloads.
+          backgroundImage: shot.blur ? `url(${shot.blur})` : undefined,
+          backgroundSize: "100% 100%",
+          ...(tour ? ({ "--shot-seconds": `${seconds}s` } as CSSProperties) : null),
+        }}
       >
         <Image
+          ref={imageRef}
           src={shot.src}
           alt={alt}
           width={shot.width}
           height={shot.height}
           sizes={sizes}
+          quality={60}
           priority={priority}
-          className="block h-auto w-full"
+          onLoad={() => setLoaded(true)}
+          className={`block h-auto w-full transition-opacity duration-500 ${
+            loaded ? "opacity-100" : "opacity-0"
+          }`}
         />
-        {!reduce &&
+        {tour &&
           shot.videos?.map((video) => (
             <ShotVideoLayer
               key={`${video.src}-${video.x}-${video.y}`}
@@ -338,6 +357,7 @@ export default function ProjectShowcase({
   onPrev,
   onNext,
   backHref,
+  priority,
 }: {
   project: Project;
   screens: ProjectScreen[];
@@ -346,6 +366,8 @@ export default function ProjectShowcase({
   onPrev: () => void;
   onNext: () => void;
   backHref: string;
+  /** Load the first screen right away (the project the visitor opened); defaults to the first slide. */
+  priority?: boolean;
 }) {
   const counter = `${String(index + 1).padStart(2, "0")} // ${String(total).padStart(2, "0")}`;
   const category = project.category === "diseno-web" ? "Diseño web" : "Aplicativo";
@@ -362,7 +384,7 @@ export default function ProjectShowcase({
           name={project.name}
           host={project.url ? new URL(project.url).hostname.replace(/^www\./, "") : ""}
           pace={project.tourPace ?? 1}
-          priority={index === 0}
+          priority={priority ?? index === 0}
         />
       </div>
 

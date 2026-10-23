@@ -27,6 +27,7 @@ export default function WorkDetail({
         index={index}
         total={total}
         backHref="/work"
+        priority
         onPrev={() => router.push(`/work/${prevSlug}`)}
         onNext={() => router.push(`/work/${nextSlug}`)}
       />

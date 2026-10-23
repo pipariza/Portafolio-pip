@@ -10,6 +10,7 @@ export default function ProjectCaseStudy({
   onPrev,
   onNext,
   backHref,
+  priority,
 }: {
   project: Project;
   index: number;
@@ -17,6 +18,7 @@ export default function ProjectCaseStudy({
   onPrev: () => void;
   onNext: () => void;
   backHref: string;
+  priority?: boolean;
 }) {
   if (project.screens?.length) {
     return (
@@ -28,6 +30,7 @@ export default function ProjectCaseStudy({
         onPrev={onPrev}
         onNext={onNext}
         backHref={backHref}
+        priority={priority}
       />
     );
   }
