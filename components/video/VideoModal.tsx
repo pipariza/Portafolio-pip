@@ -12,11 +12,23 @@ const VIMEO_ORIGIN = "https://player.vimeo.com";
  * (the slow part: player + config download), and if the browser only allows
  * muted autoplay a button lets the viewer turn the sound on.
  */
-function ModalPlayer({ clip }: { clip: VideoClip }) {
+function ModalPlayer({
+  clip,
+  wantsSound,
+  onSoundOn,
+}: {
+  clip: VideoClip;
+  /** The viewer already turned the sound on once; keep it on for every clip. */
+  wantsSound: boolean;
+  onSoundOn: () => void;
+}) {
   const ref = useRef<HTMLIFrameElement>(null);
   const [ready, setReady] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
+  // Set when the first `playing` arrives so that only that first answer to
+  // getMuted turns the sound on by itself (never after the viewer mutes it).
+  const checkingStart = useRef(false);
 
   const send = useCallback((method: string, value?: unknown) => {
     ref.current?.contentWindow?.postMessage(
@@ -39,22 +51,34 @@ function ModalPlayer({ clip }: { clip: VideoClip }) {
       } else if (data?.event === "playing") {
         setReady(true);
         setPlaying(true);
+        checkingStart.current = true;
         send("getMuted");
       } else if (data?.event === "volumechange") {
         send("getMuted");
       } else if (data?.method === "getMuted") {
-        setMuted(Boolean(data.value));
+        const isMuted = Boolean(data.value);
+        setMuted(isMuted);
+        if (checkingStart.current) {
+          checkingStart.current = false;
+          if (isMuted && wantsSound) {
+            send("setMuted", false);
+            send("setVolume", 1);
+            // If the browser refuses, the button comes back.
+            window.setTimeout(() => send("getMuted"), 500);
+          }
+        }
       }
     };
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, [send]);
+  }, [send, wantsSound]);
 
   const unmute = () => {
     send("setMuted", false);
     send("setVolume", 1);
     send("play");
     setMuted(false);
+    onSoundOn();
     // If the browser refuses, the player stays muted and the button comes back.
     window.setTimeout(() => send("getMuted"), 500);
   };
@@ -128,6 +152,9 @@ export default function VideoModal({
   onPrev: () => void;
   onNext: () => void;
 }) {
+  // Lives as long as the page, so one tap on "Activar sonido" covers every clip.
+  const [soundOn, setSoundOn] = useState(false);
+
   useEffect(() => {
     if (!clip) return;
     const onKey = (e: KeyboardEvent) => {
@@ -206,7 +233,11 @@ export default function VideoModal({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative h-full max-h-[88vh] aspect-[9/16] bg-black">
-              <ModalPlayer clip={clip} />
+              <ModalPlayer
+                clip={clip}
+                wantsSound={soundOn}
+                onSoundOn={() => setSoundOn(true)}
+              />
             </div>
           </motion.div>
         </motion.div>
