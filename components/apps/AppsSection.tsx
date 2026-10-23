@@ -19,16 +19,16 @@ export default function AppsSection() {
       id="aplicativos"
       className="relative w-full min-h-screen bg-paper text-ink overflow-hidden pt-32 pb-40"
     >
-      {/* Wallpaper: the subject sits near the horizontal middle (~52%), so on tall
-          phone screens the crop is centered on it. */}
+      {/* Wallpaper: a soft glow centered in the frame, so on tall phone screens
+          the crop stays on it. Keep the file name in sync with /public/apps. */}
       <Image
-        src="/apps/wallpaper.png"
+        src="/apps/wallpaper.jpg"
         alt=""
         fill
         priority
         quality={85}
         sizes="(max-aspect-ratio: 16/9) 178vh, 100vw"
-        className="pointer-events-none select-none object-cover object-[52%_50%] grayscale"
+        className="pointer-events-none select-none object-cover object-center"
         aria-hidden="true"
       />
 
