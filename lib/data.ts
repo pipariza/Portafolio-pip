@@ -9,19 +9,34 @@ export type Project = {
   color: string;
   /** Path under /public, e.g. "/work/proyecto-uno.jpg". Falls back to `color` when unset. */
   image?: string;
+  /**
+   * Uncropped captures of the finished site (path under /public plus pixel size).
+   * When set, the project uses the device showcase layout instead of a cover image.
+   */
+  shots?: {
+    desktop: { src: string; width: number; height: number };
+    mobile: { src: string; width: number; height: number };
+  };
+  /** Live site, shown as a "Ver sitio" link. */
+  url?: string;
 };
 
 export const projects: Project[] = [
   {
-    slug: "proyecto-uno",
-    name: "Proyecto Uno",
-    role: "Diseño & Desarrollo",
+    slug: "visual-living",
+    name: "Visual Living",
+    role: "Diseño & Desarrollo web",
     year: "2025",
-    stack: "Next.js, Tailwind",
+    stack: "Shopify",
     category: "diseno-web",
     summary:
-      "Sitio a medida para una marca que necesitaba una presencia digital clara y rápida.",
-    color: "#3a3a38",
+      "Sitio de una casa de diseño audiovisual en Bogotá. El video abre la página, una sola frase grande ordena todo lo demás y la navegación flota abajo, igual de ligera en el celular y en el escritorio.",
+    color: "#e3e0d8",
+    url: "https://www.visualliving.co/",
+    shots: {
+      desktop: { src: "/work/visual-living-desktop.jpg", width: 2000, height: 1666 },
+      mobile: { src: "/work/visual-living-mobile.jpg", width: 1000, height: 2166 },
+    },
   },
   {
     slug: "proyecto-dos",

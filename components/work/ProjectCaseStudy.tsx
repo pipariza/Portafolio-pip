@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Project } from "@/lib/data";
+import ProjectShowcase from "./ProjectShowcase";
 
 export default function ProjectCaseStudy({
   project,
@@ -17,6 +18,20 @@ export default function ProjectCaseStudy({
   onNext: () => void;
   backHref: string;
 }) {
+  if (project.shots) {
+    return (
+      <ProjectShowcase
+        project={project}
+        shots={project.shots}
+        index={index}
+        total={total}
+        onPrev={onPrev}
+        onNext={onNext}
+        backHref={backHref}
+      />
+    );
+  }
+
   const counter = `${String(index + 1).padStart(2, "0")} // ${String(total).padStart(2, "0")}`;
 
   return (
