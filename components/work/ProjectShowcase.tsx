@@ -128,6 +128,7 @@ function ScrollShot({
   alt,
   viewportRatio,
   pageWidth,
+  pace,
   sizes,
   priority,
 }: {
@@ -135,12 +136,13 @@ function ScrollShot({
   alt: string;
   viewportRatio: number;
   pageWidth: number;
+  pace: number;
   sizes: string;
   priority: boolean;
 }) {
   const reduce = useReducedMotion();
   // Longer pages take longer, so the speed feels the same on every page.
-  const seconds = Math.min(24, Math.max(6, (shot.height / shot.width - viewportRatio) * 7));
+  const seconds = Math.min(24, Math.max(6, (shot.height / shot.width - viewportRatio) * 7)) * pace;
 
   const pageHeight = (shot.height / shot.width) * pageWidth;
 
@@ -187,10 +189,15 @@ function ScrollShot({
 function DeviceStage({
   screens,
   name,
+  host,
+  pace,
   priority,
 }: {
   screens: ProjectScreen[];
   name: string;
+  /** Domain shown in the browser bar. */
+  host: string;
+  pace: number;
   priority: boolean;
 }) {
   const reduce = useReducedMotion();
@@ -226,7 +233,7 @@ function DeviceStage({
             <span className="h-[1cqw] w-[1cqw] rounded-full bg-black/20" />
             <span className="h-[1cqw] w-[1cqw] rounded-full bg-black/20" />
             <span className="ml-[2cqw] hidden h-[2.2cqw] items-center rounded-full bg-white px-[1.6cqw] text-[1.4cqw] leading-none text-black/50 @md:flex">
-              visualliving.co{screen.path}
+              {host}{screen.path}
             </span>
           </div>
           <div className="relative aspect-[16/10] overflow-hidden bg-white">
@@ -237,6 +244,7 @@ function DeviceStage({
                   alt={`${name}: ${screen.label}, en escritorio`}
                   viewportRatio={DESKTOP_RATIO}
                   pageWidth={DESKTOP_PAGE_WIDTH}
+                  pace={pace}
                   sizes="(min-width: 1024px) 45vw, 90vw"
                   priority={priority && active === 0}
                 />
@@ -257,6 +265,7 @@ function DeviceStage({
                   alt={`${name}: ${screen.label}, en celular`}
                   viewportRatio={PHONE_RATIO}
                   pageWidth={MOBILE_PAGE_WIDTH}
+                  pace={pace}
                   sizes="(min-width: 1024px) 12vw, 25vw"
                   priority={priority && active === 0}
                 />
@@ -320,13 +329,19 @@ export default function ProjectShowcase({
         className="relative flex items-center justify-center px-6 pb-8 pt-24 lg:px-24 lg:pb-24 lg:pt-28 lg:[container-type:size]"
         style={{ background: project.color }}
       >
-        <DeviceStage screens={screens} name={project.name} priority={index === 0} />
+        <DeviceStage
+          screens={screens}
+          name={project.name}
+          host={project.url ? new URL(project.url).hostname.replace(/^www\./, "") : ""}
+          pace={project.tourPace ?? 1}
+          priority={index === 0}
+        />
       </div>
 
-      <div className="relative flex flex-col justify-center gap-6 bg-paper px-6 pb-24 pt-8 text-ink lg:gap-8 lg:overflow-y-auto lg:pl-16 lg:pr-24 lg:pb-24 lg:pt-28">
+      <div className="@container relative flex flex-col justify-center gap-6 bg-paper px-6 pb-24 pt-8 text-ink lg:gap-8 lg:overflow-y-auto lg:pl-16 lg:pr-24 lg:pb-24 lg:pt-28">
         <div>
           <p className="mb-4 text-[11px] uppercase tracking-[0.08em] text-ink/50">{category}</p>
-          <h2 className="text-[clamp(2.25rem,10vw,3.5rem)] font-medium uppercase leading-[0.95] tracking-tight lg:text-[clamp(2.5rem,4.4vw,4.5rem)]">
+          <h2 className="text-[clamp(1.75rem,12.5cqw,4.5rem)] font-medium uppercase leading-[0.95] tracking-tight">
             {project.name}
           </h2>
           <p className="mt-6 max-w-md text-sm leading-relaxed text-ink/70">{project.summary}</p>

@@ -48,8 +48,10 @@ export type Project = {
    * cover image.
    */
   screens?: ProjectScreen[];
-  /** Live site, shown as a "Ver sitio" link. */
+  /** Live site, shown as a "Ver sitio" link and in the browser bar. */
   url?: string;
+  /** Multiplies how long the slow tour of each capture takes (default 1; higher is calmer). */
+  tourPace?: number;
 };
 
 export const projects: Project[] = [
@@ -157,14 +159,33 @@ export const projects: Project[] = [
     ],
   },
   {
-    slug: "proyecto-dos",
-    name: "Proyecto Dos",
-    role: "Diseño UI",
+    slug: "el-departamento",
+    name: "El Departamento",
+    role: "Diseño & Desarrollo web",
     year: "2025",
-    stack: "Figma, Webflow",
+    stack: "WordPress.org Development",
     category: "diseno-web",
-    summary: "Rediseño de e-commerce enfocado en conversión y velocidad.",
-    color: "#2f2f2d",
+    summary:
+      "Sitio de El Departamento (DPTO), casa creativa para marcas, plataformas y talento del entretenimiento. Un video a pantalla completa abre la página, los proyectos destacados se mueven por sí solos y todo se recorre con calma, con mucho aire entre secciones.",
+    color: "#e2e1de",
+    url: "https://eldepartamento.tv/",
+    tourPace: 1.9,
+    screens: [
+      {
+        id: "inicio",
+        label: "Inicio",
+        path: "",
+        desktop: { src: "/work/el-departamento/inicio-desktop.jpg", width: 1440, height: 4478 },
+        mobile: { src: "/work/el-departamento/inicio-mobile.jpg", width: 600, height: 9900 },
+      },
+      {
+        id: "caso",
+        label: "Caso",
+        path: "/cien-anos-de-soledad/",
+        desktop: { src: "/work/el-departamento/caso-desktop.jpg", width: 1440, height: 4729 },
+        mobile: { src: "/work/el-departamento/caso-mobile.jpg", width: 600, height: 6504 },
+      },
+    ],
   },
   {
     slug: "proyecto-tres",
