@@ -36,7 +36,7 @@ export function DesktopAppIcon({
           app.name.slice(0, 2).toUpperCase()
         )}
       </div>
-      <span className="text-[11px] font-medium uppercase tracking-[0.05em] text-ink [text-shadow:0_0_4px_rgba(255,255,255,0.95),0_0_12px_rgba(255,255,255,0.85)]">
+      <span className="text-[11px] font-medium uppercase tracking-[0.05em] text-ink">
         {app.label}
       </span>
     </motion.div>
@@ -60,7 +60,7 @@ export function GridAppIcon({ app }: { app: AppProject }) {
           app.name.slice(0, 2).toUpperCase()
         )}
       </div>
-      <span className="text-[11px] font-medium uppercase tracking-[0.05em] text-ink [text-shadow:0_0_4px_rgba(255,255,255,0.95),0_0_12px_rgba(255,255,255,0.85)] text-center">
+      <span className="text-[11px] font-medium uppercase tracking-[0.05em] text-ink text-center">
         {app.label}
       </span>
     </Link>
