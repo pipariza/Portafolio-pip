@@ -247,7 +247,7 @@ function DeviceStage({
 
         <motion.div
           {...enter(0.2, 28)}
-          className="group/device absolute bottom-0 right-0 w-[24%] overflow-hidden rounded-[3.2cqw] border-[0.7cqw] border-[#1b1b1a] bg-[#1b1b1a] shadow-[0_3cqw_6cqw_-1cqw_rgba(20,19,16,0.45)]"
+          className="group/device absolute bottom-0 right-0 w-[24%] overflow-hidden rounded-[3.2cqw] border-[0.7cqw] border-[#c9c6be] bg-[#c9c6be] ring-1 ring-black/10 shadow-[0_3cqw_6cqw_-1cqw_rgba(20,19,16,0.45)]"
         >
           <div className="relative aspect-[390/844] overflow-hidden rounded-[2.5cqw] bg-white">
             <AnimatePresence initial={false}>
