@@ -1,11 +1,14 @@
 "use client";
 
+import { useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
-import type { Project } from "@/lib/data";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import type { Project, ProjectScreen, ShotImage } from "@/lib/data";
 
-type Shots = NonNullable<Project["shots"]>;
+// Height / width of what each device frame shows (a 16:10 laptop, a 390x844 phone).
+const DESKTOP_RATIO = 10 / 16;
+const PHONE_RATIO = 844 / 390;
 
 const EASE = [0.16, 0.84, 0.44, 1] as const;
 
@@ -42,13 +45,68 @@ function ArrowButton({
 }
 
 /**
- * The finished site inside a browser frame, with the phone version in front.
- * Both captures keep their own proportions (height is automatic), so nothing
- * is ever cropped; the stage only scales. Sizes use container units, so the
- * chrome around the screenshots scales with the stage.
+ * One full-page capture inside a device screen. The image keeps its own
+ * proportions; when the page is taller than the screen it scrolls slowly top
+ * to bottom and back, so the whole page is seen and nothing is cropped. With
+ * "reduce motion" it does not move and the screen scrolls by hand instead.
  */
-function DeviceStage({ shots, name, priority }: { shots: Shots; name: string; priority: boolean }) {
+function ScrollShot({
+  shot,
+  alt,
+  viewportRatio,
+  sizes,
+  priority,
+}: {
+  shot: ShotImage;
+  alt: string;
+  viewportRatio: number;
+  sizes: string;
+  priority: boolean;
+}) {
   const reduce = useReducedMotion();
+  // Longer pages take longer, so the speed feels the same on every page.
+  const seconds = Math.min(24, Math.max(6, (shot.height / shot.width - viewportRatio) * 7));
+
+  return (
+    <div
+      className={`absolute inset-0 [container-type:size] ${
+        reduce ? "overflow-y-auto" : "overflow-hidden"
+      }`}
+    >
+      <Image
+        src={shot.src}
+        alt={alt}
+        width={shot.width}
+        height={shot.height}
+        sizes={sizes}
+        priority={priority}
+        className={`block h-auto w-full ${
+          reduce ? "" : "shot-scroll group-hover/device:[animation-play-state:paused]"
+        }`}
+        style={reduce ? undefined : ({ "--shot-seconds": `${seconds}s` } as CSSProperties)}
+      />
+    </div>
+  );
+}
+
+/**
+ * The finished site inside a browser frame, with the phone version in front
+ * and a tab for each page. Sizes use container units, so the chrome around the
+ * screenshots scales with the stage.
+ */
+function DeviceStage({
+  screens,
+  name,
+  priority,
+}: {
+  screens: ProjectScreen[];
+  name: string;
+  priority: boolean;
+}) {
+  const reduce = useReducedMotion();
+  const [active, setActive] = useState(0);
+  const screen = screens[active];
+
   const enter = (delay: number, y: number) =>
     reduce
       ? {}
@@ -57,56 +115,95 @@ function DeviceStage({ shots, name, priority }: { shots: Shots; name: string; pr
           animate: { opacity: 1, y: 0 },
           transition: { duration: 0.8, delay, ease: EASE },
         };
+  const fade = reduce
+    ? {}
+    : {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+        transition: { duration: 0.4 },
+      };
 
   return (
-    <div
-      className="@container relative w-full max-w-[780px] lg:w-[min(100cqw,135cqh)] lg:max-w-none"
-      style={{ aspectRatio: "100 / 74" }}
-    >
-      <motion.div
-        {...enter(0.05, 18)}
-        className="absolute left-0 top-0 w-[80%] overflow-hidden rounded-[1.4cqw] bg-white shadow-[0_3cqw_6cqw_-2cqw_rgba(20,19,16,0.35)] ring-1 ring-black/10"
-      >
-        <div className="flex h-[3.6cqw] items-center gap-[0.9cqw] bg-[#ecebe7] px-[1.6cqw]">
-          <span className="h-[1cqw] w-[1cqw] rounded-full bg-black/20" />
-          <span className="h-[1cqw] w-[1cqw] rounded-full bg-black/20" />
-          <span className="h-[1cqw] w-[1cqw] rounded-full bg-black/20" />
-          <span className="ml-[2cqw] hidden h-[2.2cqw] items-center rounded-full bg-white px-[1.6cqw] text-[1.4cqw] leading-none text-black/50 @md:flex">
-            visualliving.co
-          </span>
-        </div>
-        <Image
-          src={shots.desktop.src}
-          alt={`Captura de ${name} en escritorio`}
-          width={shots.desktop.width}
-          height={shots.desktop.height}
-          sizes="(min-width: 768px) 45vw, 90vw"
-          priority={priority}
-          className="block h-auto w-full"
-        />
-      </motion.div>
+    <div className="w-full max-w-[780px] lg:w-[min(100cqw,calc((100cqh_-_4.5rem)*1.6))] lg:max-w-none">
+      <div className="@container relative w-full" style={{ aspectRatio: "100 / 62" }}>
+        <motion.div
+          {...enter(0.05, 18)}
+          className="group/device absolute left-0 top-0 w-[80%] overflow-hidden rounded-[1.4cqw] bg-white shadow-[0_3cqw_6cqw_-2cqw_rgba(20,19,16,0.35)] ring-1 ring-black/10"
+        >
+          <div className="flex h-[3.6cqw] items-center gap-[0.9cqw] bg-[#ecebe7] px-[1.6cqw]">
+            <span className="h-[1cqw] w-[1cqw] rounded-full bg-black/20" />
+            <span className="h-[1cqw] w-[1cqw] rounded-full bg-black/20" />
+            <span className="h-[1cqw] w-[1cqw] rounded-full bg-black/20" />
+            <span className="ml-[2cqw] hidden h-[2.2cqw] items-center rounded-full bg-white px-[1.6cqw] text-[1.4cqw] leading-none text-black/50 @md:flex">
+              visualliving.co{screen.path}
+            </span>
+          </div>
+          <div className="relative aspect-[16/10] overflow-hidden bg-white">
+            <AnimatePresence initial={false}>
+              <motion.div key={screen.id} {...fade} className="absolute inset-0">
+                <ScrollShot
+                  shot={screen.desktop}
+                  alt={`${name}: ${screen.label}, en escritorio`}
+                  viewportRatio={DESKTOP_RATIO}
+                  sizes="(min-width: 1024px) 45vw, 90vw"
+                  priority={priority && active === 0}
+                />
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </motion.div>
 
-      <motion.div
-        {...enter(0.2, 28)}
-        className="absolute bottom-0 right-0 w-[24%] overflow-hidden rounded-[3.2cqw] border-[0.7cqw] border-[#1b1b1a] bg-[#1b1b1a] shadow-[0_3cqw_6cqw_-1cqw_rgba(20,19,16,0.45)]"
+        <motion.div
+          {...enter(0.2, 28)}
+          className="group/device absolute bottom-0 right-0 w-[24%] overflow-hidden rounded-[3.2cqw] border-[0.7cqw] border-[#1b1b1a] bg-[#1b1b1a] shadow-[0_3cqw_6cqw_-1cqw_rgba(20,19,16,0.45)]"
+        >
+          <div className="relative aspect-[390/844] overflow-hidden rounded-[2.5cqw] bg-white">
+            <AnimatePresence initial={false}>
+              <motion.div key={screen.id} {...fade} className="absolute inset-0">
+                <ScrollShot
+                  shot={screen.mobile}
+                  alt={`${name}: ${screen.label}, en celular`}
+                  viewportRatio={PHONE_RATIO}
+                  sizes="(min-width: 1024px) 12vw, 25vw"
+                  priority={priority && active === 0}
+                />
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      </div>
+
+      <div
+        role="tablist"
+        aria-label="Pantallas del proyecto"
+        className="mt-4 flex flex-wrap justify-center gap-x-3 sm:gap-x-5"
       >
-        <Image
-          src={shots.mobile.src}
-          alt={`Captura de ${name} en celular`}
-          width={shots.mobile.width}
-          height={shots.mobile.height}
-          sizes="(min-width: 768px) 12vw, 25vw"
-          priority={priority}
-          className="block h-auto w-full rounded-[2.5cqw]"
-        />
-      </motion.div>
+        {screens.map((s, i) => (
+          <button
+            key={s.id}
+            type="button"
+            role="tab"
+            aria-selected={i === active}
+            onClick={() => setActive(i)}
+            data-cursor-hover
+            className={`flex min-h-11 items-center border-b text-[10px] font-medium uppercase tracking-[0.08em] sm:text-[11px] transition-colors ${
+              i === active
+                ? "border-ink text-ink"
+                : "border-transparent text-ink/45 hover:text-ink"
+            }`}
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
 
 export default function ProjectShowcase({
   project,
-  shots,
+  screens,
   index,
   total,
   onPrev,
@@ -114,7 +211,7 @@ export default function ProjectShowcase({
   backHref,
 }: {
   project: Project;
-  shots: Shots;
+  screens: ProjectScreen[];
   index: number;
   total: number;
   onPrev: () => void;
@@ -131,7 +228,7 @@ export default function ProjectShowcase({
         className="relative flex items-center justify-center px-6 pb-8 pt-24 lg:px-24 lg:pb-24 lg:pt-28 lg:[container-type:size]"
         style={{ background: project.color }}
       >
-        <DeviceStage shots={shots} name={project.name} priority={index === 0} />
+        <DeviceStage screens={screens} name={project.name} priority={index === 0} />
       </div>
 
       <div className="relative flex flex-col justify-center gap-6 bg-paper px-6 pb-24 pt-8 text-ink lg:gap-8 lg:overflow-y-auto lg:pl-16 lg:pr-24 lg:pb-24 lg:pt-28">

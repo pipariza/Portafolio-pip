@@ -127,6 +127,24 @@ body {
   color: var(--color-ink);
 }
 
+/* ---------- Work: slow tour of a full-page screenshot ---------- */
+
+/* The image sits in a size container (its device screen): it moves just far
+   enough to show its bottom edge, and not at all if it already fits. */
+@keyframes shot-scroll {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(min(0px, calc(100cqh - 100%)));
+  }
+}
+
+.shot-scroll {
+  animation: shot-scroll var(--shot-seconds, 12s) ease-in-out 1.2s infinite alternate;
+  will-change: transform;
+}
+
 /* ---------- Technical grid background ---------- */
 
 .tech-grid {

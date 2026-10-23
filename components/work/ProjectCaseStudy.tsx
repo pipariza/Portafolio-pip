@@ -18,11 +18,11 @@ export default function ProjectCaseStudy({
   onNext: () => void;
   backHref: string;
 }) {
-  if (project.shots) {
+  if (project.screens?.length) {
     return (
       <ProjectShowcase
         project={project}
-        shots={project.shots}
+        screens={project.screens}
         index={index}
         total={total}
         onPrev={onPrev}

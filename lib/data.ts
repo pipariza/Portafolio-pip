@@ -1,3 +1,16 @@
+/** An uncropped capture: path under /public plus its pixel size. */
+export type ShotImage = { src: string; width: number; height: number };
+
+export type ProjectScreen = {
+  id: string;
+  /** Tab label. */
+  label: string;
+  /** Path shown in the browser bar, e.g. "/pages/somos" ("" for the home page). */
+  path: string;
+  desktop: ShotImage;
+  mobile: ShotImage;
+};
+
 export type Project = {
   slug: string;
   name: string;
@@ -10,13 +23,11 @@ export type Project = {
   /** Path under /public, e.g. "/work/proyecto-uno.jpg". Falls back to `color` when unset. */
   image?: string;
   /**
-   * Uncropped captures of the finished site (path under /public plus pixel size).
-   * When set, the project uses the device showcase layout instead of a cover image.
+   * Full-page captures of the finished site, one per page (the first is shown
+   * first). When set, the project uses the device showcase layout instead of a
+   * cover image.
    */
-  shots?: {
-    desktop: { src: string; width: number; height: number };
-    mobile: { src: string; width: number; height: number };
-  };
+  screens?: ProjectScreen[];
   /** Live site, shown as a "Ver sitio" link. */
   url?: string;
 };
@@ -33,10 +44,43 @@ export const projects: Project[] = [
       "Sitio de una casa de diseño audiovisual en Bogotá. El video abre la página, una sola frase grande ordena todo lo demás y la navegación flota abajo, igual de ligera en el celular y en el escritorio.",
     color: "#e3e0d8",
     url: "https://www.visualliving.co/",
-    shots: {
-      desktop: { src: "/work/visual-living-desktop.jpg", width: 2000, height: 1666 },
-      mobile: { src: "/work/visual-living-mobile.jpg", width: 1000, height: 2166 },
-    },
+    screens: [
+      {
+        id: "inicio",
+        label: "Inicio",
+        path: "",
+        desktop: { src: "/work/visual-living/inicio-desktop.jpg", width: 1600, height: 1333 },
+        mobile: { src: "/work/visual-living/inicio-mobile.jpg", width: 750, height: 1624 },
+      },
+      {
+        id: "somos",
+        label: "Somos",
+        path: "/pages/somos",
+        desktop: { src: "/work/visual-living/somos-desktop.jpg", width: 1600, height: 1664 },
+        mobile: { src: "/work/visual-living/somos-mobile.jpg", width: 750, height: 1624 },
+      },
+      {
+        id: "archivos",
+        label: "Archivos",
+        path: "/pages/archivos",
+        desktop: { src: "/work/visual-living/archivos-desktop.jpg", width: 1600, height: 1082 },
+        mobile: { src: "/work/visual-living/archivos-mobile.jpg", width: 750, height: 1624 },
+      },
+      {
+        id: "servicios",
+        label: "Servicios",
+        path: "/pages/servicios",
+        desktop: { src: "/work/visual-living/servicios-desktop.jpg", width: 1600, height: 1595 },
+        mobile: { src: "/work/visual-living/servicios-mobile.jpg", width: 750, height: 1624 },
+      },
+      {
+        id: "marcas",
+        label: "Marcas",
+        path: "/pages/marcas",
+        desktop: { src: "/work/visual-living/marcas-desktop.jpg", width: 1600, height: 2695 },
+        mobile: { src: "/work/visual-living/marcas-mobile.jpg", width: 750, height: 4710 },
+      },
+    ],
   },
   {
     slug: "proyecto-dos",
