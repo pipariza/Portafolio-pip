@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { Barlow } from "next/font/google";
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type { Project, ProjectScreen, ShotImage, ShotVideo } from "@/lib/data";
@@ -15,6 +15,12 @@ const PHONE_RATIO = 844 / 390;
 // positions in the data are in those pixels.
 const DESKTOP_PAGE_WIDTH = 1440;
 const MOBILE_PAGE_WIDTH = 500;
+
+// `sizes` and quality of the screenshots, shared with the prefetch so it asks
+// the image optimizer for exactly the files the visible tab will need.
+const DESKTOP_SIZES = "(min-width: 1024px) 45vw, 90vw";
+const PHONE_SIZES = "(min-width: 1024px) 12vw, 25vw";
+const SHOT_QUALITY = 60;
 
 // The font the captured site uses for the labels it draws over its videos.
 const barlow = Barlow({ subsets: ["latin"], weight: "400" });
@@ -143,6 +149,67 @@ function ShotVideoLayer({
 }
 
 /**
+ * Loads the pictures of the tabs that are not showing, one at a time, starting
+ * with the next one. It holds back on data saver and on slow connections, runs
+ * when the browser is idle, and only touches images (never the videos).
+ * Returns a function that stops it.
+ */
+function prefetchScreens(screens: ProjectScreen[], current: number) {
+  const connection = (
+    navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }
+  ).connection;
+  if (connection?.saveData) return;
+  if (connection?.effectiveType && /^(slow-2g|2g|3g)$/.test(connection.effectiveType)) return;
+
+  let cancelled = false;
+  const queue: ShotImage[] = [];
+  for (let step = 1; step < screens.length; step++) {
+    const screen = screens[(current + step) % screens.length];
+    queue.push(screen.desktop, screen.mobile);
+  }
+
+  // Each picture moves the queue on once, when it loads, fails, or takes too
+  // long, so one slow download can never stall the rest.
+  const next = () => {
+    const shot = queue.shift();
+    if (cancelled || !shot) return;
+    let advanced = false;
+    const advance = () => {
+      if (advanced) return;
+      advanced = true;
+      next();
+    };
+    const isPhone = shot.width <= 700;
+    const { props } = getImageProps({
+      src: shot.src,
+      alt: "",
+      width: shot.width,
+      height: shot.height,
+      sizes: isPhone ? PHONE_SIZES : DESKTOP_SIZES,
+      quality: SHOT_QUALITY,
+    });
+    const img = new window.Image();
+    img.onload = img.onerror = advance;
+    window.setTimeout(advance, 6000);
+    img.sizes = props.sizes ?? "";
+    if (props.srcSet) img.srcset = props.srcSet;
+    img.src = props.src ?? shot.src;
+  };
+
+  // Safari has no requestIdleCallback.
+  const hasIdle = typeof window.requestIdleCallback === "function";
+  const schedule = hasIdle
+    ? window.requestIdleCallback(next, { timeout: 4000 })
+    : window.setTimeout(next, 1500);
+
+  return () => {
+    cancelled = true;
+    if (hasIdle) window.cancelIdleCallback(schedule);
+    else window.clearTimeout(schedule);
+  };
+}
+
+/**
  * One full-page capture inside a device screen. The image keeps its own
  * proportions; when the page is taller than the screen it scrolls slowly top
  * to bottom and back, so the whole page is seen and nothing is cropped. With
@@ -156,6 +223,7 @@ function ScrollShot({
   pace,
   sizes,
   priority,
+  onLoaded,
 }: {
   shot: ShotImage;
   alt: string;
@@ -164,15 +232,23 @@ function ScrollShot({
   pace: number;
   sizes: string;
   priority: boolean;
+  onLoaded?: () => void;
 }) {
   const reduce = useReducedMotion();
   // The tour (and the videos) start only once the picture is on screen, so a slow
   // connection never shows a page that is already half way down.
   const [loaded, setLoaded] = useState(false);
+  const markLoaded = useCallback(() => {
+    setLoaded(true);
+    onLoaded?.();
+  }, [onLoaded]);
   // An image that came from the cache can finish before React attaches onLoad.
-  const imageRef = useCallback((img: HTMLImageElement | null) => {
-    if (img?.complete && img.naturalWidth > 0) setLoaded(true);
-  }, []);
+  const imageRef = useCallback(
+    (img: HTMLImageElement | null) => {
+      if (img?.complete && img.naturalWidth > 0) markLoaded();
+    },
+    [markLoaded],
+  );
   const tour = !reduce && loaded;
 
   // Longer pages take longer, so the speed feels the same on every page.
@@ -207,9 +283,9 @@ function ScrollShot({
           width={shot.width}
           height={shot.height}
           sizes={sizes}
-          quality={60}
+          quality={SHOT_QUALITY}
           priority={priority}
-          onLoad={() => setLoaded(true)}
+          onLoad={markLoaded}
           className={`block h-auto w-full transition-opacity duration-500 ${
             loaded ? "opacity-100" : "opacity-0"
           }`}
@@ -251,6 +327,28 @@ function DeviceStage({
   const [active, setActive] = useState(0);
   const screen = screens[active];
 
+  // Once the first screen is on screen, quietly fetch the other tabs' pictures
+  // so switching tabs is instant. See prefetchScreens for when it holds back.
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [firstLoaded, setFirstLoaded] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const markFirstLoaded = useCallback(() => setFirstLoaded(true), []);
+
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), {
+      threshold: 0.2,
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!firstLoaded || !visible) return;
+    return prefetchScreens(screens, 0);
+  }, [firstLoaded, visible, screens]);
+
   const enter = (delay: number, y: number) =>
     reduce
       ? {}
@@ -269,7 +367,10 @@ function DeviceStage({
       };
 
   return (
-    <div className="w-full max-w-[780px] lg:w-[min(100cqw,calc((100cqh_-_4.5rem)*1.6))] lg:max-w-none">
+    <div
+      ref={rootRef}
+      className="w-full max-w-[780px] lg:w-[min(100cqw,calc((100cqh_-_4.5rem)*1.6))] lg:max-w-none"
+    >
       <div className="@container relative w-full" style={{ aspectRatio: "100 / 62" }}>
         <motion.div
           {...enter(0.05, 18)}
@@ -292,8 +393,9 @@ function DeviceStage({
                   viewportRatio={DESKTOP_RATIO}
                   pageWidth={DESKTOP_PAGE_WIDTH}
                   pace={pace}
-                  sizes="(min-width: 1024px) 45vw, 90vw"
+                  sizes={DESKTOP_SIZES}
                   priority={priority && active === 0}
+                  onLoaded={active === 0 ? markFirstLoaded : undefined}
                 />
               </motion.div>
             </AnimatePresence>
@@ -313,7 +415,7 @@ function DeviceStage({
                   viewportRatio={PHONE_RATIO}
                   pageWidth={MOBILE_PAGE_WIDTH}
                   pace={pace}
-                  sizes="(min-width: 1024px) 12vw, 25vw"
+                  sizes={PHONE_SIZES}
                   priority={priority && active === 0}
                 />
               </motion.div>
