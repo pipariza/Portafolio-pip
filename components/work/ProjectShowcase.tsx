@@ -56,7 +56,10 @@ function ArrowButton({
 /**
  * The page's own video, playing on top of the spot where the capture shows
  * its first frame. It lives inside the scrolling layer, so it moves with the
- * page. Muted and looping; if the browser refuses autoplay the capture stays.
+ * page. Muted and looping. To keep phones and laptops cool it only loads and
+ * plays while it is inside the device screen. If the browser refuses
+ * autoplay the capture stays. Whatever the page draws over the video (logo,
+ * buttons, titles, shading) comes back on top as a transparent image.
  */
 function ShotVideoLayer({
   video,
@@ -73,8 +76,21 @@ function ShotVideoLayer({
     const el = ref.current;
     if (!el) return;
     el.muted = true;
-    el.play().catch(() => {});
-  }, []);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (!el.getAttribute("src")) el.src = video.src;
+          el.play().catch(() => {});
+        } else {
+          el.pause();
+        }
+      },
+      // The device screen is the root, so "visible" means visible inside it.
+      { root: el.closest("[data-shot-viewport]"), rootMargin: "60px 0px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [video.src]);
 
   const { notch } = video;
   const notchLeft = notch ? (1 - notch.w / video.w) * 100 : 0;
@@ -96,15 +112,24 @@ function ShotVideoLayer({
     >
       <video
         ref={ref}
-        src={video.src}
-        autoPlay
-        muted
         loop
+        muted
         playsInline
         preload="metadata"
         aria-hidden="true"
         className={`h-full w-full ${video.fit === "cover" ? "object-cover" : "object-contain"}`}
       />
+      {video.overlay && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={video.overlay}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          className="pointer-events-none absolute inset-0 h-full w-full"
+        />
+      )}
       {video.label && (
         <span
           className={`${barlow.className} absolute inset-0 flex items-center justify-center uppercase text-white`}
@@ -144,10 +169,13 @@ function ScrollShot({
   // Longer pages take longer, so the speed feels the same on every page.
   const seconds = Math.min(24, Math.max(6, (shot.height / shot.width - viewportRatio) * 7)) * pace;
 
-  const pageHeight = (shot.height / shot.width) * pageWidth;
+  // Each capture may have been taken at its own width (the data says so when it differs).
+  const captureWidth = shot.pageWidth ?? pageWidth;
+  const pageHeight = (shot.height / shot.width) * captureWidth;
 
   return (
     <div
+      data-shot-viewport
       className={`absolute inset-0 [container-type:size] ${
         reduce ? "overflow-y-auto" : "overflow-hidden"
       }`}
@@ -172,7 +200,7 @@ function ScrollShot({
             <ShotVideoLayer
               key={`${video.src}-${video.x}-${video.y}`}
               video={video}
-              pageWidth={pageWidth}
+              pageWidth={captureWidth}
               pageHeight={pageHeight}
             />
           ))}
@@ -373,6 +401,10 @@ export default function ProjectShowcase({
             Ver sitio
             <span aria-hidden="true">↗</span>
           </a>
+        )}
+
+        {project.note && (
+          <p className="max-w-md text-[11px] leading-relaxed text-ink/50">{project.note}</p>
         )}
       </div>
 

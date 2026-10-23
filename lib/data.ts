@@ -1,7 +1,7 @@
 /**
  * A video that plays over the spot where the page has one. Coordinates are in
- * the page's own CSS pixels at the width it was captured (1440 desktop, 500
- * mobile), so they follow the screenshot at any scale.
+ * the page's own CSS pixels at the width it was captured (see `pageWidth`),
+ * so they follow the screenshot at any scale.
  */
 export type ShotVideo = {
   /** Path under /public. */
@@ -14,12 +14,21 @@ export type ShotVideo = {
   fit?: "cover" | "contain";
   /** Text the page draws over the video (the capture's own copy is hidden by the video). */
   label?: { text: string; size: number };
+  /** Transparent image of everything the page draws over this video (logo, buttons, titles, shading). */
+  overlay?: string;
   /** Top-right corner left uncovered, for the floating "Contacto" button that sits over the video. */
   notch?: { w: number; h: number };
 };
 
 /** An uncropped capture: path under /public plus its pixel size. */
-export type ShotImage = { src: string; width: number; height: number; videos?: ShotVideo[] };
+export type ShotImage = {
+  src: string;
+  width: number;
+  height: number;
+  /** CSS width the capture was taken at, when it is not the default (1440 desktop, 500 mobile). */
+  pageWidth?: number;
+  videos?: ShotVideo[];
+};
 
 export type ProjectScreen = {
   id: string;
@@ -52,6 +61,8 @@ export type Project = {
   url?: string;
   /** Multiplies how long the slow tour of each capture takes (default 1; higher is calmer). */
   tourPace?: number;
+  /** Small credit line under the project text, e.g. who owns the media shown. */
+  note?: string;
 };
 
 export const projects: Project[] = [
@@ -66,6 +77,7 @@ export const projects: Project[] = [
       "Sitio de una casa de diseño audiovisual en Bogotá. El video abre la página, una sola frase grande ordena todo lo demás y la navegación flota abajo, igual de ligera en el celular y en el escritorio.",
     color: "#e3e0d8",
     url: "https://www.visualliving.co/",
+    note: "El contenido audiovisual es propiedad de cada marca.",
     screens: [
       {
         id: "inicio",
@@ -170,20 +182,81 @@ export const projects: Project[] = [
     color: "#e2e1de",
     url: "https://eldepartamento.tv/",
     tourPace: 1.9,
+    note: "El contenido audiovisual es propiedad de cada marca.",
     screens: [
       {
         id: "inicio",
         label: "Inicio",
         path: "",
-        desktop: { src: "/work/el-departamento/inicio-desktop.jpg", width: 1440, height: 4478 },
-        mobile: { src: "/work/el-departamento/inicio-mobile.jpg", width: 600, height: 9900 },
+        desktop: {
+          src: "/work/el-departamento/inicio-desktop.jpg",
+          width: 1440,
+          height: 4478,
+          videos: [
+            { src: "/work/el-departamento/video/banner-home-dpto.mp4", x: 0, y: 0, w: 1440, h: 900, fit: "cover", overlay: "/work/el-departamento/overlay/banner-home-dpto-home-desktop.webp" },
+            { src: "/work/el-departamento/video/p1-cien-anos-de-soledad.mp4", x: 80, y: 1603, w: 1280, h: 240, fit: "cover", overlay: "/work/el-departamento/overlay/p1-cien-anos-de-soledad-home-desktop.webp" },
+            { src: "/work/el-departamento/video/p2-sony.mp4", x: 80, y: 1859, w: 632, h: 240, fit: "cover", overlay: "/work/el-departamento/overlay/p2-sony-home-desktop.webp" },
+            { src: "/work/el-departamento/video/p3-karol-g.mp4", x: 728, y: 1859, w: 416, h: 240, fit: "cover", overlay: "/work/el-departamento/overlay/p3-karol-g-home-desktop.webp" },
+            { src: "/work/el-departamento/video/p4-griselda.mp4", x: 1160, y: 1859, w: 200, h: 240, fit: "cover", overlay: "/work/el-departamento/overlay/p4-griselda-home-desktop.webp" },
+            { src: "/work/el-departamento/video/p5-rolos-vs-paisas-hotd-promo-s2-web.mp4", x: 80, y: 2115, w: 1280, h: 240, fit: "cover", overlay: "/work/el-departamento/overlay/p5-rolos-vs-paisas-hotd-promo-s2-web-home-desktop.webp" },
+            { src: "/work/el-departamento/video/p6-sqtm-case-study-universal-web.mp4", x: 80, y: 2371, w: 308, h: 240, fit: "cover", overlay: "/work/el-departamento/overlay/p6-sqtm-case-study-universal-web-home-desktop.webp" },
+            { src: "/work/el-departamento/video/p7-ojos-de-mujer-intro-entertainment-web.mp4", x: 404, y: 2371, w: 416, h: 240, fit: "cover", overlay: "/work/el-departamento/overlay/p7-ojos-de-mujer-intro-entertainment-web-home-desktop.webp" },
+            { src: "/work/el-departamento/video/p8-netflix-star-power-base-web.mp4", x: 836, y: 2371, w: 524, h: 240, fit: "cover", overlay: "/work/el-departamento/overlay/p8-netflix-star-power-base-web-home-desktop.webp" },
+            { src: "/work/el-departamento/video/loop-creative-solutions-and-design.mp4", x: 118, y: 3344, w: 375, h: 500, fit: "cover", overlay: "/work/el-departamento/overlay/loop-creative-solutions-and-design-home-desktop.webp" },
+            { src: "/work/el-departamento/video/loop-live-action-and-social.mp4", x: 533, y: 3344, w: 375, h: 500, fit: "cover", overlay: "/work/el-departamento/overlay/loop-live-action-and-social-home-desktop.webp" },
+            { src: "/work/el-departamento/video/loop-motion-and-post.mp4", x: 947, y: 3344, w: 375, h: 500, fit: "cover", overlay: "/work/el-departamento/overlay/loop-motion-and-post-home-desktop.webp" },
+          ],
+        },
+        mobile: {
+          src: "/work/el-departamento/inicio-mobile.jpg",
+          width: 600,
+          height: 9900,
+          pageWidth: 390,
+          videos: [
+            { src: "/work/el-departamento/video/banner-home-dpto.mp4", x: 0, y: 0, w: 390, h: 844, fit: "cover", overlay: "/work/el-departamento/overlay/banner-home-dpto-home-mobile.webp" },
+            { src: "/work/el-departamento/video/p1-cien-anos-de-soledad.mp4", x: 0, y: 1442, w: 390, h: 241, fit: "cover", overlay: "/work/el-departamento/overlay/p1-cien-anos-de-soledad-home-mobile.webp" },
+            { src: "/work/el-departamento/video/p2-sony.mp4", x: 0, y: 1682, w: 390, h: 241, fit: "cover", overlay: "/work/el-departamento/overlay/p2-sony-home-mobile.webp" },
+            { src: "/work/el-departamento/video/p3-karol-g.mp4", x: 0, y: 1922, w: 390, h: 241, fit: "cover", overlay: "/work/el-departamento/overlay/p3-karol-g-home-mobile.webp" },
+            { src: "/work/el-departamento/video/p4-griselda.mp4", x: 0, y: 2162, w: 390, h: 241, fit: "cover", overlay: "/work/el-departamento/overlay/p4-griselda-home-mobile.webp" },
+            { src: "/work/el-departamento/video/p5-rolos-vs-paisas-hotd-promo-s2-web.mp4", x: 0, y: 2402, w: 390, h: 241, fit: "cover", overlay: "/work/el-departamento/overlay/p5-rolos-vs-paisas-hotd-promo-s2-web-home-mobile.webp" },
+            { src: "/work/el-departamento/video/p6-sqtm-case-study-universal-web.mp4", x: 0, y: 2642, w: 390, h: 241, fit: "cover", overlay: "/work/el-departamento/overlay/p6-sqtm-case-study-universal-web-home-mobile.webp" },
+            { src: "/work/el-departamento/video/p7-ojos-de-mujer-intro-entertainment-web.mp4", x: 0, y: 2882, w: 390, h: 241, fit: "cover", overlay: "/work/el-departamento/overlay/p7-ojos-de-mujer-intro-entertainment-web-home-mobile.webp" },
+            { src: "/work/el-departamento/video/p8-netflix-star-power-base-web.mp4", x: 0, y: 3122, w: 390, h: 241, fit: "cover", overlay: "/work/el-departamento/overlay/p8-netflix-star-power-base-web-home-mobile.webp" },
+            { src: "/work/el-departamento/video/loop-creative-solutions-and-design.mp4", x: 39, y: 4218, w: 312, h: 416, fit: "cover", overlay: "/work/el-departamento/overlay/loop-creative-solutions-and-design-home-mobile.webp" },
+            { src: "/work/el-departamento/video/loop-live-action-and-social.mp4", x: 39, y: 4687, w: 312, h: 416, fit: "cover", overlay: "/work/el-departamento/overlay/loop-live-action-and-social-home-mobile.webp" },
+            { src: "/work/el-departamento/video/loop-motion-and-post.mp4", x: 39, y: 5157, w: 312, h: 416, fit: "cover", overlay: "/work/el-departamento/overlay/loop-motion-and-post-home-mobile.webp" },
+          ],
+        },
       },
       {
         id: "caso",
         label: "Caso",
         path: "/cien-anos-de-soledad/",
-        desktop: { src: "/work/el-departamento/caso-desktop.jpg", width: 1440, height: 4729 },
-        mobile: { src: "/work/el-departamento/caso-mobile.jpg", width: 600, height: 6504 },
+        desktop: {
+          src: "/work/el-departamento/caso-desktop.jpg",
+          width: 1440,
+          height: 4729,
+          videos: [
+            { src: "/work/el-departamento/video/banner-home-dpto.mp4", x: 0, y: 0, w: 1440, h: 900, fit: "cover", overlay: "/work/el-departamento/overlay/banner-home-dpto-caso-desktop.webp" },
+            { src: "/work/el-departamento/video/anuncio-especial.mp4", x: 190, y: 1390, w: 1060, h: 482, fit: "cover" },
+            { src: "/work/el-departamento/video/directores.mp4", x: 190, y: 2127, w: 1060, h: 482, fit: "cover" },
+            { src: "/work/el-departamento/video/arte.mp4", x: 190, y: 2894, w: 1060, h: 482, fit: "cover" },
+            { src: "/work/el-departamento/video/vestuario.mp4", x: 190, y: 3631, w: 1060, h: 482, fit: "cover" },
+          ],
+        },
+        mobile: {
+          src: "/work/el-departamento/caso-mobile.jpg",
+          width: 600,
+          height: 6504,
+          pageWidth: 390,
+          videos: [
+            { src: "/work/el-departamento/video/banner-home-dpto.mp4", x: 0, y: 0, w: 390, h: 844, fit: "cover", overlay: "/work/el-departamento/overlay/banner-home-dpto-caso-mobile.webp" },
+            { src: "/work/el-departamento/video/anuncio-especial.mp4", x: 20, y: 1509, w: 350, h: 159, fit: "cover" },
+            { src: "/work/el-departamento/video/directores.mp4", x: 20, y: 2007, w: 350, h: 159, fit: "cover" },
+            { src: "/work/el-departamento/video/arte.mp4", x: 20, y: 2597, w: 350, h: 159, fit: "cover" },
+            { src: "/work/el-departamento/video/vestuario.mp4", x: 20, y: 3095, w: 350, h: 159, fit: "cover" },
+          ],
+        },
       },
     ],
   },
