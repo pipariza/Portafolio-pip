@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { getImageProps } from "next/image";
 import { ThemeSection } from "@/lib/section-theme";
 import { apps } from "@/lib/data";
 import { DesktopAppIcon, GridAppIcon } from "./AppIcon";
@@ -12,25 +12,35 @@ const POSITIONS = [
   { top: "62%", left: "14%" },
 ];
 
+// Art direction: a portrait wallpaper for tall screens (phones, tablets held
+// upright) and a landscape one otherwise. Keep both files in /public/apps.
+const WALLPAPER = { alt: "", fill: true, priority: true, sizes: "100vw" } as const;
+
 export default function AppsSection() {
+  const {
+    props: { srcSet: landscapeSet, ...wallpaperProps },
+  } = getImageProps({ ...WALLPAPER, src: "/apps/wallpaper.jpg" });
+  const {
+    props: { srcSet: portraitSet },
+  } = getImageProps({ ...WALLPAPER, src: "/apps/wallpaper-movil.jpg" });
+
   return (
     <ThemeSection
       theme="light"
       id="aplicativos"
       className="relative w-full min-h-screen bg-paper text-ink overflow-hidden pt-32 pb-40"
     >
-      {/* Wallpaper: a soft glow centered in the frame, so on tall phone screens
-          the crop stays on it. Keep the file name in sync with /public/apps. */}
-      <Image
-        src="/apps/wallpaper.jpg"
-        alt=""
-        fill
-        priority
-        quality={85}
-        sizes="(max-aspect-ratio: 16/9) 178vh, 100vw"
-        className="pointer-events-none select-none object-cover object-center"
-        aria-hidden="true"
-      />
+      {/* Wallpaper: a soft glow centered in the frame, so the crop stays on it at any size. */}
+      <picture>
+        <source media="(orientation: portrait)" srcSet={portraitSet} />
+        <source media="(orientation: landscape)" srcSet={landscapeSet} />
+        <img
+          {...wallpaperProps}
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none select-none object-cover object-center"
+        />
+      </picture>
 
       <p className="relative z-10 px-6 max-md:portrait:pl-[76px] md:px-16 text-[11px] uppercase tracking-[0.08em] text-ink/60">
         Arrastrá los íconos · Click para abrir
