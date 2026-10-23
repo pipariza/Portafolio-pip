@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { preconnect } from "react-dom";
 import { AnimatePresence } from "framer-motion";
 import { ThemeSection } from "@/lib/section-theme";
 import { videoClips } from "@/lib/data";
@@ -10,7 +11,34 @@ import VideoModal from "./VideoModal";
 const VISIBLE_COUNT = 5;
 const CYCLE_MS = 3500;
 
+// On phones, only the center card and its two neighbors run a Vimeo player;
+// the rest show their poster. Five players at once (each loads its own copy of
+// the player and a video stream) is what left the cards grey on mobile.
+const COMPACT_QUERY = "(max-width: 767px)";
+const COMPACT_LIVE_DISTANCE = 1;
+
+function subscribeCompact(onChange: () => void) {
+  const mq = window.matchMedia(COMPACT_QUERY);
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+}
+
+const noopSubscribe = () => () => {};
+
 export default function VideoSection() {
+  // Players mount only after hydration, once we know the screen size; otherwise
+  // the server HTML would start all five downloads on a phone.
+  const hydrated = useSyncExternalStore(noopSubscribe, () => true, () => false);
+  const compact = useSyncExternalStore(
+    subscribeCompact,
+    () => window.matchMedia(COMPACT_QUERY).matches,
+    () => false,
+  );
+
+  preconnect("https://player.vimeo.com");
+  preconnect("https://i.vimeocdn.com");
+  preconnect("https://f.vimeocdn.com");
+
   const [startIndex, setStartIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -121,6 +149,7 @@ export default function VideoSection() {
                 tilt={tilt}
                 zIndex={zIndex}
                 delay={distance * 0.07}
+                live={hydrated && (!compact || distance <= COMPACT_LIVE_DISTANCE)}
                 onOpen={() => setActiveIndex(clipIndex)}
               />
             ))}
