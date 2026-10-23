@@ -58,7 +58,7 @@ export const projects: Project[] = [
     name: "Visual Living",
     role: "Diseño & Desarrollo web",
     year: "2025",
-    stack: "Shopify",
+    stack: "Shopify Development",
     category: "diseno-web",
     summary:
       "Sitio de una casa de diseño audiovisual en Bogotá. El video abre la página, una sola frase grande ordena todo lo demás y la navegación flota abajo, igual de ligera en el celular y en el escritorio.",
