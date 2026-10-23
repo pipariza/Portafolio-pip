@@ -1,14 +1,23 @@
 "use client";
 
-import { useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { Barlow } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import type { Project, ProjectScreen, ShotImage } from "@/lib/data";
+import type { Project, ProjectScreen, ShotImage, ShotVideo } from "@/lib/data";
 
 // Height / width of what each device frame shows (a 16:10 laptop, a 390x844 phone).
 const DESKTOP_RATIO = 10 / 16;
 const PHONE_RATIO = 844 / 390;
+
+// Width, in CSS px, the desktop and mobile captures were taken at; video
+// positions in the data are in those pixels.
+const DESKTOP_PAGE_WIDTH = 1440;
+const MOBILE_PAGE_WIDTH = 500;
+
+// The font the captured site uses for the labels it draws over its videos.
+const barlow = Barlow({ subsets: ["latin"], weight: "400" });
 
 const EASE = [0.16, 0.84, 0.44, 1] as const;
 
@@ -45,6 +54,70 @@ function ArrowButton({
 }
 
 /**
+ * The page's own video, playing on top of the spot where the capture shows
+ * its first frame. It lives inside the scrolling layer, so it moves with the
+ * page. Muted and looping; if the browser refuses autoplay the capture stays.
+ */
+function ShotVideoLayer({
+  video,
+  pageWidth,
+  pageHeight,
+}: {
+  video: ShotVideo;
+  pageWidth: number;
+  pageHeight: number;
+}) {
+  const ref = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.muted = true;
+    el.play().catch(() => {});
+  }, []);
+
+  const { notch } = video;
+  const notchLeft = notch ? (1 - notch.w / video.w) * 100 : 0;
+  const notchBottom = notch ? (notch.h / video.h) * 100 : 0;
+
+  return (
+    <div
+      className="absolute overflow-hidden"
+      style={{
+        left: `${(video.x / pageWidth) * 100}%`,
+        top: `${(video.y / pageHeight) * 100}%`,
+        width: `${(video.w / pageWidth) * 100}%`,
+        height: `${(video.h / pageHeight) * 100}%`,
+        borderRadius: `${((video.radius ?? 0) / pageWidth) * 100}cqw`,
+        clipPath: notch
+          ? `polygon(0 0, ${notchLeft}% 0, ${notchLeft}% ${notchBottom}%, 100% ${notchBottom}%, 100% 100%, 0 100%)`
+          : undefined,
+      }}
+    >
+      <video
+        ref={ref}
+        src={video.src}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        aria-hidden="true"
+        className={`h-full w-full ${video.fit === "cover" ? "object-cover" : "object-contain"}`}
+      />
+      {video.label && (
+        <span
+          className={`${barlow.className} absolute inset-0 flex items-center justify-center uppercase text-white`}
+          style={{ fontSize: `${(video.label.size / pageWidth) * 100}cqw` }}
+        >
+          {video.label.text}
+        </span>
+      )}
+    </div>
+  );
+}
+
+/**
  * One full-page capture inside a device screen. The image keeps its own
  * proportions; when the page is taller than the screen it scrolls slowly top
  * to bottom and back, so the whole page is seen and nothing is cropped. With
@@ -54,12 +127,14 @@ function ScrollShot({
   shot,
   alt,
   viewportRatio,
+  pageWidth,
   sizes,
   priority,
 }: {
   shot: ShotImage;
   alt: string;
   viewportRatio: number;
+  pageWidth: number;
   sizes: string;
   priority: boolean;
 }) {
@@ -67,24 +142,39 @@ function ScrollShot({
   // Longer pages take longer, so the speed feels the same on every page.
   const seconds = Math.min(24, Math.max(6, (shot.height / shot.width - viewportRatio) * 7));
 
+  const pageHeight = (shot.height / shot.width) * pageWidth;
+
   return (
     <div
       className={`absolute inset-0 [container-type:size] ${
         reduce ? "overflow-y-auto" : "overflow-hidden"
       }`}
     >
-      <Image
-        src={shot.src}
-        alt={alt}
-        width={shot.width}
-        height={shot.height}
-        sizes={sizes}
-        priority={priority}
-        className={`block h-auto w-full ${
+      <div
+        className={`relative ${
           reduce ? "" : "shot-scroll group-hover/device:[animation-play-state:paused]"
         }`}
         style={reduce ? undefined : ({ "--shot-seconds": `${seconds}s` } as CSSProperties)}
-      />
+      >
+        <Image
+          src={shot.src}
+          alt={alt}
+          width={shot.width}
+          height={shot.height}
+          sizes={sizes}
+          priority={priority}
+          className="block h-auto w-full"
+        />
+        {!reduce &&
+          shot.videos?.map((video) => (
+            <ShotVideoLayer
+              key={`${video.src}-${video.x}-${video.y}`}
+              video={video}
+              pageWidth={pageWidth}
+              pageHeight={pageHeight}
+            />
+          ))}
+      </div>
     </div>
   );
 }
@@ -146,6 +236,7 @@ function DeviceStage({
                   shot={screen.desktop}
                   alt={`${name}: ${screen.label}, en escritorio`}
                   viewportRatio={DESKTOP_RATIO}
+                  pageWidth={DESKTOP_PAGE_WIDTH}
                   sizes="(min-width: 1024px) 45vw, 90vw"
                   priority={priority && active === 0}
                 />
@@ -165,6 +256,7 @@ function DeviceStage({
                   shot={screen.mobile}
                   alt={`${name}: ${screen.label}, en celular`}
                   viewportRatio={PHONE_RATIO}
+                  pageWidth={MOBILE_PAGE_WIDTH}
                   sizes="(min-width: 1024px) 12vw, 25vw"
                   priority={priority && active === 0}
                 />

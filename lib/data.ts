@@ -1,5 +1,25 @@
+/**
+ * A video that plays over the spot where the page has one. Coordinates are in
+ * the page's own CSS pixels at the width it was captured (1440 desktop, 500
+ * mobile), so they follow the screenshot at any scale.
+ */
+export type ShotVideo = {
+  /** Path under /public. */
+  src: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  radius?: number;
+  fit?: "cover" | "contain";
+  /** Text the page draws over the video (the capture's own copy is hidden by the video). */
+  label?: { text: string; size: number };
+  /** Top-right corner left uncovered, for the floating "Contacto" button that sits over the video. */
+  notch?: { w: number; h: number };
+};
+
 /** An uncropped capture: path under /public plus its pixel size. */
-export type ShotImage = { src: string; width: number; height: number };
+export type ShotImage = { src: string; width: number; height: number; videos?: ShotVideo[] };
 
 export type ProjectScreen = {
   id: string;
@@ -49,8 +69,22 @@ export const projects: Project[] = [
         id: "inicio",
         label: "Inicio",
         path: "",
-        desktop: { src: "/work/visual-living/inicio-desktop.jpg", width: 1600, height: 1333 },
-        mobile: { src: "/work/visual-living/inicio-mobile.jpg", width: 750, height: 1624 },
+        desktop: {
+          src: "/work/visual-living/inicio-desktop.jpg",
+          width: 1600,
+          height: 1333,
+          videos: [
+            { src: "/work/visual-living/video/inicio.mp4", x: 35, y: 134, w: 1370, h: 630, radius: 20, fit: "cover", notch: { w: 84, h: 6 } },
+          ],
+        },
+        mobile: {
+          src: "/work/visual-living/inicio-mobile.jpg",
+          width: 750,
+          height: 1624,
+          videos: [
+            { src: "/work/visual-living/video/inicio.mp4", x: 35, y: 86, w: 430, h: 242, radius: 20, fit: "contain", notch: { w: 72, h: 18 } },
+          ],
+        },
       },
       {
         id: "somos",
@@ -63,22 +97,62 @@ export const projects: Project[] = [
         id: "archivos",
         label: "Archivos",
         path: "/pages/archivos",
-        desktop: { src: "/work/visual-living/archivos-desktop.jpg", width: 1600, height: 1082 },
-        mobile: { src: "/work/visual-living/archivos-mobile.jpg", width: 750, height: 1624 },
+        desktop: {
+          src: "/work/visual-living/archivos-desktop.jpg",
+          width: 1600,
+          height: 1082,
+          videos: [
+            { src: "/work/visual-living/video/archivos-reels.mp4", x: 480, y: 114, w: 480, h: 360, fit: "cover", label: { text: "Reels", size: 36 } },
+            { src: "/work/visual-living/video/archivos-videoads.mp4", x: 0, y: 474, w: 480, h: 360, fit: "cover", label: { text: "Video ads", size: 36 } },
+          ],
+        },
+        mobile: {
+          src: "/work/visual-living/archivos-mobile.jpg",
+          width: 750,
+          height: 1624,
+          videos: [
+            { src: "/work/visual-living/video/archivos-reels.mp4", x: 250, y: 66, w: 250, h: 263, fit: "cover", label: { text: "Reels", size: 20 }, notch: { w: 107, h: 38 } },
+            { src: "/work/visual-living/video/archivos-videoads.mp4", x: 250, y: 328, w: 250, h: 263, fit: "cover", label: { text: "Video ads", size: 20 } },
+          ],
+        },
       },
       {
         id: "servicios",
         label: "Servicios",
         path: "/pages/servicios",
-        desktop: { src: "/work/visual-living/servicios-desktop.jpg", width: 1600, height: 1595 },
-        mobile: { src: "/work/visual-living/servicios-mobile.jpg", width: 750, height: 1624 },
+        desktop: {
+          src: "/work/visual-living/servicios-desktop.jpg",
+          width: 1600,
+          height: 1595,
+          videos: [{ src: "/work/visual-living/video/servicios.mp4", x: 30, y: 594, w: 1380, h: 682, radius: 20, fit: "contain" }],
+        },
+        mobile: {
+          src: "/work/visual-living/servicios-mobile.jpg",
+          width: 750,
+          height: 1624,
+          videos: [{ src: "/work/visual-living/video/servicios.mp4", x: 30, y: 351, w: 440, h: 217, radius: 20, fit: "contain" }],
+        },
       },
       {
         id: "marcas",
         label: "Marcas",
         path: "/pages/marcas",
-        desktop: { src: "/work/visual-living/marcas-desktop.jpg", width: 1600, height: 2695 },
-        mobile: { src: "/work/visual-living/marcas-mobile.jpg", width: 750, height: 4710 },
+        desktop: {
+          src: "/work/visual-living/marcas-desktop.jpg",
+          width: 1600,
+          height: 2695,
+          videos: [
+            { src: "/work/visual-living/video/marcas.mp4", x: 35, y: 134, w: 1370, h: 677, radius: 20, fit: "contain", notch: { w: 84, h: 6 } },
+          ],
+        },
+        mobile: {
+          src: "/work/visual-living/marcas-mobile.jpg",
+          width: 750,
+          height: 4710,
+          videos: [
+            { src: "/work/visual-living/video/marcas.mp4", x: 35, y: 86, w: 430, h: 212, radius: 20, fit: "contain", notch: { w: 72, h: 18 } },
+          ],
+        },
       },
     ],
   },
