@@ -223,6 +223,7 @@ function ScrollShot({
   pace,
   sizes,
   priority,
+  inView,
   onLoaded,
 }: {
   shot: ShotImage;
@@ -232,11 +233,15 @@ function ScrollShot({
   pace: number;
   sizes: string;
   priority: boolean;
+  /** Whether the whole stage is on the visitor's screen; the tour and videos run only then. */
+  inView: boolean;
   onLoaded?: () => void;
 }) {
   const reduce = useReducedMotion();
-  // The tour (and the videos) start only once the picture is on screen, so a slow
-  // connection never shows a page that is already half way down.
+  // The tour (and the videos) start only once the picture has loaded and the
+  // stage is really on screen. Leaving the screen drops them again, so coming
+  // back (next slide, scrolling up) always starts from the top of the page and
+  // the first frame of each video, never half way through.
   const [loaded, setLoaded] = useState(false);
   const markLoaded = useCallback(() => {
     setLoaded(true);
@@ -249,7 +254,7 @@ function ScrollShot({
     },
     [markLoaded],
   );
-  const tour = !reduce && loaded;
+  const tour = !reduce && loaded && inView;
 
   // Longer pages take longer, so the speed feels the same on every page.
   const seconds = Math.min(24, Math.max(6, (shot.height / shot.width - viewportRatio) * 7)) * pace;
@@ -337,8 +342,9 @@ function DeviceStage({
   useEffect(() => {
     const el = rootRef.current;
     if (!el) return;
+    // Most of the stage must be on screen, so a slide that is still sliding in has not started yet.
     const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), {
-      threshold: 0.2,
+      threshold: 0.6,
     });
     observer.observe(el);
     return () => observer.disconnect();
@@ -395,6 +401,7 @@ function DeviceStage({
                   pace={pace}
                   sizes={DESKTOP_SIZES}
                   priority={priority && active === 0}
+                  inView={visible}
                   onLoaded={active === 0 ? markFirstLoaded : undefined}
                 />
               </motion.div>
@@ -417,6 +424,7 @@ function DeviceStage({
                   pace={pace}
                   sizes={PHONE_SIZES}
                   priority={priority && active === 0}
+                  inView={visible}
                 />
               </motion.div>
             </AnimatePresence>
