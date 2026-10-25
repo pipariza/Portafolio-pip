@@ -22,21 +22,35 @@ import {
   prefetchScreens,
 } from "./ProjectShowcase";
 
+/*
+ * One component tree for every screen size. From lg up it is a MacBook that
+ * fills the viewport; below that the same desktop is shown smaller, as a
+ * rounded "screen" that scrolls with the page. Everything inside the screen
+ * is measured in cqw (a share of the screen's width) below lg, so the Safari
+ * and iPhone windows keep the proportions of the desktop at any width.
+ */
+
 /* ---------- small pieces ---------- */
 
-function TrafficLights({ className = "" }: { className?: string }) {
+function TrafficLights() {
+  const dot =
+    "block h-[max(4px,1.8cqw)] w-[max(4px,1.8cqw)] rounded-full shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.18)] lg:h-3 lg:w-3";
   return (
-    <div className={`flex gap-2 ${className}`} aria-hidden="true">
-      <i className="block h-3 w-3 rounded-full bg-[#ff5f57] shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.18)]" />
-      <i className="block h-3 w-3 rounded-full bg-[#febc2e] shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.18)]" />
-      <i className="block h-3 w-3 rounded-full bg-[#28c840] shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.18)]" />
+    <div className="flex gap-[max(2px,1cqw)] lg:mr-2 lg:gap-2" aria-hidden="true">
+      <i className={`${dot} bg-[#ff5f57]`} />
+      <i className={`${dot} bg-[#febc2e]`} />
+      <i className={`${dot} bg-[#28c840]`} />
     </div>
   );
 }
 
 function AppleLogo() {
   return (
-    <svg width="14" height="17" viewBox="0 0 24 24" aria-hidden="true" className="-mt-0.5">
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className="h-[max(9px,3.2cqw)] w-[max(8px,2.8cqw)] lg:-mt-0.5 lg:h-[17px] lg:w-[14px]"
+    >
       <path
         fill="currentColor"
         d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"
@@ -68,7 +82,7 @@ function MenuBar() {
   // re-renders once a minute even though the clock is checked every second.
   const clock = useSyncExternalStore(subscribeClock, clockSnapshot, () => "");
   return (
-    <div className="absolute inset-x-0 top-0 z-40 flex h-[34px] items-center gap-5 bg-white/55 px-5 text-[13px] text-[#1d1d1f] backdrop-blur-2xl">
+    <div className="absolute inset-x-0 top-0 z-40 flex h-[8cqw] items-center gap-[3cqw] bg-white/55 px-[3.6cqw] text-[max(7.5px,2.8cqw)] text-[#1d1d1f] backdrop-blur-2xl lg:h-[34px] lg:gap-5 lg:px-5 lg:text-[13px]">
       <AppleLogo />
       <b className="font-bold">Work</b>
       <span className="max-xl:hidden">Archivo</span>
@@ -76,8 +90,13 @@ function MenuBar() {
       <span className="max-xl:hidden">Ver</span>
       <span className="max-xl:hidden">Ventana</span>
       <span className="max-xl:hidden">Ayuda</span>
-      <span className="ml-auto flex items-center gap-4 text-[12.5px]">
-        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor" aria-hidden="true">
+      <span className="ml-auto flex items-center gap-[2.4cqw] text-[max(7px,2.6cqw)] lg:gap-4 lg:text-[12.5px]">
+        <svg
+          viewBox="0 0 16 12"
+          fill="currentColor"
+          aria-hidden="true"
+          className="h-[max(6px,2.2cqw)] w-auto lg:h-3"
+        >
           <path d="M8 2.2c2 0 3.8.8 5.1 2.1l1.1-1.2A8.9 8.9 0 0 0 8 .6a8.9 8.9 0 0 0-6.2 2.5l1.1 1.2A7.2 7.2 0 0 1 8 2.2Zm0 3.4c1.1 0 2.1.4 2.9 1.2l1.1-1.2A6 6 0 0 0 8 4a6 6 0 0 0-4 1.6l1.1 1.2c.8-.8 1.8-1.2 2.9-1.2Zm0 3.3c.5 0 1 .2 1.4.6L8 11.1 6.6 9.5c.4-.4.9-.6 1.4-.6Z" />
         </svg>
         <span className="tabular-nums">{clock}</span>
@@ -98,11 +117,11 @@ function Widget({ className = "", children }: { className?: string; children: Re
 
 const LABEL = "text-[11px] font-semibold uppercase tracking-[0.08em] text-black/50";
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value, className = "" }: { label: string; value: string; className?: string }) {
   return (
-    <div className="min-w-0">
+    <div className={`min-w-0 ${className}`}>
       <p className={LABEL}>{label}</p>
-      <p className="mt-0.5 text-[13px] font-semibold leading-snug [overflow-wrap:anywhere] [@media(max-height:800px)]:lg:text-[12px] [@media(max-height:800px)]:lg:leading-tight">{value}</p>
+      <p className="mt-0.5 text-[13px] font-semibold leading-snug [overflow-wrap:anywhere]">{value}</p>
     </div>
   );
 }
@@ -123,7 +142,7 @@ function InfoCard({
 }) {
   const counter = `${String(index + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}`;
   return (
-    <Widget className="p-4 sm:p-5 lg:p-4 xl:p-5 [@media(max-height:800px)]:lg:p-3">
+    <Widget className="flex flex-col justify-center p-4 lg:p-4 xl:p-5">
       <div className="flex items-center justify-between gap-3">
         <p className={`${LABEL} min-w-0 truncate`}>
           <span className="max-sm:hidden">Proyecto </span>
@@ -142,7 +161,7 @@ function InfoCard({
               aria-label={label}
               onClick={fn}
               data-cursor-hover
-              className="flex h-6 w-6 items-center justify-center rounded-full bg-black/[0.06] text-black/60 transition-colors hover:bg-black/10"
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-black/[0.06] text-black/60 transition-colors hover:bg-black/10 lg:h-6 lg:w-6"
             >
               <svg width="11" height="12" viewBox="0 0 11 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d={d} />
@@ -151,29 +170,23 @@ function InfoCard({
           ))}
         </div>
       </div>
-      <h2 className="my-1.5 text-[1.55rem] font-bold leading-[1.05] tracking-tight [@media(max-height:800px)]:lg:my-1 [@media(max-height:800px)]:lg:text-[1.3rem]">{project.name}</h2>
-      <div className="grid grid-cols-3 gap-3 border-t border-black/10 pt-2.5 [@media(max-height:800px)]:lg:gap-2 [@media(max-height:800px)]:lg:pt-1.5">
+      <h2 className="my-1.5 text-[1.55rem] font-bold leading-[1.05] tracking-tight lg:text-[1.4rem] xl:text-[1.55rem]">
+        {project.name}
+      </h2>
+      <div className="grid grid-cols-3 gap-3 border-t border-black/10 pt-2.5 max-[400px]:grid-cols-2">
         <Stat label="Rol" value={project.role} />
         <Stat label="Año" value={project.year} />
-        <Stat label="Stack" value={project.stack} />
+        <Stat label="Stack" value={project.stack} className="max-[400px]:col-span-2" />
       </div>
     </Widget>
   );
 }
 
 /** Summary, "Ver sitio" and the ownership note. */
-function SummaryCard({
-  project,
-  className = "",
-  summaryClassName = "",
-}: {
-  project: Project;
-  className?: string;
-  summaryClassName?: string;
-}) {
+function SummaryCard({ project }: { project: Project }) {
   return (
-    <Widget className={`flex flex-col justify-center gap-3 p-4 sm:p-5 lg:p-4 xl:p-5 [@media(max-height:800px)]:lg:p-3 ${className}`}>
-      <p className={`text-[13px] leading-relaxed text-black/70 ${summaryClassName}`}>{project.summary}</p>
+    <Widget className="flex flex-col justify-center gap-3 p-4 lg:gap-2.5 lg:p-4 xl:gap-3 xl:p-5">
+      <p className="text-[13px] leading-relaxed text-black/70 lg:leading-[1.5]">{project.summary}</p>
       <div className="flex items-center gap-4">
         {project.url && (
           <a
@@ -227,21 +240,21 @@ function SafariWindow({
       };
 
   return (
-    <div className="group/device flex h-full min-h-0 flex-col overflow-hidden rounded-[14px] bg-white shadow-[0_0_0_0.5px_rgba(0,0,0,0.28),0_30px_70px_-18px_rgba(30,40,40,0.55),0_8px_20px_-8px_rgba(30,40,40,0.3)]">
-      <div className="flex h-[52px] shrink-0 items-center gap-3 border-b border-black/[0.14] bg-[#f3f1ee] px-4">
-        <TrafficLights className="mr-2" />
-        <svg width="20" height="16" viewBox="0 0 20 16" fill="none" stroke="currentColor" strokeWidth="1.4" className="text-black/50" aria-hidden="true">
+    <div className="group/device flex min-h-0 flex-1 flex-col overflow-hidden rounded-[2.2cqw] bg-white shadow-[0_0_0_0.5px_rgba(0,0,0,0.28),0_30px_70px_-18px_rgba(30,40,40,0.55),0_8px_20px_-8px_rgba(30,40,40,0.3)] lg:rounded-[14px]">
+      <div className="flex h-[7.2cqw] shrink-0 items-center gap-[1.6cqw] border-b border-black/[0.14] bg-[#f3f1ee] px-[2cqw] lg:h-[52px] lg:gap-3 lg:px-4">
+        <TrafficLights />
+        <svg width="20" height="16" viewBox="0 0 20 16" fill="none" stroke="currentColor" strokeWidth="1.4" className="text-black/50 max-lg:hidden" aria-hidden="true">
           <rect x="1.5" y="1.5" width="17" height="13" rx="3" />
           <path d="M7 2v12" />
         </svg>
-        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-black/45" aria-hidden="true">
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-black/45 max-lg:hidden" aria-hidden="true">
           <path d="M8 2 2 8l6 6" />
         </svg>
-        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-black/25" aria-hidden="true">
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-black/25 max-lg:hidden" aria-hidden="true">
           <path d="m2 2 6 6-6 6" />
         </svg>
-        <div className="mx-auto flex h-[30px] w-full min-w-0 max-w-[26rem] items-center justify-center gap-1.5 rounded-[9px] bg-black/[0.06] px-3 text-[13px]">
-          <svg width="9" height="11" viewBox="0 0 9 11" fill="currentColor" className="shrink-0 text-black/45" aria-hidden="true">
+        <div className="mx-auto flex h-[4.2cqw] w-full min-w-0 items-center justify-center gap-[0.8cqw] rounded-[1.2cqw] bg-black/[0.06] px-[1.4cqw] text-[max(6.5px,2.3cqw)] lg:h-[30px] lg:max-w-[26rem] lg:gap-1.5 lg:rounded-[9px] lg:px-3 lg:text-[13px]">
+          <svg viewBox="0 0 9 11" fill="currentColor" className="h-[max(5px,1.8cqw)] w-auto shrink-0 text-black/45 lg:h-[11px]" aria-hidden="true">
             <path d="M4.5 0a2.7 2.7 0 0 0-2.7 2.7V4H1a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-.8V2.7A2.7 2.7 0 0 0 4.5 0Zm-1.5 2.7a1.5 1.5 0 0 1 3 0V4H3V2.7Z" />
           </svg>
           <span className="truncate">
@@ -249,18 +262,19 @@ function SafariWindow({
             <span className="text-black/45">{screen.path}</span>
           </span>
         </div>
-        <svg width="16" height="18" viewBox="0 0 16 18" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="text-black/50" aria-hidden="true">
+        <svg width="16" height="18" viewBox="0 0 16 18" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="text-black/50 max-lg:hidden" aria-hidden="true">
           <path d="M8 1v10M4.5 4.5 8 1l3.5 3.5M3 7.5H2.5a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1H13" />
         </svg>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-black/50" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-black/50 max-lg:hidden" aria-hidden="true">
           <path d="M8 2v12M2 8h12" />
         </svg>
       </div>
 
+      {/* Too small to tap below lg: the pill tabs under the windows take over. */}
       <div
         role="tablist"
         aria-label="Pantallas del proyecto"
-        className="flex h-[36px] shrink-0 overflow-x-auto border-b border-black/[0.16] bg-[#e6e3df] [scrollbar-width:none]"
+        className="flex h-[36px] shrink-0 overflow-x-auto border-b border-black/[0.16] bg-[#e6e3df] [scrollbar-width:none] max-lg:hidden"
       >
         {screens.map((s, i) => (
           <button
@@ -303,14 +317,14 @@ function SafariWindow({
   );
 }
 
-// Side buttons share the titanium of the frame.
-const TITANIUM = "bg-gradient-to-b from-[#5a5d64] via-[#2d2f34] to-[#4b4e55]";
+// The side buttons catch the light like the frame does.
+const TITANIUM = "bg-gradient-to-b from-[#7d8087] via-[#3a3c41] to-[#6a6d74]";
 
 /**
- * An iPhone 17 Pro Max: titanium frame, side buttons and Camera Control, thin
- * bezels, Dynamic Island, status bar and home indicator. Every measure is in
- * cqw (a share of the phone's own width), so it scales to any size; the box
- * takes its size from its parent (give it a height or a width).
+ * An iPhone 17 Pro Max: a thin titanium rim, a hairline black bezel, side
+ * buttons and Camera Control, Dynamic Island, status bar and home indicator.
+ * Every measure is in cqw (a share of the phone's own width), so it scales to
+ * any size; the box takes its size from its parent (give it a height or a width).
  */
 function IPhone17({
   screens,
@@ -345,28 +359,31 @@ function IPhone17({
       className={`@container group/device relative aspect-[78/163.4] drop-shadow-[0_28px_36px_rgba(30,40,40,0.45)] ${className}`}
     >
       {/* Action button, volume up / down */}
-      <span className={`absolute -left-[0.9cqw] top-[13.5%] h-[3%] w-[1.2cqw] rounded-l-[0.5cqw] ${TITANIUM}`} aria-hidden="true" />
-      <span className={`absolute -left-[0.9cqw] top-[19.5%] h-[6.2%] w-[1.2cqw] rounded-l-[0.5cqw] ${TITANIUM}`} aria-hidden="true" />
-      <span className={`absolute -left-[0.9cqw] top-[27.5%] h-[6.2%] w-[1.2cqw] rounded-l-[0.5cqw] ${TITANIUM}`} aria-hidden="true" />
+      <span className={`absolute -left-[0.7cqw] top-[13.5%] h-[3%] w-[1cqw] rounded-l-[0.5cqw] ${TITANIUM}`} aria-hidden="true" />
+      <span className={`absolute -left-[0.7cqw] top-[19.5%] h-[6.2%] w-[1cqw] rounded-l-[0.5cqw] ${TITANIUM}`} aria-hidden="true" />
+      <span className={`absolute -left-[0.7cqw] top-[27.5%] h-[6.2%] w-[1cqw] rounded-l-[0.5cqw] ${TITANIUM}`} aria-hidden="true" />
       {/* Power and Camera Control */}
-      <span className={`absolute -right-[0.9cqw] top-[24%] h-[9.5%] w-[1.2cqw] rounded-r-[0.5cqw] ${TITANIUM}`} aria-hidden="true" />
-      <span className={`absolute -right-[0.9cqw] top-[62%] h-[5.5%] w-[1.2cqw] rounded-r-[0.5cqw] ${TITANIUM}`} aria-hidden="true" />
+      <span className={`absolute -right-[0.7cqw] top-[24%] h-[9.5%] w-[1cqw] rounded-r-[0.5cqw] ${TITANIUM}`} aria-hidden="true" />
+      <span className={`absolute -right-[0.7cqw] top-[62%] h-[5.5%] w-[1cqw] rounded-r-[0.5cqw] ${TITANIUM}`} aria-hidden="true" />
 
-      {/* Titanium frame */}
-      <div className="absolute inset-0 rounded-[14cqw] bg-gradient-to-br from-[#62656c] via-[#2a2c31] to-[#4d5057] p-[1.3cqw] shadow-[inset_0_0_0_0.35cqw_rgba(255,255,255,0.16)]">
-        {/* Black bezel */}
-        <div className="h-full w-full rounded-[12.8cqw] bg-black p-[1.1cqw]">
+      {/* Titanium rim */}
+      <div className="absolute inset-0 rounded-[13.6cqw] bg-gradient-to-br from-[#9a9da4] via-[#4a4d53] to-[#868990] p-[max(1px,0.7cqw)] shadow-[inset_0_0_0_0.3cqw_rgba(255,255,255,0.28)]">
+        {/* Black bezel, as thin as it gets */}
+        <div className="h-full w-full rounded-[12.9cqw] bg-black p-[max(1px,0.45cqw)]">
           {/* Screen */}
-          <div className="relative h-full w-full overflow-hidden rounded-[11.8cqw] bg-white">
-            <div className="pointer-events-none absolute left-1/2 top-[2.6cqw] z-20 h-[8.4cqw] w-[29cqw] -translate-x-1/2 rounded-full bg-black" />
-            <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex h-[13cqw] items-center justify-between bg-white px-[9cqw] pt-[1.6cqw] text-[3.7cqw] font-semibold text-black">
+          <div className="relative h-full w-full overflow-hidden rounded-[12.4cqw] bg-white">
+            <div className="pointer-events-none absolute left-1/2 top-[2.2cqw] z-20 h-[7.8cqw] w-[27.5cqw] -translate-x-1/2 rounded-full bg-black" />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 top-0 z-10 flex h-[11.5cqw] items-center justify-between bg-white px-[8cqw] pt-[1.4cqw] text-[3.6cqw] font-semibold text-black"
+            >
               <span>9:41</span>
-              <span className="flex items-center gap-[1.2cqw]" aria-hidden="true">
+              <span className="flex items-center gap-[1.2cqw]">
                 <svg className="h-[2.3cqw] w-auto" viewBox="0 0 15 9" fill="currentColor"><rect x="0" y="6" width="2.4" height="3" rx=".6" /><rect x="4" y="4" width="2.4" height="5" rx=".6" /><rect x="8" y="2" width="2.4" height="7" rx=".6" /><rect x="12" y="0" width="2.4" height="9" rx=".6" /></svg>
                 <svg className="h-[2.4cqw] w-auto" viewBox="0 0 22 10" fill="none"><rect x=".5" y=".5" width="18" height="9" rx="2.6" stroke="currentColor" opacity=".4" /><rect x="2" y="2" width="15" height="6" rx="1.4" fill="currentColor" /></svg>
               </span>
             </div>
-            <div className="absolute inset-x-0 bottom-0 top-[13cqw]">
+            <div className="absolute inset-x-0 bottom-0 top-[11.5cqw]">
               <AnimatePresence initial={false}>
                 <motion.div key={screen.id} {...fade} className="absolute inset-0">
                   <ScrollShot
@@ -382,7 +399,7 @@ function IPhone17({
                 </motion.div>
               </AnimatePresence>
             </div>
-            <div className="pointer-events-none absolute bottom-[1.8cqw] left-1/2 z-20 h-[1.2cqw] w-[34cqw] -translate-x-1/2 rounded-full bg-black/70" />
+            <div className="pointer-events-none absolute bottom-[1.6cqw] left-1/2 z-20 h-[1.1cqw] w-[33cqw] -translate-x-1/2 rounded-full bg-black/70" />
           </div>
         </div>
       </div>
@@ -392,19 +409,28 @@ function IPhone17({
 
 /* ---------- dock ---------- */
 
+/**
+ * The dock of projects. From lg up it sits on the desktop; below lg it floats
+ * over the page, fixed to the bottom of the viewport, and is shown only while
+ * this project is the one on screen (`show`).
+ */
 function Dock({
   index,
   onGoTo,
+  show,
   className = "",
 }: {
   index: number;
   onGoTo: (i: number) => void;
+  show: boolean;
   className?: string;
 }) {
   return (
     <nav
       aria-label="Proyectos"
-      className={`flex items-end gap-2 rounded-[26px] bg-white/45 px-2.5 pb-2.5 pt-2.5 shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.8),0_0_0_0.5px_rgba(0,0,0,0.12),0_18px_40px_-12px_rgba(30,40,40,0.45)] backdrop-blur-3xl backdrop-saturate-150 min-[400px]:gap-3 min-[400px]:px-3.5 ${className}`}
+      className={`flex items-end gap-2 rounded-[26px] bg-white/45 px-2.5 pb-2.5 pt-2.5 shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.8),0_0_0_0.5px_rgba(0,0,0,0.12),0_18px_40px_-12px_rgba(30,40,40,0.45)] backdrop-blur-3xl backdrop-saturate-150 min-[400px]:gap-3 min-[400px]:px-3.5 max-lg:fixed max-lg:bottom-[max(0.75rem,env(safe-area-inset-bottom))] max-lg:left-1/2 max-lg:z-[60] max-lg:-translate-x-1/2 max-lg:bg-white/70 max-lg:shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.9),0_0_0_0.5px_rgba(0,0,0,0.14),0_16px_36px_-10px_rgba(20,25,25,0.55)] max-lg:transition-[opacity,translate,visibility] max-lg:duration-300 ${
+        show ? "" : "max-lg:invisible max-lg:translate-y-6 max-lg:opacity-0"
+      } ${className}`}
     >
       {projects.map((p, i) => {
         const on = i === index;
@@ -447,7 +473,7 @@ function Dock({
   );
 }
 
-/** Safari-style tabs for the phone-only layout. */
+/** Safari-style tabs below the windows, for the sizes where the real ones are too small. */
 function PillTabs({
   screens,
   active,
@@ -461,7 +487,7 @@ function PillTabs({
     <div
       role="tablist"
       aria-label="Pantallas del proyecto"
-      className="flex gap-2 overflow-x-auto py-1 [scrollbar-width:none]"
+      className="mx-auto flex w-fit max-w-full gap-2 overflow-x-auto py-1 [scrollbar-width:none] lg:hidden"
     >
       {screens.map((s, i) => (
         <button
@@ -511,18 +537,33 @@ export default function ProjectMac({
   const wallpaper = project.wallpaper ?? ["#f7f2e8", "#dbe0dc", "#8aa5a2"];
   const first = priority ?? index === 0;
 
-  // The tour and videos run only while most of the desktop is on screen; once
+  // The tour and videos run only while most of the two windows are on screen
+  // (not the whole page: on a phone the page is taller than the screen); once
   // the first page has loaded, the other tabs' pictures are fetched quietly.
+  const stageRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const [dockOn, setDockOn] = useState(false);
   const [firstLoaded, setFirstLoaded] = useState(false);
   const markFirstLoaded = useCallback(() => setFirstLoaded(true), []);
 
   useEffect(() => {
-    const el = rootRef.current;
+    const el = stageRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), {
       threshold: 0.6,
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // The floating dock (phones and tablets) shows while this project covers the
+  // middle of the screen, so the other slides of the carousel don't stack theirs.
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => setDockOn(entry.isIntersecting), {
+      rootMargin: "0px -40% 0px -40%",
     });
     observer.observe(el);
     return () => observer.disconnect();
@@ -550,27 +591,28 @@ export default function ProjectMac({
     background: `radial-gradient(900px 600px at 18% 8%, ${wallpaper[0]}, transparent 70%), radial-gradient(1000px 700px at 92% 96%, ${wallpaper[2]}, transparent 65%), radial-gradient(700px 500px at 60% 40%, ${wallpaper[1]}, transparent 70%), linear-gradient(135deg, ${wallpaper[0]}, ${wallpaper[2]})`,
   };
 
-  const info = (
-    <InfoCard project={project} index={index} total={total} onPrev={onPrev} onNext={onNext} />
-  );
-
   return (
     <div
       ref={rootRef}
-      className="relative w-full bg-[#ecebe7] px-3 pb-6 pt-24 text-[#1d1d1f] sm:px-6 lg:flex lg:h-screen lg:min-h-[640px] lg:flex-col lg:px-8 lg:pb-5"
+      className="relative w-full bg-[#ecebe7] px-3 pb-28 pt-24 text-[#1d1d1f] sm:px-6 lg:flex lg:h-screen lg:min-h-[820px] lg:flex-col lg:px-8 lg:pb-5 xl:min-h-[760px]"
     >
-      {/* ===== Desktop (lg and up): a MacBook ===== */}
-      <div className="hidden min-h-0 flex-1 flex-col lg:flex">
-        <div className="relative mx-auto flex min-h-0 w-full max-w-[1760px] flex-1 flex-col rounded-t-[1.6rem] rounded-b-md bg-[#0c0c0d] p-3.5 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.45)]">
-          <div className="pointer-events-none absolute left-1/2 top-3.5 z-50 h-8 w-44 -translate-x-1/2 rounded-b-2xl bg-[#0c0c0d]">
+      <div className="flex flex-col lg:min-h-0 lg:flex-1">
+        {/* From lg up this is the lid of a MacBook; below, just the screen. */}
+        <div className="relative mx-auto flex w-full max-w-[44rem] flex-col lg:min-h-0 lg:max-w-[1760px] lg:flex-1 lg:rounded-b-md lg:rounded-t-[1.6rem] lg:bg-[#0c0c0d] lg:p-3.5 lg:shadow-[0_40px_80px_-30px_rgba(0,0,0,0.45)]">
+          <div className="pointer-events-none absolute left-1/2 top-3.5 z-50 hidden h-8 w-44 -translate-x-1/2 rounded-b-2xl bg-[#0c0c0d] lg:block">
             <span className="absolute left-1/2 top-[11px] h-2 w-2 -translate-x-1/2 rounded-full bg-[#1b2230] shadow-[0_0_0_2px_#14161c]" />
           </div>
-          <div className="relative min-h-0 flex-1 overflow-hidden rounded-[14px]" style={wallpaperStyle}>
+
+          {/* The screen: a size container, so everything below lg scales with it. */}
+          <div
+            className="@container relative flex flex-col overflow-hidden rounded-[1.6rem] lg:min-h-0 lg:flex-1 lg:rounded-[14px]"
+            style={wallpaperStyle}
+          >
             <MenuBar />
-            <div className="absolute inset-x-0 bottom-0 top-[34px] flex flex-col gap-4 p-5">
+            <div className="flex flex-col gap-[3cqw] px-[4cqw] pb-[4cqw] pt-[12cqw] lg:absolute lg:inset-x-0 lg:bottom-0 lg:top-[34px] lg:gap-4 lg:p-4 xl:p-5">
               {/* Safari and the iPhone, side by side */}
-              <div className="flex min-h-0 flex-1 gap-6">
-                <div className="min-w-0 flex-1">
+              <div ref={stageRef} className="flex gap-[3cqw] lg:min-h-0 lg:flex-1 lg:gap-6">
+                <div className="flex min-w-0 flex-1 flex-col">
                   <SafariWindow
                     screens={screens}
                     active={active}
@@ -583,7 +625,7 @@ export default function ProjectMac({
                     onFirstLoaded={markFirstLoaded}
                   />
                 </div>
-                <div className="flex shrink-0 items-center py-2">
+                <div className="w-[32cqw] shrink-0 lg:flex lg:w-auto lg:items-center lg:py-2">
                   <IPhone17
                     screens={screens}
                     active={active}
@@ -591,51 +633,33 @@ export default function ProjectMac({
                     pace={pace}
                     priority={first}
                     inView={visible}
-                    className="h-full max-h-full"
+                    className="w-full lg:h-full lg:max-h-full lg:w-auto"
                   />
                 </div>
               </div>
 
-              {/* Information below; at xl the dock sits between the two cards */}
-              <div className="grid shrink-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-end gap-4 xl:gap-5">
-                <div className="order-1">{info}</div>
-                <SummaryCard
-                  project={project}
-                  className="order-3"
-                  summaryClassName="max-xl:hidden [@media(max-height:760px)]:hidden"
+              <PillTabs screens={screens} active={active} onSelect={setActive} />
+
+              {/* Information below; from xl the dock sits between the two cards */}
+              <div className="grid shrink-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:items-stretch lg:gap-4 xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] xl:gap-5">
+                <div className="flex lg:order-1 [&>*]:flex-1">
+                  <InfoCard project={project} index={index} total={total} onPrev={onPrev} onNext={onNext} />
+                </div>
+                <div className="flex lg:order-2 xl:order-3 [&>*]:flex-1">
+                  <SummaryCard project={project} />
+                </div>
+                <Dock
+                  index={index}
+                  onGoTo={onGoTo}
+                  show={dockOn}
+                  className="lg:order-3 lg:col-span-2 lg:justify-self-center xl:order-2 xl:col-span-1 xl:self-end"
                 />
-                <Dock index={index} onGoTo={onGoTo} className="order-2" />
               </div>
             </div>
           </div>
         </div>
-        <div className="relative mx-auto h-[18px] w-[calc(100%+3rem)] max-w-[min(1840px,100%)] rounded-b-[1.4rem] bg-gradient-to-b from-[#d9dadc] to-[#b8babe] shadow-[0_18px_30px_-12px_rgba(0,0,0,0.35)]">
+        <div className="relative mx-auto hidden h-[18px] w-[calc(100%+3rem)] max-w-[min(1840px,100%)] rounded-b-[1.4rem] bg-gradient-to-b from-[#d9dadc] to-[#b8babe] shadow-[0_18px_30px_-12px_rgba(0,0,0,0.35)] lg:block">
           <span className="absolute left-1/2 top-0 h-[7px] w-52 -translate-x-1/2 rounded-b-xl bg-[#a4a6aa]" />
-        </div>
-      </div>
-
-      {/* ===== Tablet and phone: an iPhone 17 Pro Max with the information below ===== */}
-      <div className="mx-auto max-w-[34rem] rounded-[1.6rem] p-4 sm:p-6 lg:hidden" style={wallpaperStyle}>
-        <div className="mx-auto w-[min(72vw,19rem)] sm:w-[min(52vw,21rem)]">
-          <IPhone17
-            screens={screens}
-            active={active}
-            name={project.name}
-            pace={pace}
-            priority={first}
-            inView={visible}
-            className="w-full"
-          />
-        </div>
-        <div className="mt-5">
-          <PillTabs screens={screens} active={active} onSelect={setActive} />
-        </div>
-        <div className="mt-3 flex flex-col gap-3">
-          {info}
-          <SummaryCard project={project} />
-        </div>
-        <div className="mt-5 flex justify-center pb-1">
-          <Dock index={index} onGoTo={onGoTo} />
         </div>
       </div>
     </div>
