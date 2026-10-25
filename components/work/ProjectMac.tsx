@@ -3,12 +3,14 @@
 import {
   useCallback,
   useEffect,
+  useId,
   useRef,
   useState,
   type ReactNode,
+  type Ref,
 } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
 import { projects, type Project, type ProjectScreen } from "@/lib/data";
 import {
   DESKTOP_PAGE_WIDTH,
@@ -33,14 +35,77 @@ import {
 
 /* ---------- small pieces ---------- */
 
-function TrafficLights() {
-  const dot =
-    "block h-[max(4px,1.8cqw)] w-[max(4px,1.8cqw)] rounded-full shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.18)] lg:h-3 lg:w-3";
+/**
+ * The three window buttons. Their hit areas are wider than the dots (which are
+ * tiny on a phone), and the symbols show on hover, like macOS.
+ */
+function Light({
+  label,
+  onClick,
+  color,
+  hit,
+  dot,
+  children,
+}: {
+  label: string;
+  onClick: () => void;
+  color: string;
+  hit: string;
+  dot: string;
+  children: ReactNode;
+}) {
   return (
-    <div className="flex gap-[max(2px,1cqw)] lg:mr-2 lg:gap-2" aria-hidden="true">
-      <i className={`${dot} bg-[#ff5f57]`} />
-      <i className={`${dot} bg-[#febc2e]`} />
-      <i className={`${dot} bg-[#28c840]`} />
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      data-cursor-hover
+      className={`group/light flex h-full items-center justify-center outline-none ${hit}`}
+    >
+      <span
+        className={`flex items-center justify-center rounded-full shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.18)] group-focus-visible/light:ring-2 group-focus-visible/light:ring-[#0078d4] group-focus-visible/light:ring-offset-1 ${dot}`}
+        style={{ background: color }}
+      >
+        {children}
+      </span>
+    </button>
+  );
+}
+
+function TrafficLights({
+  zoomed,
+  onClose,
+  onMinimize,
+  onZoom,
+}: {
+  zoomed: boolean;
+  onClose: () => void;
+  onMinimize: () => void;
+  onZoom: () => void;
+}) {
+  const hit = zoomed ? "w-5" : "w-[max(18px,4.8cqw)] lg:w-5";
+  const dot = zoomed ? "h-3 w-3" : "h-[max(7px,2.4cqw)] w-[max(7px,2.4cqw)] lg:h-3 lg:w-3";
+  // Too small to read on a phone (and nobody hovers there): only shown from lg up or when zoomed.
+  const glyph = `h-[7px] w-[7px] opacity-0 transition-opacity group-hover/lights:opacity-100 group-focus-within/lights:opacity-100 ${
+    zoomed ? "" : "max-lg:hidden"
+  }`;
+  return (
+    <div role="group" aria-label="Controles de la ventana" className="group/lights -ml-1 flex h-full items-center">
+      <Light label="Cerrar ventana" onClick={onClose} color="#ff5f57" hit={hit} dot={dot}>
+        <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" className={`${glyph} text-[#4d0000]/70`} aria-hidden="true">
+          <path d="m2 2 6 6M8 2 2 8" />
+        </svg>
+      </Light>
+      <Light label="Minimizar ventana" onClick={onMinimize} color="#febc2e" hit={hit} dot={dot}>
+        <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" className={`${glyph} text-[#5a3b00]/70`} aria-hidden="true">
+          <path d="M1.5 5h7" />
+        </svg>
+      </Light>
+      <Light label={zoomed ? "Salir de pantalla completa" : "Pantalla completa"} onClick={onZoom} color="#28c840" hit={hit} dot={dot}>
+        <svg viewBox="0 0 10 10" fill="currentColor" className={`${glyph} text-[#0a4d0f]/70`} aria-hidden="true">
+          {zoomed ? <path d="M1 5h4V1zM9 5H5v4z" /> : <path d="M1 1h4L1 5zM9 9H5l4-4z" />}
+        </svg>
+      </Light>
     </div>
   );
 }
@@ -147,6 +212,45 @@ function SummaryCard({ project }: { project: Project }) {
 
 /* ---------- the windows ---------- */
 
+const EASE = [0.16, 0.84, 0.44, 1] as const;
+
+/** Where a window is heading (or coming from) when it is closed or minimized into the dock. */
+type WindowFx = { kind: "close" | "minimize"; x: number; y: number };
+
+const WINDOW_FX: Variants = {
+  hidden: (fx: WindowFx) =>
+    fx.kind === "minimize"
+      ? { opacity: 0, scale: 0.12, x: fx.x, y: fx.y }
+      : { opacity: 0, scale: 0.94, x: 0, y: 0 },
+  shown: {
+    opacity: 1,
+    scale: 1,
+    x: 0,
+    y: 0,
+    transition: { duration: 0.45, ease: EASE },
+  },
+  gone: (fx: WindowFx) =>
+    fx.kind === "minimize"
+      ? {
+          opacity: [1, 1, 0],
+          scale: 0.12,
+          x: fx.x,
+          y: fx.y,
+          transition: {
+            duration: 0.5,
+            ease: [0.5, 0, 0.75, 0],
+            opacity: { duration: 0.5, times: [0, 0.7, 1] },
+          },
+        }
+      : { opacity: 0, scale: 0.92, transition: { duration: 0.18 } },
+};
+
+const WINDOW_FX_REDUCED: Variants = {
+  hidden: { opacity: 0 },
+  shown: { opacity: 1, transition: { duration: 0.01 } },
+  gone: { opacity: 0, transition: { duration: 0.01 } },
+};
+
 function SafariWindow({
   screens,
   active,
@@ -158,6 +262,12 @@ function SafariWindow({
   priority,
   inView,
   onFirstLoaded,
+  zoomed,
+  fx,
+  windowRef,
+  onClose,
+  onMinimize,
+  onZoom,
 }: {
   screens: ProjectScreen[];
   active: number;
@@ -170,6 +280,13 @@ function SafariWindow({
   priority: boolean;
   inView: boolean;
   onFirstLoaded: () => void;
+  /** Full screen: the window covers the viewport under the menu bar, with the desktop-size chrome at any width. */
+  zoomed: boolean;
+  fx: WindowFx;
+  windowRef: Ref<HTMLDivElement>;
+  onClose: () => void;
+  onMinimize: () => void;
+  onZoom: () => void;
 }) {
   const reduce = useReducedMotion();
   const screen = screens[active];
@@ -181,23 +298,48 @@ function SafariWindow({
         exit: { opacity: 0 },
         transition: { duration: 0.4 },
       };
+  const z = zoomed;
 
   return (
-    <div className="group/device flex min-h-0 flex-1 flex-col overflow-hidden rounded-[2.2cqw] bg-white shadow-[0_0_0_0.5px_rgba(0,0,0,0.28),0_30px_70px_-18px_rgba(30,40,40,0.55),0_8px_20px_-8px_rgba(30,40,40,0.3)] lg:rounded-[14px]">
-      <div className="flex h-[7.2cqw] shrink-0 items-center gap-[1.6cqw] border-b border-black/[0.14] bg-[#f3f1ee] px-[2cqw] lg:h-[52px] lg:gap-3 lg:px-4">
-        <TrafficLights />
-        <svg width="20" height="16" viewBox="0 0 20 16" fill="none" stroke="currentColor" strokeWidth="1.4" className="text-black/50 max-lg:hidden" aria-hidden="true">
+    <motion.div
+      ref={windowRef}
+      layout={!reduce}
+      transition={{ layout: { duration: 0.45, ease: EASE } }}
+      variants={reduce ? WINDOW_FX_REDUCED : WINDOW_FX}
+      custom={fx}
+      initial="hidden"
+      animate="shown"
+      exit="gone"
+      className={`group/device flex flex-col overflow-hidden bg-white ${
+        z
+          ? "fixed inset-x-0 bottom-0 top-[34px] z-[65]"
+          : "min-h-0 flex-1 rounded-[2.2cqw] shadow-[0_0_0_0.5px_rgba(0,0,0,0.28),0_30px_70px_-18px_rgba(30,40,40,0.55),0_8px_20px_-8px_rgba(30,40,40,0.3)] lg:rounded-[14px]"
+      }`}
+    >
+      <div
+        className={`flex shrink-0 items-center border-b border-black/[0.14] bg-[#f3f1ee] ${
+          z ? "h-[52px] gap-3 px-4" : "h-[7.2cqw] gap-[1.6cqw] px-[2cqw] lg:h-[52px] lg:gap-3 lg:px-4"
+        }`}
+      >
+        <TrafficLights zoomed={z} onClose={onClose} onMinimize={onMinimize} onZoom={onZoom} />
+        <svg width="20" height="16" viewBox="0 0 20 16" fill="none" stroke="currentColor" strokeWidth="1.4" className={`text-black/50 ${z ? "" : "max-lg:hidden"}`} aria-hidden="true">
           <rect x="1.5" y="1.5" width="17" height="13" rx="3" />
           <path d="M7 2v12" />
         </svg>
-        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-black/45 max-lg:hidden" aria-hidden="true">
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={`text-black/45 ${z ? "" : "max-lg:hidden"}`} aria-hidden="true">
           <path d="M8 2 2 8l6 6" />
         </svg>
-        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-black/25 max-lg:hidden" aria-hidden="true">
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={`text-black/25 ${z ? "" : "max-lg:hidden"}`} aria-hidden="true">
           <path d="m2 2 6 6-6 6" />
         </svg>
-        <div className="mx-auto flex h-[4.2cqw] w-full min-w-0 items-center justify-center gap-[0.8cqw] rounded-[1.2cqw] bg-black/[0.06] px-[1.4cqw] text-[max(6.5px,2.3cqw)] lg:h-[30px] lg:max-w-[26rem] lg:gap-1.5 lg:rounded-[9px] lg:px-3 lg:text-[13px]">
-          <svg viewBox="0 0 9 11" fill="currentColor" className="h-[max(5px,1.8cqw)] w-auto shrink-0 text-black/45 lg:h-[11px]" aria-hidden="true">
+        <div
+          className={`mx-auto flex w-full min-w-0 items-center justify-center bg-black/[0.06] ${
+            z
+              ? "h-[30px] max-w-[26rem] gap-1.5 rounded-[9px] px-3 text-[13px]"
+              : "h-[4.2cqw] gap-[0.8cqw] rounded-[1.2cqw] px-[1.4cqw] text-[max(6.5px,2.3cqw)] lg:h-[30px] lg:max-w-[26rem] lg:gap-1.5 lg:rounded-[9px] lg:px-3 lg:text-[13px]"
+          }`}
+        >
+          <svg viewBox="0 0 9 11" fill="currentColor" className={`w-auto shrink-0 text-black/45 ${z ? "h-[11px]" : "h-[max(5px,1.8cqw)] lg:h-[11px]"}`} aria-hidden="true">
             <path d="M4.5 0a2.7 2.7 0 0 0-2.7 2.7V4H1a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-.8V2.7A2.7 2.7 0 0 0 4.5 0Zm-1.5 2.7a1.5 1.5 0 0 1 3 0V4H3V2.7Z" />
           </svg>
           <span className="truncate">
@@ -205,19 +347,21 @@ function SafariWindow({
             <span className="text-black/45">{screen.path}</span>
           </span>
         </div>
-        <svg width="16" height="18" viewBox="0 0 16 18" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="text-black/50 max-lg:hidden" aria-hidden="true">
+        <svg width="16" height="18" viewBox="0 0 16 18" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className={`text-black/50 ${z ? "" : "max-lg:hidden"}`} aria-hidden="true">
           <path d="M8 1v10M4.5 4.5 8 1l3.5 3.5M3 7.5H2.5a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1H13" />
         </svg>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-black/50 max-lg:hidden" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className={`text-black/50 ${z ? "" : "max-lg:hidden"}`} aria-hidden="true">
           <path d="M8 2v12M2 8h12" />
         </svg>
       </div>
 
-      {/* Too small to tap below lg: the pill tabs under the windows take over. */}
+      {/* Too small to tap below lg: the pill tabs under the windows take over (unless the window is full screen). */}
       <div
         role="tablist"
         aria-label="Pantallas del proyecto"
-        className="flex h-[36px] shrink-0 overflow-x-auto border-b border-black/[0.16] bg-[#e6e3df] [scrollbar-width:none] max-lg:hidden"
+        className={`flex h-[36px] shrink-0 overflow-x-auto border-b border-black/[0.16] bg-[#e6e3df] [scrollbar-width:none] ${
+          z ? "" : "max-lg:hidden"
+        }`}
       >
         {screens.map((s, i) => (
           <button
@@ -256,7 +400,58 @@ function SafariWindow({
           </motion.div>
         </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
+  );
+}
+
+/** What is left on the desktop after the Safari window is closed: a Safari icon to open it again. */
+function SafariShortcut({
+  host,
+  onOpen,
+  buttonRef,
+}: {
+  host: string;
+  onOpen: () => void;
+  buttonRef: Ref<HTMLButtonElement>;
+}) {
+  const id = useId();
+  return (
+    <motion.button
+      ref={buttonRef}
+      type="button"
+      onClick={onOpen}
+      aria-label={`Abrir Safari: ${host}`}
+      data-cursor-hover
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1, transition: { duration: 0.3, ease: EASE } }}
+      exit={{ opacity: 0, transition: { duration: 0.12 } }}
+      className="group/shortcut absolute inset-0 m-auto flex h-fit w-fit flex-col items-center gap-[1.6cqw] rounded-2xl p-[2cqw] outline-none lg:gap-2.5 lg:p-3"
+    >
+      <svg
+        viewBox="0 0 64 64"
+        aria-hidden="true"
+        className="h-[16cqw] w-[16cqw] drop-shadow-[0_8px_14px_rgba(20,30,40,0.35)] transition-transform duration-200 group-hover/shortcut:scale-105 group-focus-visible/shortcut:scale-105 lg:h-[76px] lg:w-[76px]"
+      >
+        <defs>
+          <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#62d0ff" />
+            <stop offset="1" stopColor="#0a7bff" />
+          </linearGradient>
+        </defs>
+        <rect x="2" y="2" width="60" height="60" rx="14" fill={`url(#${id})`} />
+        <circle cx="32" cy="32" r="23" fill="#f4f8fc" stroke="#cfd8e3" strokeWidth="1" />
+        <g stroke="#9aa6b5" strokeWidth="1.2" strokeLinecap="round">
+          <path d="M32 11v3M32 50v3M11 32h3M50 32h3" />
+        </g>
+        <g transform="rotate(45 32 32)">
+          <path d="M32 13 37 32H27z" fill="#ff3b30" />
+          <path d="M32 51 37 32H27z" fill="#d2d7de" />
+        </g>
+      </svg>
+      <span className="rounded-md bg-black/55 px-2 py-0.5 text-[max(9px,2.6cqw)] font-medium text-white backdrop-blur-md group-focus-visible/shortcut:ring-2 group-focus-visible/shortcut:ring-[#0078d4] lg:text-[12.5px]">
+        Safari
+      </span>
+    </motion.button>
   );
 }
 
@@ -352,24 +547,41 @@ function IPhone17({
 
 /* ---------- dock ---------- */
 
+// Every dock icon (projects and minimized windows) has the same size at each breakpoint.
+const DOCK_ICON =
+  "relative h-10 w-10 shrink-0 min-[400px]:h-12 min-[400px]:w-12 sm:h-14 sm:w-14 lg:h-11 lg:w-11 xl:h-16 xl:w-16 [@media(max-height:760px)]:xl:h-14 [@media(max-height:760px)]:xl:w-14";
+
+/** A window sent to the dock: click it to bring it back. */
+type MinimizedWindow = { title: string; thumb?: string };
+
 /**
  * The dock of projects. From lg up it sits on the desktop; below lg it floats
  * over the page, fixed to the bottom of the viewport, and is shown only while
- * this project is the one on screen (`show`).
+ * this project is the one on screen (`show`). A minimized window waits at its
+ * right end, after a divider, like in macOS.
  */
 function Dock({
   index,
   onGoTo,
   show,
+  minimized,
+  onRestore,
+  navRef,
+  restoreRef,
   className = "",
 }: {
   index: number;
   onGoTo: (i: number) => void;
   show: boolean;
+  minimized: MinimizedWindow | null;
+  onRestore: () => void;
+  navRef: Ref<HTMLElement>;
+  restoreRef: Ref<HTMLButtonElement>;
   className?: string;
 }) {
   return (
     <nav
+      ref={navRef}
       aria-label="Proyectos"
       className={`flex items-end gap-2 rounded-[26px] bg-white/45 px-2.5 pb-2.5 pt-2.5 shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.8),0_0_0_0.5px_rgba(0,0,0,0.12),0_18px_40px_-12px_rgba(30,40,40,0.45)] backdrop-blur-3xl backdrop-saturate-150 min-[400px]:gap-3 min-[400px]:px-3.5 max-lg:fixed max-lg:bottom-[max(0.75rem,env(safe-area-inset-bottom))] max-lg:left-1/2 max-lg:z-[60] max-lg:-translate-x-1/2 max-lg:bg-white/70 max-lg:shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.9),0_0_0_0.5px_rgba(0,0,0,0.14),0_16px_36px_-10px_rgba(20,25,25,0.55)] max-lg:transition-[opacity,translate,visibility] max-lg:duration-300 ${
         show ? "" : "max-lg:invisible max-lg:translate-y-6 max-lg:opacity-0"
@@ -386,7 +598,7 @@ function Dock({
             aria-label={p.name}
             aria-current={on ? "page" : undefined}
             data-cursor-hover
-            className="group/dock relative h-10 w-10 shrink-0 min-[400px]:h-12 min-[400px]:w-12 sm:h-14 sm:w-14 lg:h-11 lg:w-11 xl:h-16 xl:w-16 [@media(max-height:760px)]:xl:h-14 [@media(max-height:760px)]:xl:w-14"
+            className={`group/dock ${DOCK_ICON}`}
           >
             <span
               className={`absolute inset-0 flex items-center justify-center overflow-hidden rounded-[14px] text-[15px] font-bold tracking-tight shadow-[0_6px_14px_-4px_rgba(0,0,0,0.4),0_0_0_0.5px_rgba(0,0,0,0.18)] transition-transform duration-200 ease-out group-hover/dock:-translate-y-2 group-hover/dock:scale-110 sm:text-[17px] lg:text-[14px] xl:text-[19px] ${
@@ -412,6 +624,41 @@ function Dock({
           </button>
         );
       })}
+
+      <AnimatePresence initial={false}>
+        {minimized && (
+          <motion.div
+            key="minimized"
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ opacity: 1, width: "auto", transition: { duration: 0.3, ease: EASE } }}
+            exit={{ opacity: 0, width: 0, transition: { duration: 0.2 } }}
+            className="-my-3 flex items-end gap-2 overflow-hidden py-3 min-[400px]:gap-3"
+          >
+            <span aria-hidden="true" className="mb-1 ml-1 h-[70%] w-px shrink-0 self-center bg-black/20" />
+            <button
+              ref={restoreRef}
+              type="button"
+              onClick={onRestore}
+              aria-label={`Restaurar ${minimized.title}`}
+              title={minimized.title}
+              data-cursor-hover
+              className={`group/min outline-none ${DOCK_ICON}`}
+            >
+              <span className="absolute inset-0 block overflow-hidden rounded-[10px] bg-white shadow-[0_6px_14px_-4px_rgba(0,0,0,0.4),0_0_0_0.5px_rgba(0,0,0,0.25)] transition-transform duration-200 ease-out group-hover/min:-translate-y-1.5 group-focus-visible/min:ring-2 group-focus-visible/min:ring-[#0078d4]">
+                <span className="absolute inset-x-0 top-0 flex h-[22%] items-center gap-[7%] bg-[#f3f1ee] px-[9%]">
+                  <i className="block h-[22%] w-[9%] rounded-full bg-[#ff5f57]" />
+                  <i className="block h-[22%] w-[9%] rounded-full bg-[#febc2e]" />
+                  <i className="block h-[22%] w-[9%] rounded-full bg-[#28c840]" />
+                </span>
+                <span
+                  className="absolute inset-x-0 bottom-0 top-[22%] bg-cover bg-top"
+                  style={{ backgroundImage: minimized.thumb ? `url(${minimized.thumb})` : undefined }}
+                />
+              </span>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }
@@ -475,6 +722,15 @@ export default function ProjectMac({
   priority?: boolean;
 }) {
   const [active, setActive] = useState(0);
+  // Safari's window: open, closed (a Safari icon stays on the desktop) or
+  // minimized (a thumbnail waits in the dock); `zoomed` is full screen.
+  const [win, setWin] = useState<"open" | "closed" | "minimized">("open");
+  const [zoomed, setZoomed] = useState(false);
+  const [fx, setFx] = useState<WindowFx>({ kind: "close", x: 0, y: 0 });
+  const windowRef = useRef<HTMLDivElement>(null);
+  const dockRef = useRef<HTMLElement>(null);
+  const shortcutRef = useRef<HTMLButtonElement>(null);
+  const restoreRef = useRef<HTMLButtonElement>(null);
   const pace = project.tourPace ?? 1;
   const host = project.url ? new URL(project.url).hostname.replace(/^www\./, "") : "";
   const wallpaper = project.wallpaper ?? ["#f7f2e8", "#dbe0dc", "#8aa5a2"];
@@ -519,7 +775,7 @@ export default function ProjectMac({
 
   // ← / → move between projects while this desktop is the one on screen.
   useEffect(() => {
-    if (!visible) return;
+    if (!visible || zoomed) return;
     const onKey = (e: KeyboardEvent) => {
       const target = e.target;
       if (target instanceof HTMLElement && /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) return;
@@ -528,7 +784,51 @@ export default function ProjectMac({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [visible, onNext, onPrev]);
+  }, [visible, zoomed, onNext, onPrev]);
+
+  // Full screen: Esc leaves it, and the page behind does not scroll.
+  useEffect(() => {
+    if (!zoomed) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setZoomed(false);
+    };
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [zoomed]);
+
+  // Keyboard users lose their place when the window disappears: hand the focus to what replaces it.
+  useEffect(() => {
+    if (win === "closed") shortcutRef.current?.focus({ preventScroll: true });
+    if (win === "minimized") restoreRef.current?.focus({ preventScroll: true });
+  }, [win]);
+
+  const closeWindow = () => {
+    setFx({ kind: "close", x: 0, y: 0 });
+    setZoomed(false);
+    setWin("closed");
+  };
+  const minimizeWindow = () => {
+    // Aim at the right end of the dock, where the window's thumbnail will wait.
+    const w = windowRef.current?.getBoundingClientRect();
+    const d = dockRef.current?.getBoundingClientRect();
+    setFx(
+      w && d
+        ? {
+            kind: "minimize",
+            x: d.right - 30 - (w.left + w.width / 2),
+            y: d.top + d.height / 2 - (w.top + w.height / 2),
+          }
+        : { kind: "close", x: 0, y: 0 },
+    );
+    setZoomed(false);
+    setWin("minimized");
+  };
+  const openWindow = () => setWin("open");
 
   const wallpaperStyle = {
     background: `radial-gradient(900px 600px at 18% 8%, ${wallpaper[0]}, transparent 70%), radial-gradient(1000px 700px at 92% 96%, ${wallpaper[2]}, transparent 65%), radial-gradient(700px 500px at 60% 40%, ${wallpaper[1]}, transparent 70%), linear-gradient(135deg, ${wallpaper[0]}, ${wallpaper[2]})`,
@@ -546,19 +846,33 @@ export default function ProjectMac({
           {/* Safari and the iPhone, side by side */}
           {/* The Safari window sets the height; the phone is a bit smaller and sits flush with its bottom edge. */}
           <div ref={stageRef} className="flex items-end gap-[3cqw] lg:min-h-0 lg:flex-1 lg:items-stretch lg:gap-6">
-            <div className="flex h-[67cqw] min-w-0 flex-1 flex-col lg:h-auto">
-              <SafariWindow
-                screens={screens}
-                active={active}
-                onSelect={setActive}
-                host={host}
-                name={project.name}
-                accent={project.dock?.bg ?? "#8aa5a2"}
-                pace={pace}
-                priority={first}
-                inView={visible}
-                onFirstLoaded={markFirstLoaded}
-              />
+            <div className="relative flex h-[67cqw] min-w-0 flex-1 flex-col lg:h-auto">
+              <AnimatePresence initial={false} custom={fx}>
+                {win === "open" && (
+                  <SafariWindow
+                    key="safari"
+                    screens={screens}
+                    active={active}
+                    onSelect={setActive}
+                    host={host}
+                    name={project.name}
+                    accent={project.dock?.bg ?? "#8aa5a2"}
+                    pace={pace}
+                    priority={first}
+                    inView={visible}
+                    onFirstLoaded={markFirstLoaded}
+                    zoomed={zoomed}
+                    fx={fx}
+                    windowRef={windowRef}
+                    onClose={closeWindow}
+                    onMinimize={minimizeWindow}
+                    onZoom={() => setZoomed((z) => !z)}
+                  />
+                )}
+                {win === "closed" && (
+                  <SafariShortcut key="shortcut" host={host} onOpen={openWindow} buttonRef={shortcutRef} />
+                )}
+              </AnimatePresence>
             </div>
             <div className="w-[28cqw] shrink-0 lg:flex lg:w-auto lg:items-end">
               <IPhone17
@@ -587,6 +901,14 @@ export default function ProjectMac({
               index={index}
               onGoTo={onGoTo}
               show={dockOn}
+              minimized={
+                win === "minimized"
+                  ? { title: `Safari: ${host}`, thumb: screens[active].desktop.blur }
+                  : null
+              }
+              onRestore={openWindow}
+              navRef={dockRef}
+              restoreRef={restoreRef}
               className="lg:order-3 lg:col-span-2 lg:justify-self-center xl:order-2 xl:col-span-1 xl:self-end"
             />
           </div>
