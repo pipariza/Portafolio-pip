@@ -541,8 +541,9 @@ export default function ProjectMac({
       <div className="@container relative mx-auto flex w-full max-w-[44rem] flex-col lg:min-h-0 lg:max-w-none lg:flex-1">
         <div className="flex flex-col gap-[3cqw] px-[4cqw] pb-28 pt-[calc(34px+5cqw)] lg:absolute lg:inset-0 lg:gap-4 lg:p-5 lg:pt-[calc(34px+1.25rem)] xl:p-6 xl:pt-[calc(34px+1.5rem)]">
           {/* Safari and the iPhone, side by side */}
-          <div ref={stageRef} className="flex gap-[3cqw] lg:min-h-0 lg:flex-1 lg:gap-6">
-            <div className="flex min-w-0 flex-1 flex-col">
+          {/* The Safari window sets the height; the phone is a bit smaller and sits flush with its bottom edge. */}
+          <div ref={stageRef} className="flex items-end gap-[3cqw] lg:min-h-0 lg:flex-1 lg:items-stretch lg:gap-6">
+            <div className="flex h-[67cqw] min-w-0 flex-1 flex-col lg:h-auto">
               <SafariWindow
                 screens={screens}
                 active={active}
@@ -555,7 +556,7 @@ export default function ProjectMac({
                 onFirstLoaded={markFirstLoaded}
               />
             </div>
-            <div className="w-[32cqw] shrink-0 lg:flex lg:w-auto lg:items-center lg:py-2">
+            <div className="w-[28cqw] shrink-0 lg:flex lg:w-auto lg:items-end">
               <IPhone17
                 screens={screens}
                 active={active}
@@ -563,7 +564,7 @@ export default function ProjectMac({
                 pace={pace}
                 priority={first}
                 inView={visible}
-                className="w-full lg:h-full lg:max-h-full lg:w-auto"
+                className="w-full lg:h-[90%] lg:w-auto"
               />
             </div>
           </div>
