@@ -192,6 +192,8 @@ export const projects: Project[] = [
   {
     slug: "el-departamento",
     dock: { bg: "#22e48f", fg: "#06210f", label: "DP" },
+    layout: "mac",
+    wallpaper: ["#e6f3ec", "#c3cde0", "#6b739a"],
     name: "El Departamento",
     role: "Diseño & Desarrollo web",
     year: "2025",
@@ -287,6 +289,8 @@ export const projects: Project[] = [
   {
     slug: "el-costurero-de-meme",
     dock: { bg: "#a9722b", fg: "#fff7e6", label: "CM" },
+    layout: "mac",
+    wallpaper: ["#fcefe4", "#eadacd", "#c4a088"],
     name: "El Costurero de Meme",
     role: "Diseño & Desarrollo web",
     year: "2025",
@@ -349,6 +353,8 @@ export const projects: Project[] = [
   {
     slug: "mar-de-palma",
     dock: { bg: "#a87b5b", fg: "#ffffff", label: "MP" },
+    layout: "mac",
+    wallpaper: ["#f9efe3", "#ebdac7", "#b79b7e"],
     name: "Mar de Palma",
     role: "Diseño & Desarrollo web",
     year: "2025",
@@ -471,6 +477,8 @@ export const projects: Project[] = [
   {
     slug: "feria-eva",
     dock: { bg: "#d9739a", fg: "#ffffff", label: "EV" },
+    layout: "mac",
+    wallpaper: ["#fde8eb", "#e9c9c8", "#b98a8c"],
     name: "Feria EVA",
     role: "Diseño & Desarrollo web",
     year: "2024",

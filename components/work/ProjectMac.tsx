@@ -153,6 +153,7 @@ function SafariWindow({
   onSelect,
   host,
   name,
+  accent,
   pace,
   priority,
   inView,
@@ -163,6 +164,8 @@ function SafariWindow({
   onSelect: (i: number) => void;
   host: string;
   name: string;
+  /** Color of the little site icon on each tab (the project's dock color). */
+  accent: string;
   pace: number;
   priority: boolean;
   inView: boolean;
@@ -230,7 +233,7 @@ function SafariWindow({
                 : "text-black/55 hover:bg-black/[0.04]"
             }`}
           >
-            <span className="h-[11px] w-[11px] rounded-[3px] bg-[#8aa5a2]" aria-hidden="true" />
+            <span className="h-[11px] w-[11px] rounded-[3px]" style={{ background: accent }} aria-hidden="true" />
             {s.label}
           </button>
         ))}
@@ -550,6 +553,7 @@ export default function ProjectMac({
                 onSelect={setActive}
                 host={host}
                 name={project.name}
+                accent={project.dock?.bg ?? "#8aa5a2"}
                 pace={pace}
                 priority={first}
                 inView={visible}
