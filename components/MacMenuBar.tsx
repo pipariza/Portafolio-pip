@@ -6,6 +6,26 @@ import { AnimatePresence, motion } from "framer-motion";
 
 export type MacMenuLink = { href: string; label: string; active: boolean };
 
+// Light pages get a light, frosted bar; dark pages get macOS's dark one.
+const SKIN = {
+  light: {
+    bar: "bg-white/60 text-[#1d1d1f] shadow-[0_0.5px_0_rgba(0,0,0,0.14)]",
+    hover: "hover:bg-black/10 focus-visible:bg-black/10",
+    active: "bg-black/[0.08]",
+    menu: "border-black/10 bg-[#f6f4f0]/95 text-[#1d1d1f]",
+    menuActive: "bg-black/[0.07]",
+    scrim: "bg-black/30",
+  },
+  dark: {
+    bar: "bg-[#161616]/60 text-white shadow-[0_0.5px_0_rgba(255,255,255,0.14)]",
+    hover: "hover:bg-white/15 focus-visible:bg-white/15",
+    active: "bg-white/[0.14]",
+    menu: "border-white/[0.12] bg-[#1c1c1e]/95 text-white",
+    menuActive: "bg-white/[0.12]",
+    scrim: "bg-black/50",
+  },
+} as const;
+
 // The clock is the visitor's own: their date, their time, their language and
 // 12/24-hour format, ticking in real time ("dom 25 oct 8:32 a. m.").
 function subscribeClock(onChange: () => void) {
@@ -61,7 +81,14 @@ function StatusIcons() {
  * icons with the visitor's real clock. On phones the menus fold into one
  * button that opens a dropdown under the bar.
  */
-export default function MacMenuBar({ links }: { links: MacMenuLink[] }) {
+export default function MacMenuBar({
+  links,
+  theme,
+}: {
+  links: MacMenuLink[];
+  theme: "light" | "dark";
+}) {
+  const skin = SKIN[theme];
   const [open, setOpen] = useState(false);
   // The snapshot is a string that only changes with the minute, so the bar
   // re-renders once a minute even though the clock is checked every second.
@@ -76,15 +103,16 @@ export default function MacMenuBar({ links }: { links: MacMenuLink[] }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  const item =
-    "rounded-md px-2.5 py-[3px] transition-colors hover:bg-black/10 focus-visible:bg-black/10 focus-visible:outline-none";
+  const item = `rounded-md px-2.5 py-[3px] transition-colors focus-visible:outline-none ${skin.hover}`;
 
   return (
-    <header className="fixed inset-x-0 top-0 z-[70] text-[#1d1d1f]">
-      <div className="flex h-[34px] items-center bg-white/60 pl-3 pr-2 text-[13px] shadow-[0_0.5px_0_rgba(0,0,0,0.14)] backdrop-blur-2xl backdrop-saturate-150 md:px-4">
+    <header className="fixed inset-x-0 top-0 z-[70]">
+      <div
+        className={`flex h-[34px] items-center pl-3 pr-2 text-[13px] backdrop-blur-2xl backdrop-saturate-150 transition-colors duration-300 md:px-4 ${skin.bar}`}
+      >
         <nav aria-label="Principal" className="flex min-w-0 items-center gap-2.5 md:gap-3">
           <AppleLogo />
-          <Link href="/" className="-mx-1.5 rounded-md px-1.5 py-[3px] font-bold hover:bg-black/10">
+          <Link href="/" className={`-mx-1.5 rounded-md px-1.5 py-[3px] font-bold transition-colors ${skin.hover}`}>
             Pip Ariza
           </Link>
           <ul className="hidden items-center md:flex">
@@ -93,7 +121,7 @@ export default function MacMenuBar({ links }: { links: MacMenuLink[] }) {
                 <Link
                   href={link.href}
                   aria-current={link.active ? "page" : undefined}
-                  className={`${item} ${link.active ? "bg-black/[0.08] font-semibold" : ""}`}
+                  className={`${item} ${link.active ? `${skin.active} font-semibold` : ""}`}
                 >
                   {link.label}
                 </Link>
@@ -134,7 +162,7 @@ export default function MacMenuBar({ links }: { links: MacMenuLink[] }) {
             transition={{ duration: 0.2 }}
             onClick={() => setOpen(false)}
             aria-hidden="true"
-            className="fixed inset-0 -z-10 bg-black/30 md:hidden"
+            className={`fixed inset-0 -z-10 md:hidden ${skin.scrim}`}
           />
         )}
         {open && (
@@ -144,7 +172,7 @@ export default function MacMenuBar({ links }: { links: MacMenuLink[] }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.18 }}
-            className="absolute right-2 top-[40px] w-56 rounded-xl border border-black/10 bg-[#f6f4f0]/95 p-1.5 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.5)] backdrop-blur-2xl md:hidden"
+            className={`absolute right-2 top-[40px] w-56 rounded-xl border p-1.5 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.5)] backdrop-blur-2xl md:hidden ${skin.menu}`}
           >
             {links.map((link) => (
               <li key={link.href}>
@@ -153,7 +181,7 @@ export default function MacMenuBar({ links }: { links: MacMenuLink[] }) {
                   onClick={() => setOpen(false)}
                   aria-current={link.active ? "page" : undefined}
                   className={`flex h-11 items-center rounded-lg px-3 text-[15px] ${
-                    link.active ? "bg-black/[0.07] font-semibold" : "font-medium active:bg-black/[0.07]"
+                    link.active ? `${skin.menuActive} font-semibold` : "font-medium"
                   }`}
                 >
                   {link.label}

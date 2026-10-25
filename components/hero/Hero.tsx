@@ -61,7 +61,12 @@ export default function Hero() {
 
           <panel.Icon className="absolute inset-0 m-auto h-[55%] w-[55%] text-white/[0.13] transition-transform duration-700 group-hover:scale-105" />
 
-          <span className="absolute top-6 left-6 text-xs font-medium tracking-[0.08em] text-bone/70">
+          {/* Below the menu bar: on a phone only the first panel reaches the top. */}
+          <span
+            className={`absolute left-6 top-6 text-xs font-medium tracking-[0.08em] text-bone/70 md:top-14 ${
+              i === 0 ? "max-md:top-14" : ""
+            }`}
+          >
             {panel.n}
           </span>
 
