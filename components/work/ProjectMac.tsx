@@ -23,11 +23,12 @@ import {
 } from "./ProjectShowcase";
 
 /*
- * One component tree for every screen size. From lg up it is a MacBook that
- * fills the viewport; below that the same desktop is shown smaller, as a
- * rounded "screen" that scrolls with the page. Everything inside the screen
- * is measured in cqw (a share of the screen's width) below lg, so the Safari
- * and iPhone windows keep the proportions of the desktop at any width.
+ * One component tree for every screen size: a macOS desktop (wallpaper, menu
+ * bar, a Safari and an iPhone window, widgets and a dock) with no laptop drawn
+ * around it. From lg up it fills the viewport; below that the same desktop is
+ * shown smaller and scrolls with the page. Everything inside it is measured in
+ * cqw (a share of the desktop's width) below lg, so the Safari and iPhone
+ * windows keep the proportions of the large one at any width.
  */
 
 /* ---------- small pieces ---------- */
@@ -594,18 +595,13 @@ export default function ProjectMac({
   return (
     <div
       ref={rootRef}
-      className="relative w-full bg-[#ecebe7] px-3 pb-28 pt-24 text-[#1d1d1f] sm:px-6 lg:flex lg:h-screen lg:min-h-[820px] lg:flex-col lg:px-8 lg:pb-5 xl:min-h-[760px]"
+      className="relative w-full bg-[#ecebe7] px-3 pb-28 pt-24 text-[#1d1d1f] sm:px-6 lg:flex lg:h-screen lg:min-h-[780px] lg:flex-col lg:px-8 lg:pb-6 xl:min-h-[720px]"
     >
       <div className="flex flex-col lg:min-h-0 lg:flex-1">
-        {/* From lg up this is the lid of a MacBook; below, just the screen. */}
-        <div className="relative mx-auto flex w-full max-w-[44rem] flex-col lg:min-h-0 lg:max-w-[1760px] lg:flex-1 lg:rounded-b-md lg:rounded-t-[1.6rem] lg:bg-[#0c0c0d] lg:p-3.5 lg:shadow-[0_40px_80px_-30px_rgba(0,0,0,0.45)]">
-          <div className="pointer-events-none absolute left-1/2 top-3.5 z-50 hidden h-8 w-44 -translate-x-1/2 rounded-b-2xl bg-[#0c0c0d] lg:block">
-            <span className="absolute left-1/2 top-[11px] h-2 w-2 -translate-x-1/2 rounded-full bg-[#1b2230] shadow-[0_0_0_2px_#14161c]" />
-          </div>
-
-          {/* The screen: a size container, so everything below lg scales with it. */}
+        <div className="relative mx-auto flex w-full max-w-[44rem] flex-col lg:min-h-0 lg:max-w-[1760px] lg:flex-1">
+          {/* The desktop itself, with no laptop around it: a size container, so everything below lg scales with it. */}
           <div
-            className="@container relative flex flex-col overflow-hidden rounded-[1.6rem] lg:min-h-0 lg:flex-1 lg:rounded-[14px]"
+            className="@container relative flex flex-col overflow-hidden rounded-[1.6rem] shadow-[0_30px_70px_-34px_rgba(30,40,40,0.5)] lg:min-h-0 lg:flex-1"
             style={wallpaperStyle}
           >
             <MenuBar />
@@ -657,9 +653,6 @@ export default function ProjectMac({
               </div>
             </div>
           </div>
-        </div>
-        <div className="relative mx-auto hidden h-[18px] w-[calc(100%+3rem)] max-w-[min(1840px,100%)] rounded-b-[1.4rem] bg-gradient-to-b from-[#d9dadc] to-[#b8babe] shadow-[0_18px_30px_-12px_rgba(0,0,0,0.35)] lg:block">
-          <span className="absolute left-1/2 top-0 h-[7px] w-52 -translate-x-1/2 rounded-b-xl bg-[#a4a6aa]" />
         </div>
       </div>
     </div>
