@@ -45,22 +45,30 @@ function AppleLogo() {
   );
 }
 
-// The clock is the visitor's own, formatted like macOS ("vie 24 oct 3:41 p. m.").
-function subscribeMinute(onChange: () => void) {
-  const id = window.setInterval(onChange, 15000);
+// The clock is the visitor's own: their date, their time, their language and
+// 12/24-hour format, ticking in real time ("dom 25 oct 8:32 a. m.").
+function subscribeClock(onChange: () => void) {
+  const id = window.setInterval(onChange, 1000);
   return () => window.clearInterval(id);
 }
-function minuteSnapshot() {
-  const now = new Date();
-  const date = now.toLocaleDateString("es", { weekday: "short", day: "numeric", month: "short" });
-  const time = now.toLocaleTimeString("es", { hour: "numeric", minute: "2-digit" });
-  return `${date.replace(/\./g, "")}  ${time}`;
+function clockSnapshot() {
+  return new Date()
+    .toLocaleString(undefined, {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      hour: "numeric",
+      minute: "2-digit",
+    })
+    .replace(/,/g, "");
 }
 
 function MenuBar() {
-  const clock = useSyncExternalStore(subscribeMinute, minuteSnapshot, () => "");
+  // The snapshot is a string that only changes with the minute, so the bar
+  // re-renders once a minute even though the clock is checked every second.
+  const clock = useSyncExternalStore(subscribeClock, clockSnapshot, () => "");
   return (
-    <div className="absolute inset-x-0 top-0 z-40 flex h-[34px] items-center gap-5 bg-white/55 px-5 text-[13px] text-[#1d1d1f] backdrop-blur-2xl max-lg:hidden">
+    <div className="absolute inset-x-0 top-0 z-40 flex h-[34px] items-center gap-5 bg-white/55 px-5 text-[13px] text-[#1d1d1f] backdrop-blur-2xl">
       <AppleLogo />
       <b className="font-bold">Work</b>
       <span className="max-xl:hidden">Archivo</span>
@@ -78,34 +86,113 @@ function MenuBar() {
   );
 }
 
-function Widget({
-  className = "",
-  children,
-}: {
-  className?: string;
-  children: ReactNode;
-}) {
+function Widget({ className = "", children }: { className?: string; children: ReactNode }) {
   return (
     <div
-      className={`min-w-0 rounded-[20px] bg-white/60 p-5 shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.7),0_18px_40px_-16px_rgba(40,50,50,0.4)] backdrop-blur-3xl backdrop-saturate-150 [@media(max-height:900px)]:lg:px-3.5 [@media(max-height:900px)]:lg:py-3 ${className}`}
+      className={`min-w-0 rounded-[20px] bg-white/60 shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.7),0_18px_40px_-16px_rgba(40,50,50,0.4)] backdrop-blur-3xl backdrop-saturate-150 ${className}`}
     >
       {children}
     </div>
   );
 }
 
-const WIDGET_LABEL = "text-[11px] font-semibold uppercase tracking-[0.08em] text-black/50";
+const LABEL = "text-[11px] font-semibold uppercase tracking-[0.08em] text-black/50";
 
-function Row({ label, value }: { label: string; value: string }) {
+function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between gap-4 border-t border-black/10 py-2 text-[13px] [@media(max-height:900px)]:lg:py-1">
-      <span className="shrink-0 text-black/50">{label}</span>
-      <b className="min-w-0 text-right font-semibold [overflow-wrap:anywhere]">{value}</b>
+    <div className="min-w-0">
+      <p className={LABEL}>{label}</p>
+      <p className="mt-0.5 text-[13px] font-semibold leading-snug [overflow-wrap:anywhere] [@media(max-height:800px)]:lg:text-[12px] [@media(max-height:800px)]:lg:leading-tight">{value}</p>
     </div>
   );
 }
 
-/* ---------- the three windows ---------- */
+/** Name, counter with arrows, and role / year / stack. */
+function InfoCard({
+  project,
+  index,
+  total,
+  onPrev,
+  onNext,
+}: {
+  project: Project;
+  index: number;
+  total: number;
+  onPrev: () => void;
+  onNext: () => void;
+}) {
+  const counter = `${String(index + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}`;
+  return (
+    <Widget className="p-4 sm:p-5 lg:p-4 xl:p-5 [@media(max-height:800px)]:lg:p-3">
+      <div className="flex items-center justify-between gap-3">
+        <p className={`${LABEL} min-w-0 truncate`}>
+          <span className="max-sm:hidden">Proyecto </span>
+          {counter}
+        </p>
+        <div className="flex shrink-0 gap-1">
+          {(
+            [
+              ["Proyecto anterior", onPrev, "M8 1 3 6l5 5"],
+              ["Siguiente proyecto", onNext, "m4 1 5 5-5 5"],
+            ] as const
+          ).map(([label, fn, d]) => (
+            <button
+              key={label}
+              type="button"
+              aria-label={label}
+              onClick={fn}
+              data-cursor-hover
+              className="flex h-6 w-6 items-center justify-center rounded-full bg-black/[0.06] text-black/60 transition-colors hover:bg-black/10"
+            >
+              <svg width="11" height="12" viewBox="0 0 11 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d={d} />
+              </svg>
+            </button>
+          ))}
+        </div>
+      </div>
+      <h2 className="my-1.5 text-[1.55rem] font-bold leading-[1.05] tracking-tight [@media(max-height:800px)]:lg:my-1 [@media(max-height:800px)]:lg:text-[1.3rem]">{project.name}</h2>
+      <div className="grid grid-cols-3 gap-3 border-t border-black/10 pt-2.5 [@media(max-height:800px)]:lg:gap-2 [@media(max-height:800px)]:lg:pt-1.5">
+        <Stat label="Rol" value={project.role} />
+        <Stat label="Año" value={project.year} />
+        <Stat label="Stack" value={project.stack} />
+      </div>
+    </Widget>
+  );
+}
+
+/** Summary, "Ver sitio" and the ownership note. */
+function SummaryCard({
+  project,
+  className = "",
+  summaryClassName = "",
+}: {
+  project: Project;
+  className?: string;
+  summaryClassName?: string;
+}) {
+  return (
+    <Widget className={`flex flex-col justify-center gap-3 p-4 sm:p-5 lg:p-4 xl:p-5 [@media(max-height:800px)]:lg:p-3 ${className}`}>
+      <p className={`text-[13px] leading-relaxed text-black/70 ${summaryClassName}`}>{project.summary}</p>
+      <div className="flex items-center gap-4">
+        {project.url && (
+          <a
+            href={project.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-cursor-hover
+            className="flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-[10px] bg-[#1d1d1f] px-5 text-[13.5px] font-semibold text-white transition-opacity hover:opacity-85"
+          >
+            Ver sitio <span aria-hidden="true">↗</span>
+          </a>
+        )}
+        {project.note && <p className="text-[11px] leading-snug text-black/55">{project.note}</p>}
+      </div>
+    </Widget>
+  );
+}
+
+/* ---------- the windows ---------- */
 
 function SafariWindow({
   screens,
@@ -143,17 +230,17 @@ function SafariWindow({
     <div className="group/device flex h-full min-h-0 flex-col overflow-hidden rounded-[14px] bg-white shadow-[0_0_0_0.5px_rgba(0,0,0,0.28),0_30px_70px_-18px_rgba(30,40,40,0.55),0_8px_20px_-8px_rgba(30,40,40,0.3)]">
       <div className="flex h-[52px] shrink-0 items-center gap-3 border-b border-black/[0.14] bg-[#f3f1ee] px-4">
         <TrafficLights className="mr-2" />
-        <svg width="20" height="16" viewBox="0 0 20 16" fill="none" stroke="currentColor" strokeWidth="1.4" className="text-black/50 max-sm:hidden" aria-hidden="true">
+        <svg width="20" height="16" viewBox="0 0 20 16" fill="none" stroke="currentColor" strokeWidth="1.4" className="text-black/50" aria-hidden="true">
           <rect x="1.5" y="1.5" width="17" height="13" rx="3" />
           <path d="M7 2v12" />
         </svg>
-        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-black/45 max-sm:hidden" aria-hidden="true">
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-black/45" aria-hidden="true">
           <path d="M8 2 2 8l6 6" />
         </svg>
-        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-black/25 max-sm:hidden" aria-hidden="true">
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-black/25" aria-hidden="true">
           <path d="m2 2 6 6-6 6" />
         </svg>
-        <div className="mx-auto flex h-[30px] w-full max-w-[26rem] min-w-0 items-center justify-center gap-1.5 rounded-[9px] bg-black/[0.06] px-3 text-[13px]">
+        <div className="mx-auto flex h-[30px] w-full min-w-0 max-w-[26rem] items-center justify-center gap-1.5 rounded-[9px] bg-black/[0.06] px-3 text-[13px]">
           <svg width="9" height="11" viewBox="0 0 9 11" fill="currentColor" className="shrink-0 text-black/45" aria-hidden="true">
             <path d="M4.5 0a2.7 2.7 0 0 0-2.7 2.7V4H1a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-.8V2.7A2.7 2.7 0 0 0 4.5 0Zm-1.5 2.7a1.5 1.5 0 0 1 3 0V4H3V2.7Z" />
           </svg>
@@ -162,10 +249,10 @@ function SafariWindow({
             <span className="text-black/45">{screen.path}</span>
           </span>
         </div>
-        <svg width="16" height="18" viewBox="0 0 16 18" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="text-black/50 max-md:hidden" aria-hidden="true">
+        <svg width="16" height="18" viewBox="0 0 16 18" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="text-black/50" aria-hidden="true">
           <path d="M8 1v10M4.5 4.5 8 1l3.5 3.5M3 7.5H2.5a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1H13" />
         </svg>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-black/50 max-md:hidden" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-black/50" aria-hidden="true">
           <path d="M8 2v12M2 8h12" />
         </svg>
       </div>
@@ -216,13 +303,23 @@ function SafariWindow({
   );
 }
 
-function IPhoneWindow({
+// Side buttons share the titanium of the frame.
+const TITANIUM = "bg-gradient-to-b from-[#5a5d64] via-[#2d2f34] to-[#4b4e55]";
+
+/**
+ * An iPhone 17 Pro Max: titanium frame, side buttons and Camera Control, thin
+ * bezels, Dynamic Island, status bar and home indicator. Every measure is in
+ * cqw (a share of the phone's own width), so it scales to any size; the box
+ * takes its size from its parent (give it a height or a width).
+ */
+function IPhone17({
   screens,
   active,
   name,
   pace,
   priority,
   inView,
+  className = "",
 }: {
   screens: ProjectScreen[];
   active: number;
@@ -230,6 +327,7 @@ function IPhoneWindow({
   pace: number;
   priority: boolean;
   inView: boolean;
+  className?: string;
 }) {
   const reduce = useReducedMotion();
   const screen = screens[active];
@@ -243,40 +341,56 @@ function IPhoneWindow({
       };
 
   return (
-    <div className="group/device flex h-full min-h-0 flex-col overflow-hidden rounded-[14px] bg-[#ebe8e4] shadow-[0_0_0_0.5px_rgba(0,0,0,0.28),0_30px_70px_-18px_rgba(30,40,40,0.55),0_8px_20px_-8px_rgba(30,40,40,0.3)]">
-      <div className="flex h-[38px] shrink-0 items-center px-3.5">
-        <TrafficLights />
-      </div>
-      <div className="flex min-h-0 flex-1 items-center justify-center px-3 pb-3">
-        <div className="relative h-full max-h-full aspect-[390/844] overflow-hidden rounded-[2.4rem] bg-white shadow-[0_0_0_7px_#1c1c1e,0_0_0_8px_#3a3a3c]">
-          <div className="pointer-events-none absolute left-1/2 top-2.5 z-10 h-6 w-[5.4rem] -translate-x-1/2 rounded-full bg-black" />
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-[5] flex h-10 items-center justify-between bg-white px-7 text-[11px] font-semibold text-black">
-            <span>9:41</span>
-            <span className="flex items-center gap-1" aria-hidden="true">
-              <svg width="15" height="9" viewBox="0 0 15 9" fill="currentColor"><rect x="0" y="6" width="2.4" height="3" rx=".6"/><rect x="4" y="4" width="2.4" height="5" rx=".6"/><rect x="8" y="2" width="2.4" height="7" rx=".6"/><rect x="12" y="0" width="2.4" height="9" rx=".6"/></svg>
-              <svg width="22" height="10" viewBox="0 0 22 10" fill="none"><rect x=".5" y=".5" width="18" height="9" rx="2.6" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="15" height="6" rx="1.4" fill="currentColor"/></svg>
-            </span>
+    <div
+      className={`@container group/device relative aspect-[78/163.4] drop-shadow-[0_28px_36px_rgba(30,40,40,0.45)] ${className}`}
+    >
+      {/* Action button, volume up / down */}
+      <span className={`absolute -left-[0.9cqw] top-[13.5%] h-[3%] w-[1.2cqw] rounded-l-[0.5cqw] ${TITANIUM}`} aria-hidden="true" />
+      <span className={`absolute -left-[0.9cqw] top-[19.5%] h-[6.2%] w-[1.2cqw] rounded-l-[0.5cqw] ${TITANIUM}`} aria-hidden="true" />
+      <span className={`absolute -left-[0.9cqw] top-[27.5%] h-[6.2%] w-[1.2cqw] rounded-l-[0.5cqw] ${TITANIUM}`} aria-hidden="true" />
+      {/* Power and Camera Control */}
+      <span className={`absolute -right-[0.9cqw] top-[24%] h-[9.5%] w-[1.2cqw] rounded-r-[0.5cqw] ${TITANIUM}`} aria-hidden="true" />
+      <span className={`absolute -right-[0.9cqw] top-[62%] h-[5.5%] w-[1.2cqw] rounded-r-[0.5cqw] ${TITANIUM}`} aria-hidden="true" />
+
+      {/* Titanium frame */}
+      <div className="absolute inset-0 rounded-[14cqw] bg-gradient-to-br from-[#62656c] via-[#2a2c31] to-[#4d5057] p-[1.3cqw] shadow-[inset_0_0_0_0.35cqw_rgba(255,255,255,0.16)]">
+        {/* Black bezel */}
+        <div className="h-full w-full rounded-[12.8cqw] bg-black p-[1.1cqw]">
+          {/* Screen */}
+          <div className="relative h-full w-full overflow-hidden rounded-[11.8cqw] bg-white">
+            <div className="pointer-events-none absolute left-1/2 top-[2.6cqw] z-20 h-[8.4cqw] w-[29cqw] -translate-x-1/2 rounded-full bg-black" />
+            <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex h-[13cqw] items-center justify-between bg-white px-[9cqw] pt-[1.6cqw] text-[3.7cqw] font-semibold text-black">
+              <span>9:41</span>
+              <span className="flex items-center gap-[1.2cqw]" aria-hidden="true">
+                <svg className="h-[2.3cqw] w-auto" viewBox="0 0 15 9" fill="currentColor"><rect x="0" y="6" width="2.4" height="3" rx=".6" /><rect x="4" y="4" width="2.4" height="5" rx=".6" /><rect x="8" y="2" width="2.4" height="7" rx=".6" /><rect x="12" y="0" width="2.4" height="9" rx=".6" /></svg>
+                <svg className="h-[2.4cqw] w-auto" viewBox="0 0 22 10" fill="none"><rect x=".5" y=".5" width="18" height="9" rx="2.6" stroke="currentColor" opacity=".4" /><rect x="2" y="2" width="15" height="6" rx="1.4" fill="currentColor" /></svg>
+              </span>
+            </div>
+            <div className="absolute inset-x-0 bottom-0 top-[13cqw]">
+              <AnimatePresence initial={false}>
+                <motion.div key={screen.id} {...fade} className="absolute inset-0">
+                  <ScrollShot
+                    shot={screen.mobile}
+                    alt={`${name}: ${screen.label}, en celular`}
+                    viewportRatio={PHONE_RATIO}
+                    pageWidth={MOBILE_PAGE_WIDTH}
+                    pace={pace}
+                    sizes={PHONE_SIZES}
+                    priority={priority && active === 0}
+                    inView={inView}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+            <div className="pointer-events-none absolute bottom-[1.8cqw] left-1/2 z-20 h-[1.2cqw] w-[34cqw] -translate-x-1/2 rounded-full bg-black/70" />
           </div>
-          <AnimatePresence initial={false}>
-            <motion.div key={screen.id} {...fade} className="absolute inset-x-0 bottom-0 top-10">
-              <ScrollShot
-                shot={screen.mobile}
-                alt={`${name}: ${screen.label}, en celular`}
-                viewportRatio={PHONE_RATIO}
-                pageWidth={MOBILE_PAGE_WIDTH}
-                pace={pace}
-                sizes={PHONE_SIZES}
-                priority={priority && active === 0}
-                inView={inView}
-              />
-            </motion.div>
-          </AnimatePresence>
-          <div className="pointer-events-none absolute bottom-2 left-1/2 z-10 h-1 w-24 -translate-x-1/2 rounded-full bg-black/60" />
         </div>
       </div>
     </div>
   );
 }
+
+/* ---------- dock ---------- */
 
 function Dock({
   index,
@@ -290,10 +404,11 @@ function Dock({
   return (
     <nav
       aria-label="Proyectos"
-      className={`flex items-end gap-2 rounded-[26px] bg-white/45 px-2.5 pb-2.5 pt-2.5 min-[400px]:gap-3 min-[400px]:px-3.5 shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.8),0_0_0_0.5px_rgba(0,0,0,0.12),0_18px_40px_-12px_rgba(30,40,40,0.45)] backdrop-blur-3xl backdrop-saturate-150 ${className}`}
+      className={`flex items-end gap-2 rounded-[26px] bg-white/45 px-2.5 pb-2.5 pt-2.5 shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.8),0_0_0_0.5px_rgba(0,0,0,0.12),0_18px_40px_-12px_rgba(30,40,40,0.45)] backdrop-blur-3xl backdrop-saturate-150 min-[400px]:gap-3 min-[400px]:px-3.5 ${className}`}
     >
       {projects.map((p, i) => {
         const on = i === index;
+        const dock = p.dock ?? { bg: "#8a8a86", fg: "#ffffff", label: p.name.slice(0, 2).toUpperCase() };
         return (
           <button
             key={p.slug}
@@ -302,22 +417,18 @@ function Dock({
             aria-label={p.name}
             aria-current={on ? "page" : undefined}
             data-cursor-hover
-            className="group/dock relative h-10 w-10 shrink-0 min-[400px]:h-12 min-[400px]:w-12 sm:h-14 sm:w-14 lg:h-16 lg:w-16 [@media(max-height:760px)]:lg:h-14 [@media(max-height:760px)]:lg:w-14"
+            className="group/dock relative h-10 w-10 shrink-0 min-[400px]:h-12 min-[400px]:w-12 sm:h-14 sm:w-14 lg:h-11 lg:w-11 xl:h-16 xl:w-16 [@media(max-height:760px)]:xl:h-14 [@media(max-height:760px)]:xl:w-14"
           >
             <span
-              className={`absolute inset-0 overflow-hidden rounded-[14px] bg-white shadow-[0_6px_14px_-4px_rgba(0,0,0,0.4),0_0_0_0.5px_rgba(0,0,0,0.18)] transition-transform duration-200 ease-out group-hover/dock:-translate-y-2 group-hover/dock:scale-110 ${
+              className={`absolute inset-0 flex items-center justify-center overflow-hidden rounded-[14px] text-[15px] font-bold tracking-tight shadow-[0_6px_14px_-4px_rgba(0,0,0,0.4),0_0_0_0.5px_rgba(0,0,0,0.18)] transition-transform duration-200 ease-out group-hover/dock:-translate-y-2 group-hover/dock:scale-110 sm:text-[17px] lg:text-[14px] xl:text-[19px] ${
                 on ? "-translate-y-1.5 scale-105" : ""
               }`}
+              style={{ background: dock.bg, color: dock.fg }}
             >
-              {p.screens?.[0] && (
-                <Image
-                  src={p.screens[0].desktop.src}
-                  alt=""
-                  fill
-                  sizes="64px"
-                  quality={60}
-                  className="object-cover object-top"
-                />
+              {dock.logo ? (
+                <Image src={dock.logo} alt="" fill sizes="64px" className="object-contain p-2" />
+              ) : (
+                dock.label
               )}
             </span>
             {on && (
@@ -333,6 +444,43 @@ function Dock({
         );
       })}
     </nav>
+  );
+}
+
+/** Safari-style tabs for the phone-only layout. */
+function PillTabs({
+  screens,
+  active,
+  onSelect,
+}: {
+  screens: ProjectScreen[];
+  active: number;
+  onSelect: (i: number) => void;
+}) {
+  return (
+    <div
+      role="tablist"
+      aria-label="Pantallas del proyecto"
+      className="flex gap-2 overflow-x-auto py-1 [scrollbar-width:none]"
+    >
+      {screens.map((s, i) => (
+        <button
+          key={s.id}
+          type="button"
+          role="tab"
+          aria-selected={i === active}
+          onClick={() => onSelect(i)}
+          data-cursor-hover
+          className={`shrink-0 rounded-full px-4 py-2 text-[13px] transition-colors ${
+            i === active
+              ? "bg-[#1d1d1f] font-semibold text-white"
+              : "bg-white/60 text-black/65 backdrop-blur-xl hover:bg-white/80"
+          }`}
+        >
+          {s.label}
+        </button>
+      ))}
+    </div>
   );
 }
 
@@ -361,6 +509,7 @@ export default function ProjectMac({
   const pace = project.tourPace ?? 1;
   const host = project.url ? new URL(project.url).hostname.replace(/^www\./, "") : "";
   const wallpaper = project.wallpaper ?? ["#f7f2e8", "#dbe0dc", "#8aa5a2"];
+  const first = priority ?? index === 0;
 
   // The tour and videos run only while most of the desktop is on screen; once
   // the first page has loaded, the other tabs' pictures are fetched quietly.
@@ -397,69 +546,12 @@ export default function ProjectMac({
     return () => window.removeEventListener("keydown", onKey);
   }, [visible, onNext, onPrev]);
 
-  const counter = `${String(index + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}`;
   const wallpaperStyle = {
     background: `radial-gradient(900px 600px at 18% 8%, ${wallpaper[0]}, transparent 70%), radial-gradient(1000px 700px at 92% 96%, ${wallpaper[2]}, transparent 65%), radial-gradient(700px 500px at 60% 40%, ${wallpaper[1]}, transparent 70%), linear-gradient(135deg, ${wallpaper[0]}, ${wallpaper[2]})`,
   };
 
   const info = (
-    <Widget>
-      <div className="mb-2 flex items-center justify-between [@media(max-height:900px)]:lg:mb-1">
-        <p className={`${WIDGET_LABEL} min-w-0 truncate`}>
-          <span className="max-sm:hidden">Proyecto </span>
-          {counter}
-        </p>
-        <div className="flex shrink-0 gap-1">
-          {(
-            [
-              ["Proyecto anterior", onPrev, "M8 1 3 6l5 5"],
-              ["Siguiente proyecto", onNext, "m4 1 5 5-5 5"],
-            ] as const
-          ).map(([label, fn, d]) => (
-            <button
-              key={label}
-              type="button"
-              aria-label={label}
-              onClick={fn}
-              data-cursor-hover
-              className="flex h-6 w-6 items-center justify-center rounded-full bg-black/[0.06] text-black/60 transition-colors hover:bg-black/10"
-            >
-              <svg width="11" height="12" viewBox="0 0 11 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d={d} />
-              </svg>
-            </button>
-          ))}
-        </div>
-      </div>
-      <h2 className="mb-3 text-[1.7rem] font-bold leading-[1.05] tracking-tight [@media(max-height:900px)]:lg:mb-1.5 [@media(max-height:900px)]:lg:text-[1.35rem]">{project.name}</h2>
-      <Row label="Rol" value={project.role} />
-      <Row label="Año" value={project.year} />
-      <Row label="Stack" value={project.stack} />
-    </Widget>
-  );
-
-  const summary = (
-    <Widget>
-      <p className={`${WIDGET_LABEL} mb-2 [@media(max-height:900px)]:lg:mb-1`}>Resumen</p>
-      <p className="text-[13px] leading-relaxed text-black/70 [@media(max-height:900px)]:lg:text-[12px] [@media(max-height:900px)]:lg:leading-snug">{project.summary}</p>
-    </Widget>
-  );
-
-  const cta = (
-    <Widget className="p-4 [@media(max-height:900px)]:lg:p-3">
-      {project.url && (
-        <a
-          href={project.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          data-cursor-hover
-          className="mb-2.5 flex h-9 items-center justify-center gap-1.5 rounded-[10px] bg-[#1d1d1f] [@media(max-height:900px)]:lg:mb-1.5 [@media(max-height:900px)]:lg:h-8 text-[13.5px] font-semibold text-white transition-opacity hover:opacity-85"
-        >
-          Ver sitio <span aria-hidden="true">↗</span>
-        </a>
-      )}
-      {project.note && <p className="text-[11px] leading-snug text-black/55">{project.note}</p>}
-    </Widget>
+    <InfoCard project={project} index={index} total={total} onPrev={onPrev} onNext={onNext} />
   );
 
   return (
@@ -475,41 +567,46 @@ export default function ProjectMac({
           </div>
           <div className="relative min-h-0 flex-1 overflow-hidden rounded-[14px]" style={wallpaperStyle}>
             <MenuBar />
-            <div className="absolute inset-x-0 bottom-[96px] top-[34px] [@media(max-height:760px)]:bottom-[84px] grid grid-rows-[minmax(0,1fr)] gap-5 p-5 xl:grid-cols-[minmax(0,1fr)_17rem_17.5rem] max-xl:grid-cols-[minmax(0,1fr)_17.5rem]">
-              <SafariWindow
-                screens={screens}
-                active={active}
-                onSelect={setActive}
-                host={host}
-                name={project.name}
-                pace={pace}
-                priority={priority ?? index === 0}
-                inView={visible}
-                onFirstLoaded={markFirstLoaded}
-              />
-              <div className="min-h-0 max-xl:hidden">
-                <IPhoneWindow
-                  screens={screens}
-                  active={active}
-                  name={project.name}
-                  pace={pace}
-                  priority={priority ?? index === 0}
-                  inView={visible}
-                />
-              </div>
-              <div className="flex min-h-0 flex-col overflow-y-auto [scrollbar-width:none]">
-                <div className="my-auto flex flex-col gap-4 max-[1100px]:gap-3 [@media(max-height:900px)]:gap-3 [@media(max-height:760px)]:gap-2">
-                  {info}
-                  {summary}
-                  {cta}
+            <div className="absolute inset-x-0 bottom-0 top-[34px] flex flex-col gap-4 p-5">
+              {/* Safari and the iPhone, side by side */}
+              <div className="flex min-h-0 flex-1 gap-6">
+                <div className="min-w-0 flex-1">
+                  <SafariWindow
+                    screens={screens}
+                    active={active}
+                    onSelect={setActive}
+                    host={host}
+                    name={project.name}
+                    pace={pace}
+                    priority={first}
+                    inView={visible}
+                    onFirstLoaded={markFirstLoaded}
+                  />
+                </div>
+                <div className="flex shrink-0 items-center py-2">
+                  <IPhone17
+                    screens={screens}
+                    active={active}
+                    name={project.name}
+                    pace={pace}
+                    priority={first}
+                    inView={visible}
+                    className="h-full max-h-full"
+                  />
                 </div>
               </div>
+
+              {/* Information below; at xl the dock sits between the two cards */}
+              <div className="grid shrink-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-end gap-4 xl:gap-5">
+                <div className="order-1">{info}</div>
+                <SummaryCard
+                  project={project}
+                  className="order-3"
+                  summaryClassName="max-xl:hidden [@media(max-height:760px)]:hidden"
+                />
+                <Dock index={index} onGoTo={onGoTo} className="order-2" />
+              </div>
             </div>
-            <Dock
-              index={index}
-              onGoTo={onGoTo}
-              className="absolute bottom-3.5 left-1/2 z-30 -translate-x-1/2"
-            />
           </div>
         </div>
         <div className="relative mx-auto h-[18px] w-[calc(100%+3rem)] max-w-[min(1840px,100%)] rounded-b-[1.4rem] bg-gradient-to-b from-[#d9dadc] to-[#b8babe] shadow-[0_18px_30px_-12px_rgba(0,0,0,0.35)]">
@@ -517,38 +614,26 @@ export default function ProjectMac({
         </div>
       </div>
 
-      {/* ===== Tablet and phone: the same desktop, stacked ===== */}
-      <div className="mx-auto max-w-[44rem] rounded-[1.6rem] p-3 sm:p-5 lg:hidden" style={wallpaperStyle}>
-        <div className="h-[26rem] sm:h-[34rem]">
-          <SafariWindow
+      {/* ===== Tablet and phone: an iPhone 17 Pro Max with the information below ===== */}
+      <div className="mx-auto max-w-[34rem] rounded-[1.6rem] p-4 sm:p-6 lg:hidden" style={wallpaperStyle}>
+        <div className="mx-auto w-[min(72vw,19rem)] sm:w-[min(52vw,21rem)]">
+          <IPhone17
             screens={screens}
             active={active}
-            onSelect={setActive}
-            host={host}
             name={project.name}
             pace={pace}
-            priority={priority ?? index === 0}
+            priority={first}
             inView={visible}
-            onFirstLoaded={markFirstLoaded}
+            className="w-full"
           />
         </div>
-        <div className="mt-4 grid grid-cols-[9.5rem_minmax(0,1fr)] items-stretch gap-3 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-4">
-          <div className="h-[19rem] sm:h-[25rem]">
-            <IPhoneWindow
-              screens={screens}
-              active={active}
-              name={project.name}
-              pace={pace}
-              priority={priority ?? index === 0}
-              inView={visible}
-            />
-          </div>
-          <div className="flex min-w-0 flex-col gap-3">
-            {info}
-            {cta}
-          </div>
+        <div className="mt-5">
+          <PillTabs screens={screens} active={active} onSelect={setActive} />
         </div>
-        <div className="mt-3">{summary}</div>
+        <div className="mt-3 flex flex-col gap-3">
+          {info}
+          <SummaryCard project={project} />
+        </div>
         <div className="mt-5 flex justify-center pb-1">
           <Dock index={index} onGoTo={onGoTo} />
         </div>

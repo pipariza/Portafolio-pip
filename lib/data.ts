@@ -69,11 +69,14 @@ export type Project = {
   layout?: "mac";
   /** Desktop wallpaper colors for the Mac layout: top-left glow, middle, bottom-right. */
   wallpaper?: [string, string, string];
+  /** Dock icon in the Mac layout: a flat color with initials until the brand's logo (`logo`, path under /public) is added. */
+  dock?: { bg: string; fg: string; label: string; logo?: string };
 };
 
 export const projects: Project[] = [
   {
     slug: "visual-living",
+    dock: { bg: "#161616", fg: "#ffffff", label: "VL" },
     name: "Visual Living",
     role: "Diseño & Desarrollo web",
     year: "2025",
@@ -188,6 +191,7 @@ export const projects: Project[] = [
   },
   {
     slug: "el-departamento",
+    dock: { bg: "#22e48f", fg: "#06210f", label: "DP" },
     name: "El Departamento",
     role: "Diseño & Desarrollo web",
     year: "2025",
@@ -282,6 +286,7 @@ export const projects: Project[] = [
   },
   {
     slug: "el-costurero-de-meme",
+    dock: { bg: "#a9722b", fg: "#fff7e6", label: "CM" },
     name: "El Costurero de Meme",
     role: "Diseño & Desarrollo web",
     year: "2025",
@@ -343,6 +348,7 @@ export const projects: Project[] = [
   },
   {
     slug: "mar-de-palma",
+    dock: { bg: "#a87b5b", fg: "#ffffff", label: "MP" },
     name: "Mar de Palma",
     role: "Diseño & Desarrollo web",
     year: "2025",
@@ -464,6 +470,7 @@ export const projects: Project[] = [
   },
   {
     slug: "feria-eva",
+    dock: { bg: "#d9739a", fg: "#ffffff", label: "EV" },
     name: "Feria EVA",
     role: "Diseño & Desarrollo web",
     year: "2024",
