@@ -8,18 +8,18 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type { Project, ProjectScreen, ShotImage, ShotVideo } from "@/lib/data";
 
 // Height / width of what each device frame shows (a 16:10 laptop, a 390x844 phone).
-const DESKTOP_RATIO = 10 / 16;
-const PHONE_RATIO = 844 / 390;
+export const DESKTOP_RATIO = 10 / 16;
+export const PHONE_RATIO = 844 / 390;
 
 // Width, in CSS px, the desktop and mobile captures were taken at; video
 // positions in the data are in those pixels.
-const DESKTOP_PAGE_WIDTH = 1440;
-const MOBILE_PAGE_WIDTH = 500;
+export const DESKTOP_PAGE_WIDTH = 1440;
+export const MOBILE_PAGE_WIDTH = 500;
 
 // `sizes` and quality of the screenshots, shared with the prefetch so it asks
 // the image optimizer for exactly the files the visible tab will need.
-const DESKTOP_SIZES = "(min-width: 1024px) 45vw, 90vw";
-const PHONE_SIZES = "(min-width: 1024px) 12vw, 25vw";
+export const DESKTOP_SIZES = "(min-width: 1024px) 45vw, 90vw";
+export const PHONE_SIZES = "(min-width: 1024px) 12vw, 25vw";
 const SHOT_QUALITY = 60;
 
 // The font the captured site uses for the labels it draws over its videos.
@@ -154,7 +154,7 @@ function ShotVideoLayer({
  * when the browser is idle, and only touches images (never the videos).
  * Returns a function that stops it.
  */
-function prefetchScreens(screens: ProjectScreen[], current: number) {
+export function prefetchScreens(screens: ProjectScreen[], current: number) {
   const connection = (
     navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }
   ).connection;
@@ -215,7 +215,7 @@ function prefetchScreens(screens: ProjectScreen[], current: number) {
  * to bottom and back, so the whole page is seen and nothing is cropped. With
  * "reduce motion" it does not move and the screen scrolls by hand instead.
  */
-function ScrollShot({
+export function ScrollShot({
   shot,
   alt,
   viewportRatio,

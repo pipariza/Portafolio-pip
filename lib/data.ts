@@ -65,6 +65,10 @@ export type Project = {
   tourPace?: number;
   /** Small credit line under the project text, e.g. who owns the media shown. */
   note?: string;
+  /** "mac": show the project as a MacBook desktop (Safari + iPhone windows, widgets, dock). */
+  layout?: "mac";
+  /** Desktop wallpaper colors for the Mac layout: top-left glow, middle, bottom-right. */
+  wallpaper?: [string, string, string];
 };
 
 export const projects: Project[] = [
@@ -79,6 +83,8 @@ export const projects: Project[] = [
       "Sitio de una casa de diseño audiovisual en Bogotá. El video abre la página, una sola frase grande ordena todo lo demás y la navegación flota abajo, igual de ligera en el celular y en el escritorio.",
     color: "#e3e0d8",
     url: "https://www.visualliving.co/",
+    layout: "mac",
+    wallpaper: ["#f7f2e8", "#dbe0dc", "#8aa5a2"],
     note: "El contenido audiovisual es propiedad de cada marca.",
     screens: [
       {

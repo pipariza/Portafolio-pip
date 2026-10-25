@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Project } from "@/lib/data";
+import ProjectMac from "./ProjectMac";
 import ProjectShowcase from "./ProjectShowcase";
 
 export default function ProjectCaseStudy({
@@ -9,6 +10,7 @@ export default function ProjectCaseStudy({
   total,
   onPrev,
   onNext,
+  onGoTo,
   backHref,
   priority,
 }: {
@@ -17,9 +19,26 @@ export default function ProjectCaseStudy({
   total: number;
   onPrev: () => void;
   onNext: () => void;
+  /** Open another project by its position in the list (used by the Mac layout's dock). */
+  onGoTo?: (index: number) => void;
   backHref: string;
   priority?: boolean;
 }) {
+  if (project.layout === "mac" && project.screens?.length && onGoTo) {
+    return (
+      <ProjectMac
+        project={project}
+        screens={project.screens}
+        index={index}
+        total={total}
+        onPrev={onPrev}
+        onNext={onNext}
+        onGoTo={onGoTo}
+        priority={priority}
+      />
+    );
+  }
+
   if (project.screens?.length) {
     return (
       <ProjectShowcase

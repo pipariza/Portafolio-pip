@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { ThemeSection } from "@/lib/section-theme";
-import type { Project } from "@/lib/data";
+import { projects, type Project } from "@/lib/data";
 import ProjectCaseStudy from "./ProjectCaseStudy";
 
 export default function WorkDetail({
@@ -30,6 +30,7 @@ export default function WorkDetail({
         priority
         onPrev={() => router.push(`/work/${prevSlug}`)}
         onNext={() => router.push(`/work/${nextSlug}`)}
+        onGoTo={(i) => router.push(`/work/${projects[i].slug}`)}
       />
     </ThemeSection>
   );

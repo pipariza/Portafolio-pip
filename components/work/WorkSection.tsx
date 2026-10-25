@@ -31,6 +31,7 @@ export default function WorkSection() {
               backHref="/"
               onPrev={() => scrollToIndex(i - 1)}
               onNext={() => scrollToIndex(i + 1)}
+              onGoTo={scrollToIndex}
             />
           </div>
         ))}
