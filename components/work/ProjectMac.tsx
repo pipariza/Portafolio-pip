@@ -5,7 +5,6 @@ import {
   useEffect,
   useRef,
   useState,
-  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import Image from "next/image";
@@ -23,12 +22,13 @@ import {
 } from "./ProjectShowcase";
 
 /*
- * One component tree for every screen size: a macOS desktop (wallpaper, menu
- * bar, a Safari and an iPhone window, widgets and a dock) with no laptop drawn
- * around it. From lg up it fills the viewport; below that the same desktop is
- * shown smaller and scrolls with the page. Everything inside it is measured in
- * cqw (a share of the desktop's width) below lg, so the Safari and iPhone
- * windows keep the proportions of the large one at any width.
+ * One component tree for every screen size: a macOS desktop (wallpaper, a Safari
+ * and an iPhone window, widgets and a dock) with no frame around it, edge to
+ * edge; its menu bar is the site's own (components/MacMenuBar.tsx), fixed above
+ * it. From lg up it fills the viewport; below that the same desktop is shown
+ * smaller and scrolls with the page. Everything inside it is measured in cqw (a
+ * share of the desktop's width) below lg, so the Safari and iPhone windows keep
+ * the proportions of the large one at any width.
  */
 
 /* ---------- small pieces ---------- */
@@ -41,67 +41,6 @@ function TrafficLights() {
       <i className={`${dot} bg-[#ff5f57]`} />
       <i className={`${dot} bg-[#febc2e]`} />
       <i className={`${dot} bg-[#28c840]`} />
-    </div>
-  );
-}
-
-function AppleLogo() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className="h-[max(9px,3.2cqw)] w-[max(8px,2.8cqw)] lg:-mt-0.5 lg:h-[17px] lg:w-[14px]"
-    >
-      <path
-        fill="currentColor"
-        d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"
-      />
-    </svg>
-  );
-}
-
-// The clock is the visitor's own: their date, their time, their language and
-// 12/24-hour format, ticking in real time ("dom 25 oct 8:32 a. m.").
-function subscribeClock(onChange: () => void) {
-  const id = window.setInterval(onChange, 1000);
-  return () => window.clearInterval(id);
-}
-function clockSnapshot() {
-  return new Date()
-    .toLocaleString(undefined, {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      hour: "numeric",
-      minute: "2-digit",
-    })
-    .replace(/,/g, "");
-}
-
-function MenuBar() {
-  // The snapshot is a string that only changes with the minute, so the bar
-  // re-renders once a minute even though the clock is checked every second.
-  const clock = useSyncExternalStore(subscribeClock, clockSnapshot, () => "");
-  return (
-    <div className="absolute inset-x-0 top-0 z-40 flex h-[8cqw] items-center gap-[3cqw] bg-white/55 px-[3.6cqw] text-[max(7.5px,2.8cqw)] text-[#1d1d1f] backdrop-blur-2xl lg:h-[34px] lg:gap-5 lg:px-5 lg:text-[13px]">
-      <AppleLogo />
-      <b className="font-bold">Work</b>
-      <span className="max-xl:hidden">Archivo</span>
-      <span className="max-xl:hidden">Edición</span>
-      <span className="max-xl:hidden">Ver</span>
-      <span className="max-xl:hidden">Ventana</span>
-      <span className="max-xl:hidden">Ayuda</span>
-      <span className="ml-auto flex items-center gap-[2.4cqw] text-[max(7px,2.6cqw)] lg:gap-4 lg:text-[12.5px]">
-        <svg
-          viewBox="0 0 16 12"
-          fill="currentColor"
-          aria-hidden="true"
-          className="h-[max(6px,2.2cqw)] w-auto lg:h-3"
-        >
-          <path d="M8 2.2c2 0 3.8.8 5.1 2.1l1.1-1.2A8.9 8.9 0 0 0 8 .6a8.9 8.9 0 0 0-6.2 2.5l1.1 1.2A7.2 7.2 0 0 1 8 2.2Zm0 3.4c1.1 0 2.1.4 2.9 1.2l1.1-1.2A6 6 0 0 0 8 4a6 6 0 0 0-4 1.6l1.1 1.2c.8-.8 1.8-1.2 2.9-1.2Zm0 3.3c.5 0 1 .2 1.4.6L8 11.1 6.6 9.5c.4-.4.9-.6 1.4-.6Z" />
-        </svg>
-        <span className="tabular-nums">{clock}</span>
-      </span>
     </div>
   );
 }
@@ -595,63 +534,56 @@ export default function ProjectMac({
   return (
     <div
       ref={rootRef}
-      className="relative w-full bg-[#ecebe7] px-3 pb-28 pt-24 text-[#1d1d1f] sm:px-6 lg:flex lg:h-screen lg:min-h-[780px] lg:flex-col lg:px-8 lg:pb-6 xl:min-h-[720px]"
+      className="relative min-h-full w-full overflow-hidden text-[#1d1d1f] lg:flex lg:h-screen lg:min-h-[max(700px,100%)] lg:flex-col xl:min-h-[max(660px,100%)]"
+      style={wallpaperStyle}
     >
-      <div className="flex flex-col lg:min-h-0 lg:flex-1">
-        <div className="relative mx-auto flex w-full max-w-[44rem] flex-col lg:min-h-0 lg:max-w-[1760px] lg:flex-1">
-          {/* The desktop itself, with no laptop around it: a size container, so everything below lg scales with it. */}
-          <div
-            className="@container relative flex flex-col overflow-hidden rounded-[1.6rem] shadow-[0_30px_70px_-34px_rgba(30,40,40,0.5)] lg:min-h-0 lg:flex-1"
-            style={wallpaperStyle}
-          >
-            <MenuBar />
-            <div className="flex flex-col gap-[3cqw] px-[4cqw] pb-[4cqw] pt-[12cqw] lg:absolute lg:inset-x-0 lg:bottom-0 lg:top-[34px] lg:gap-4 lg:p-4 xl:p-5">
-              {/* Safari and the iPhone, side by side */}
-              <div ref={stageRef} className="flex gap-[3cqw] lg:min-h-0 lg:flex-1 lg:gap-6">
-                <div className="flex min-w-0 flex-1 flex-col">
-                  <SafariWindow
-                    screens={screens}
-                    active={active}
-                    onSelect={setActive}
-                    host={host}
-                    name={project.name}
-                    pace={pace}
-                    priority={first}
-                    inView={visible}
-                    onFirstLoaded={markFirstLoaded}
-                  />
-                </div>
-                <div className="w-[32cqw] shrink-0 lg:flex lg:w-auto lg:items-center lg:py-2">
-                  <IPhone17
-                    screens={screens}
-                    active={active}
-                    name={project.name}
-                    pace={pace}
-                    priority={first}
-                    inView={visible}
-                    className="w-full lg:h-full lg:max-h-full lg:w-auto"
-                  />
-                </div>
-              </div>
-
-              <PillTabs screens={screens} active={active} onSelect={setActive} />
-
-              {/* Information below; from xl the dock sits between the two cards */}
-              <div className="grid shrink-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:items-stretch lg:gap-4 xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] xl:gap-5">
-                <div className="flex lg:order-1 [&>*]:flex-1">
-                  <InfoCard project={project} index={index} total={total} onPrev={onPrev} onNext={onNext} />
-                </div>
-                <div className="flex lg:order-2 xl:order-3 [&>*]:flex-1">
-                  <SummaryCard project={project} />
-                </div>
-                <Dock
-                  index={index}
-                  onGoTo={onGoTo}
-                  show={dockOn}
-                  className="lg:order-3 lg:col-span-2 lg:justify-self-center xl:order-2 xl:col-span-1 xl:self-end"
-                />
-              </div>
+      {/* A size container, so everything below lg scales with its width. */}
+      <div className="@container relative mx-auto flex w-full max-w-[44rem] flex-col lg:min-h-0 lg:max-w-none lg:flex-1">
+        <div className="flex flex-col gap-[3cqw] px-[4cqw] pb-28 pt-[calc(34px+5cqw)] lg:absolute lg:inset-0 lg:gap-4 lg:p-5 lg:pt-[calc(34px+1.25rem)] xl:p-6 xl:pt-[calc(34px+1.5rem)]">
+          {/* Safari and the iPhone, side by side */}
+          <div ref={stageRef} className="flex gap-[3cqw] lg:min-h-0 lg:flex-1 lg:gap-6">
+            <div className="flex min-w-0 flex-1 flex-col">
+              <SafariWindow
+                screens={screens}
+                active={active}
+                onSelect={setActive}
+                host={host}
+                name={project.name}
+                pace={pace}
+                priority={first}
+                inView={visible}
+                onFirstLoaded={markFirstLoaded}
+              />
             </div>
+            <div className="w-[32cqw] shrink-0 lg:flex lg:w-auto lg:items-center lg:py-2">
+              <IPhone17
+                screens={screens}
+                active={active}
+                name={project.name}
+                pace={pace}
+                priority={first}
+                inView={visible}
+                className="w-full lg:h-full lg:max-h-full lg:w-auto"
+              />
+            </div>
+          </div>
+
+          <PillTabs screens={screens} active={active} onSelect={setActive} />
+
+          {/* Information below; from xl the dock sits between the two cards */}
+          <div className="grid shrink-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:items-stretch lg:gap-4 xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] xl:gap-5">
+            <div className="flex lg:order-1 [&>*]:flex-1">
+              <InfoCard project={project} index={index} total={total} onPrev={onPrev} onNext={onNext} />
+            </div>
+            <div className="flex lg:order-2 xl:order-3 [&>*]:flex-1">
+              <SummaryCard project={project} />
+            </div>
+            <Dock
+              index={index}
+              onGoTo={onGoTo}
+              show={dockOn}
+              className="lg:order-3 lg:col-span-2 lg:justify-self-center xl:order-2 xl:col-span-1 xl:self-end"
+            />
           </div>
         </div>
       </div>

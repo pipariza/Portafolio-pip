@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSectionTheme } from "@/lib/section-theme";
+import MacMenuBar from "./MacMenuBar";
 
 const LINKS = [
   { href: "/", label: "Inicio" },
@@ -31,6 +32,18 @@ export default function Nav() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
+
+  // The Work pages are a macOS desktop, so their menu is a macOS menu bar.
+  if (pathname === "/work" || pathname.startsWith("/work/")) {
+    return (
+      <MacMenuBar
+        links={[...LINKS, { href: "/contacto", label: "Contact" }].map((link) => ({
+          ...link,
+          active: isLinkActive(pathname, link.href),
+        }))}
+      />
+    );
+  }
 
   return (
     <header className="fixed top-5 inset-x-0 z-[70] flex justify-center px-4">
