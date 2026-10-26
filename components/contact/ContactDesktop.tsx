@@ -217,9 +217,10 @@ export default function ContactDesktop() {
       style={WALLPAPER}
     >
       <div className="flex flex-col gap-4 px-3 pb-24 pt-[calc(34px+14px)] lg:absolute lg:inset-0 lg:flex-row lg:items-center lg:justify-center lg:gap-10 lg:px-10 lg:pb-0 lg:pt-[34px] 2xl:gap-14">
-        {/* Each slot keeps its size when its window is closed or minimized, so nothing shifts. */}
+        {/* Each slot keeps its size when its window is closed or minimized, so nothing shifts.
+            Stacked (below lg) the Contacts card goes first and Mail below it; side by side Mail is on the left. */}
         <div
-          className="relative min-h-[9rem] w-full lg:h-[560px] lg:w-[min(720px,52vw)] lg:shrink-0 xl:h-[600px] xl:w-[min(780px,54vw)] 2xl:h-[680px] 2xl:w-[900px]"
+          className="relative min-h-[9rem] w-full max-lg:order-2 lg:h-[560px] lg:w-[min(720px,52vw)] lg:shrink-0 xl:h-[600px] xl:w-[min(780px,54vw)] 2xl:h-[680px] 2xl:w-[900px]"
           style={{ zIndex: front === "mail" ? 20 : 10 }}
         >
           <motion.div
@@ -262,7 +263,7 @@ export default function ContactDesktop() {
         </div>
 
         <div
-          className="relative min-h-[9rem] w-full lg:flex lg:h-[560px] lg:w-[340px] lg:shrink-0 lg:items-center xl:h-[600px] xl:w-[360px] 2xl:h-[680px] 2xl:w-[400px]"
+          className="relative min-h-[9rem] w-full max-lg:order-1 lg:flex lg:h-[560px] lg:w-[340px] lg:shrink-0 lg:items-center xl:h-[600px] xl:w-[360px] 2xl:h-[680px] 2xl:w-[400px]"
           style={{ zIndex: front === "card" ? 20 : 10 }}
         >
           {/* The draggable box keeps one size whether or not the window is in it: framer keeps a dragged box at the same relative spot inside its limits, so a box that shrank to nothing would jump when the window came back. */}
