@@ -10,8 +10,16 @@ import {
   type Ref,
 } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { projects, type Project, type ProjectScreen } from "@/lib/data";
+import {
+  EASE,
+  TrafficLights,
+  WINDOW_FX,
+  WINDOW_FX_REDUCED,
+  useMacWindow,
+  type WindowFx,
+} from "@/components/mac/window";
 import {
   DESKTOP_PAGE_WIDTH,
   DESKTOP_RATIO,
@@ -34,81 +42,6 @@ import {
  */
 
 /* ---------- small pieces ---------- */
-
-/**
- * The three window buttons. Their hit areas are wider than the dots (which are
- * tiny on a phone), and the symbols show on hover, like macOS.
- */
-function Light({
-  label,
-  onClick,
-  color,
-  hit,
-  dot,
-  children,
-}: {
-  label: string;
-  onClick: () => void;
-  color: string;
-  hit: string;
-  dot: string;
-  children: ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      onClick={onClick}
-      data-cursor-hover
-      className={`group/light flex h-full items-center justify-center outline-none ${hit}`}
-    >
-      <span
-        className={`flex items-center justify-center rounded-full shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.18)] group-focus-visible/light:ring-2 group-focus-visible/light:ring-[#0078d4] group-focus-visible/light:ring-offset-1 ${dot}`}
-        style={{ background: color }}
-      >
-        {children}
-      </span>
-    </button>
-  );
-}
-
-function TrafficLights({
-  zoomed,
-  onClose,
-  onMinimize,
-  onZoom,
-}: {
-  zoomed: boolean;
-  onClose: () => void;
-  onMinimize: () => void;
-  onZoom: () => void;
-}) {
-  const hit = zoomed ? "w-5" : "w-[max(18px,4.8cqw)] lg:w-5";
-  const dot = zoomed ? "h-3 w-3" : "h-[max(7px,2.4cqw)] w-[max(7px,2.4cqw)] lg:h-3 lg:w-3";
-  // Too small to read on a phone (and nobody hovers there): only shown from lg up or when zoomed.
-  const glyph = `h-[7px] w-[7px] opacity-0 transition-opacity group-hover/lights:opacity-100 group-focus-within/lights:opacity-100 ${
-    zoomed ? "" : "max-lg:hidden"
-  }`;
-  return (
-    <div role="group" aria-label="Controles de la ventana" className="group/lights -ml-1 flex h-full items-center">
-      <Light label="Cerrar ventana" onClick={onClose} color="#ff5f57" hit={hit} dot={dot}>
-        <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" className={`${glyph} text-[#4d0000]/70`} aria-hidden="true">
-          <path d="m2 2 6 6M8 2 2 8" />
-        </svg>
-      </Light>
-      <Light label="Minimizar ventana" onClick={onMinimize} color="#febc2e" hit={hit} dot={dot}>
-        <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" className={`${glyph} text-[#5a3b00]/70`} aria-hidden="true">
-          <path d="M1.5 5h7" />
-        </svg>
-      </Light>
-      <Light label={zoomed ? "Salir de pantalla completa" : "Pantalla completa"} onClick={onZoom} color="#28c840" hit={hit} dot={dot}>
-        <svg viewBox="0 0 10 10" fill="currentColor" className={`${glyph} text-[#0a4d0f]/70`} aria-hidden="true">
-          {zoomed ? <path d="M1 5h4V1zM9 5H5v4z" /> : <path d="M1 1h4L1 5zM9 9H5l4-4z" />}
-        </svg>
-      </Light>
-    </div>
-  );
-}
 
 function Widget({ className = "", children }: { className?: string; children: ReactNode }) {
   return (
@@ -211,45 +144,6 @@ function SummaryCard({ project }: { project: Project }) {
 }
 
 /* ---------- the windows ---------- */
-
-const EASE = [0.16, 0.84, 0.44, 1] as const;
-
-/** Where a window is heading (or coming from) when it is closed or minimized into the dock. */
-type WindowFx = { kind: "close" | "minimize"; x: number; y: number };
-
-const WINDOW_FX: Variants = {
-  hidden: (fx: WindowFx) =>
-    fx.kind === "minimize"
-      ? { opacity: 0, scale: 0.12, x: fx.x, y: fx.y }
-      : { opacity: 0, scale: 0.94, x: 0, y: 0 },
-  shown: {
-    opacity: 1,
-    scale: 1,
-    x: 0,
-    y: 0,
-    transition: { duration: 0.45, ease: EASE },
-  },
-  gone: (fx: WindowFx) =>
-    fx.kind === "minimize"
-      ? {
-          opacity: [1, 1, 0],
-          scale: 0.12,
-          x: fx.x,
-          y: fx.y,
-          transition: {
-            duration: 0.5,
-            ease: [0.5, 0, 0.75, 0],
-            opacity: { duration: 0.5, times: [0, 0.7, 1] },
-          },
-        }
-      : { opacity: 0, scale: 0.92, transition: { duration: 0.18 } },
-};
-
-const WINDOW_FX_REDUCED: Variants = {
-  hidden: { opacity: 0 },
-  shown: { opacity: 1, transition: { duration: 0.01 } },
-  gone: { opacity: 0, transition: { duration: 0.01 } },
-};
 
 function SafariWindow({
   screens,
@@ -723,12 +617,21 @@ export default function ProjectMac({
 }) {
   const [active, setActive] = useState(0);
   // Safari's window: open, closed (a Safari icon stays on the desktop) or
-  // minimized (a thumbnail waits in the dock); `zoomed` is full screen.
-  const [win, setWin] = useState<"open" | "closed" | "minimized">("open");
-  const [zoomed, setZoomed] = useState(false);
-  const [fx, setFx] = useState<WindowFx>({ kind: "close", x: 0, y: 0 });
-  const windowRef = useRef<HTMLDivElement>(null);
+  // minimized (a thumbnail waits in the dock, at its right end); zoomed is full screen.
   const dockRef = useRef<HTMLElement>(null);
+  const {
+    win,
+    zoomed,
+    fx,
+    ref: windowRef,
+    close: closeWindow,
+    minimize: minimizeWindow,
+    open: openWindow,
+    toggleZoom,
+  } = useMacWindow(() => {
+    const d = dockRef.current?.getBoundingClientRect();
+    return d ? { x: d.right - 30, y: d.top + d.height / 2 } : null;
+  });
   const shortcutRef = useRef<HTMLButtonElement>(null);
   const restoreRef = useRef<HTMLButtonElement>(null);
   const pace = project.tourPace ?? 1;
@@ -786,58 +689,11 @@ export default function ProjectMac({
     return () => window.removeEventListener("keydown", onKey);
   }, [visible, zoomed, onNext, onPrev]);
 
-  // Full screen: Esc leaves it, and the page behind does not scroll.
-  useEffect(() => {
-    if (!zoomed) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setZoomed(false);
-    };
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    // The Work carousel is a horizontal scroller around this window: freeze it
-    // too, or a swipe on the full-screen window would slide the page behind it.
-    let scroller = windowRef.current?.parentElement ?? null;
-    while (scroller && !/(auto|scroll)/.test(getComputedStyle(scroller).overflowX)) {
-      scroller = scroller.parentElement;
-    }
-    const previousX = scroller?.style.overflowX ?? "";
-    if (scroller) scroller.style.overflowX = "hidden";
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = previous;
-      if (scroller) scroller.style.overflowX = previousX;
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [zoomed]);
-
   // Keyboard users lose their place when the window disappears: hand the focus to what replaces it.
   useEffect(() => {
     if (win === "closed") shortcutRef.current?.focus({ preventScroll: true });
     if (win === "minimized") restoreRef.current?.focus({ preventScroll: true });
   }, [win]);
-
-  const closeWindow = () => {
-    setFx({ kind: "close", x: 0, y: 0 });
-    setZoomed(false);
-    setWin("closed");
-  };
-  const minimizeWindow = () => {
-    // Aim at the right end of the dock, where the window's thumbnail will wait.
-    const w = windowRef.current?.getBoundingClientRect();
-    const d = dockRef.current?.getBoundingClientRect();
-    setFx(
-      w && d
-        ? {
-            kind: "minimize",
-            x: d.right - 30 - (w.left + w.width / 2),
-            y: d.top + d.height / 2 - (w.top + w.height / 2),
-          }
-        : { kind: "close", x: 0, y: 0 },
-    );
-    setZoomed(false);
-    setWin("minimized");
-  };
-  const openWindow = () => setWin("open");
 
   const wallpaperStyle = {
     background: `radial-gradient(900px 600px at 18% 8%, ${wallpaper[0]}, transparent 70%), radial-gradient(1000px 700px at 92% 96%, ${wallpaper[2]}, transparent 65%), radial-gradient(700px 500px at 60% 40%, ${wallpaper[1]}, transparent 70%), linear-gradient(135deg, ${wallpaper[0]}, ${wallpaper[2]})`,
@@ -875,7 +731,7 @@ export default function ProjectMac({
                     windowRef={windowRef}
                     onClose={closeWindow}
                     onMinimize={minimizeWindow}
-                    onZoom={() => setZoomed((z) => !z)}
+                    onZoom={toggleZoom}
                   />
                 )}
                 {win === "closed" && (

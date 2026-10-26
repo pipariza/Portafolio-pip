@@ -4,7 +4,9 @@ export const SITE_URL = "https://www.pipariza.digital";
 export const FORMSPREE_ENDPOINT = "https://formspree.io/f/moeqjekg";
 
 export const CONTACT = {
-  linkedin: { label: "LinkedIn", href: "https://linkedin.com/in/pip-ariza" },
+  // Pip's real LinkedIn goes here ({ label: "LinkedIn", href: "https://linkedin.com/in/…" });
+  // until then the Contacts card simply leaves that row out.
+  linkedin: null as { label: string; href: string } | null,
   instagram: { label: "Instagram", href: "https://instagram.com/piparizaa" },
   email: "pipariza27@gmail.com",
   whatsapp: { label: "+57 315 575 8792", href: "https://wa.me/573155758792" },
