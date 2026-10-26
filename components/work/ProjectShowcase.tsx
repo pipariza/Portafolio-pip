@@ -18,8 +18,8 @@ export const MOBILE_PAGE_WIDTH = 500;
 
 // `sizes` and quality of the screenshots, shared with the prefetch so it asks
 // the image optimizer for exactly the files the visible tab will need.
-export const DESKTOP_SIZES = "(min-width: 1024px) 45vw, 90vw";
-export const PHONE_SIZES = "(min-width: 1024px) 12vw, 25vw";
+export const DESKTOP_SIZES = "(min-width: 1024px) 76vw, 62vw";
+export const PHONE_SIZES = "(min-width: 1024px) 19vw, 28vw";
 const SHOT_QUALITY = 60;
 
 // The font the captured site uses for the labels it draws over its videos.

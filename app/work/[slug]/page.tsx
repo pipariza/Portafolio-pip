@@ -12,7 +12,9 @@ export async function generateMetadata({
 }: PageProps<"/work/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const project = projects.find((p) => p.slug === slug);
-  return { title: project ? `${project.name} — Pip Ariza` : "Proyecto" };
+  return project
+    ? { title: `${project.name} — Pip Ariza`, description: project.summary }
+    : { title: "Proyecto" };
 }
 
 export default async function WorkDetailPage({

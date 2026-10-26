@@ -794,9 +794,18 @@ export default function ProjectMac({
     };
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    // The Work carousel is a horizontal scroller around this window: freeze it
+    // too, or a swipe on the full-screen window would slide the page behind it.
+    let scroller = windowRef.current?.parentElement ?? null;
+    while (scroller && !/(auto|scroll)/.test(getComputedStyle(scroller).overflowX)) {
+      scroller = scroller.parentElement;
+    }
+    const previousX = scroller?.style.overflowX ?? "";
+    if (scroller) scroller.style.overflowX = "hidden";
     window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = previous;
+      if (scroller) scroller.style.overflowX = previousX;
       window.removeEventListener("keydown", onKey);
     };
   }, [zoomed]);
