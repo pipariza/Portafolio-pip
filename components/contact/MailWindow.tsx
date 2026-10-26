@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent, type KeyboardEvent, type Ref } from "react";
+import { useState, type FormEvent, type KeyboardEvent, type PointerEvent, type Ref } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { CONTACT, FORMSPREE_ENDPOINT } from "@/lib/config";
 import {
@@ -39,6 +39,7 @@ export default function MailWindow({
   onZoom,
   onSent,
   onError,
+  onTitlePointerDown,
 }: {
   draft: Draft;
   onDraft: (patch: Partial<Draft>) => void;
@@ -50,9 +51,18 @@ export default function MailWindow({
   onZoom: () => void;
   onSent: () => void;
   onError: () => void;
+  /** Drag the window by its title bar (only given where windows can be dragged). */
+  onTitlePointerDown?: (event: PointerEvent<HTMLElement>) => void;
 }) {
   const reduce = useReducedMotion();
   const [sending, setSending] = useState(false);
+
+  function startDrag(event: PointerEvent<HTMLElement>) {
+    if (!onTitlePointerDown || zoomed) return;
+    // The buttons and fields in the bar keep working as buttons and fields.
+    if ((event.target as HTMLElement).closest("button, a, input, select, textarea")) return;
+    onTitlePointerDown(event);
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -102,7 +112,10 @@ export default function MailWindow({
         {/* Honeypot: invisible to people, bots fill it and Formspree drops the submission. */}
         <input type="text" name="_gotcha" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
 
-        <div className="relative flex h-[52px] shrink-0 items-center gap-3 border-b border-white/[0.09] bg-[rgba(54,54,58,0.92)] px-4">
+        <div
+          onPointerDown={startDrag}
+          className="relative flex h-[52px] shrink-0 select-none items-center gap-3 border-b border-white/[0.09] bg-[rgba(54,54,58,0.92)] px-4 lg:touch-none"
+        >
           <TrafficLights fixedSize zoomed={zoomed} onClose={onClose} onMinimize={onMinimize} onZoom={onZoom} />
           <p className="pointer-events-none absolute inset-x-0 text-center text-[13px] font-semibold text-white/60 max-sm:hidden">
             Nuevo mensaje

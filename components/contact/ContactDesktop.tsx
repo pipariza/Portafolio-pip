@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode, type Ref } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode, type Ref } from "react";
+import { AnimatePresence, animate, motion, useDragControls, useMotionValue } from "framer-motion";
 import { EASE, useMacWindow } from "@/components/mac/window";
 import MailWindow, { EMPTY_DRAFT, type Draft } from "./MailWindow";
 import ContactsWindow from "./ContactsWindow";
@@ -14,12 +14,23 @@ import { ContactsAppIcon, MailAppIcon } from "./icons";
  * and two windows with working traffic lights: Mail ("Nuevo mensaje", the
  * form) and Contacts (Pip's card). A closed window leaves its app icon on the
  * desktop; a minimized one waits in a small dock that slides up from the bottom.
+ * From lg up the windows can be dragged by their title bar (inside the desktop,
+ * under the menu bar) and the one you touch comes to the front.
  */
 
 const WALLPAPER = {
   background:
     "radial-gradient(900px 600px at 14% 8%, rgba(86,104,170,0.55), transparent 65%), radial-gradient(1000px 700px at 90% 100%, rgba(122,78,150,0.5), transparent 62%), radial-gradient(700px 500px at 62% 42%, rgba(40,70,96,0.55), transparent 70%), linear-gradient(135deg, #10131b, #1a1626)",
 };
+
+// Windows can be dragged from lg up; below that they are stacked in the page.
+const DRAG_QUERY = "(min-width: 1024px)";
+function subscribeDrag(onChange: () => void) {
+  const query = window.matchMedia(DRAG_QUERY);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+}
+const canDragNow = () => window.matchMedia(DRAG_QUERY).matches;
 
 /** What is left where a window was, once it is closed. */
 function DesktopShortcut({
@@ -126,6 +137,52 @@ export default function ContactDesktop() {
   const mail = useMacWindow(flyTo);
   const card = useMacWindow(flyTo);
 
+  // Dragging: each window's offset from its slot lives here, so a window that is
+  // closed or minimized comes back where it was left.
+  const canDrag = useSyncExternalStore(subscribeDrag, canDragNow, () => false);
+  const boundsRef = useRef<HTMLDivElement>(null);
+  const mailX = useMotionValue(0);
+  const mailY = useMotionValue(0);
+  const cardX = useMotionValue(0);
+  const cardY = useMotionValue(0);
+  const mailDrag = useDragControls();
+  const cardDrag = useDragControls();
+  const [front, setFront] = useState<"mail" | "card">("mail");
+
+  // Back to the stacked layout (a narrower window, a tablet turned upright): back to the slots.
+  useEffect(() => {
+    if (canDrag) return;
+    mailX.set(0);
+    mailY.set(0);
+    cardX.set(0);
+    cardY.set(0);
+  }, [canDrag, mailX, mailY, cardX, cardY]);
+
+  // Full screen sits in a transformed box otherwise, so Mail glides home first and
+  // returns to where it was when full screen ends (by the button, Esc or minimizing).
+  const savedMail = useRef({ x: 0, y: 0 });
+  const toggleMailZoom = () => {
+    if (!mail.zoomed) {
+      savedMail.current = { x: mailX.get(), y: mailY.get() };
+      if (savedMail.current.x || savedMail.current.y) {
+        animate(mailX, 0, { duration: 0.25 });
+        animate(mailY, 0, { duration: 0.25 });
+        window.setTimeout(mail.toggleZoom, 260);
+        return;
+      }
+    }
+    mail.toggleZoom();
+  };
+  useEffect(() => {
+    if (mail.zoomed) return;
+    const { x, y } = savedMail.current;
+    if (x || y) {
+      animate(mailX, x, { duration: 0.3, delay: 0.4 });
+      animate(mailY, y, { duration: 0.3, delay: 0.4 });
+    }
+    savedMail.current = { x: 0, y: 0 };
+  }, [mail.zoomed, mailX, mailY]);
+
   const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
   const [toast, setToast] = useState<Toast | null>(null);
 
@@ -161,23 +218,41 @@ export default function ContactDesktop() {
     >
       <div className="flex flex-col gap-4 px-3 pb-24 pt-[calc(34px+14px)] lg:absolute lg:inset-0 lg:flex-row lg:items-center lg:justify-center lg:gap-10 lg:px-10 lg:pb-0 lg:pt-[34px] 2xl:gap-14">
         {/* Each slot keeps its size when its window is closed or minimized, so nothing shifts. */}
-        <div className="relative min-h-[9rem] w-full lg:h-[560px] lg:w-[min(720px,52vw)] lg:shrink-0 xl:h-[600px] xl:w-[min(780px,54vw)] 2xl:h-[680px] 2xl:w-[900px]">
-          <AnimatePresence initial={false} custom={mail.fx}>
-            {mail.win === "open" && (
-              <MailWindow
-                key="mail"
-                draft={draft}
-                onDraft={(patch) => setDraft((d) => ({ ...d, ...patch }))}
-                zoomed={mail.zoomed}
-                fx={mail.fx}
-                windowRef={mail.ref}
-                onClose={mail.close}
-                onMinimize={mail.minimize}
-                onZoom={mail.toggleZoom}
-                onSent={sent}
-                onError={failed}
-              />
-            )}
+        <div
+          className="relative min-h-[9rem] w-full lg:h-[560px] lg:w-[min(720px,52vw)] lg:shrink-0 xl:h-[600px] xl:w-[min(780px,54vw)] 2xl:h-[680px] 2xl:w-[900px]"
+          style={{ zIndex: front === "mail" ? 20 : 10 }}
+        >
+          <motion.div
+            style={{ x: mailX, y: mailY }}
+            drag={canDrag}
+            dragControls={mailDrag}
+            dragListener={false}
+            dragConstraints={boundsRef}
+            dragElastic={0}
+            dragMomentum={false}
+            onPointerDown={() => setFront("mail")}
+            className="h-full w-full"
+          >
+            <AnimatePresence initial={false} custom={mail.fx}>
+              {mail.win === "open" && (
+                <MailWindow
+                  key="mail"
+                  draft={draft}
+                  onDraft={(patch) => setDraft((d) => ({ ...d, ...patch }))}
+                  zoomed={mail.zoomed}
+                  fx={mail.fx}
+                  windowRef={mail.ref}
+                  onClose={mail.close}
+                  onMinimize={mail.minimize}
+                  onZoom={toggleMailZoom}
+                  onSent={sent}
+                  onError={failed}
+                  onTitlePointerDown={canDrag ? (e) => mailDrag.start(e) : undefined}
+                />
+              )}
+            </AnimatePresence>
+          </motion.div>
+          <AnimatePresence initial={false}>
             {mail.win === "closed" && (
               <DesktopShortcut key="mail-shortcut" label="Mail" aria="Abrir Mail: nuevo mensaje" onOpen={mail.open} buttonRef={mailShortcutRef}>
                 <MailAppIcon />
@@ -186,17 +261,36 @@ export default function ContactDesktop() {
           </AnimatePresence>
         </div>
 
-        <div className="relative min-h-[9rem] w-full lg:flex lg:h-[560px] lg:w-[340px] lg:shrink-0 lg:items-center xl:h-[600px] xl:w-[360px] 2xl:h-[680px] 2xl:w-[400px]">
-          <AnimatePresence initial={false} custom={card.fx}>
-            {card.win === "open" && (
-              <ContactsWindow
-                key="card"
-                fx={card.fx}
-                windowRef={card.ref}
-                onClose={card.close}
-                onMinimize={card.minimize}
-              />
-            )}
+        <div
+          className="relative min-h-[9rem] w-full lg:flex lg:h-[560px] lg:w-[340px] lg:shrink-0 lg:items-center xl:h-[600px] xl:w-[360px] 2xl:h-[680px] 2xl:w-[400px]"
+          style={{ zIndex: front === "card" ? 20 : 10 }}
+        >
+          {/* The draggable box keeps one size whether or not the window is in it: framer keeps a dragged box at the same relative spot inside its limits, so a box that shrank to nothing would jump when the window came back. */}
+          <motion.div
+            style={{ x: cardX, y: cardY }}
+            drag={canDrag}
+            dragControls={cardDrag}
+            dragListener={false}
+            dragConstraints={boundsRef}
+            dragElastic={0}
+            dragMomentum={false}
+            onPointerDown={() => setFront("card")}
+            className="w-full lg:h-[600px] 2xl:h-[640px]"
+          >
+            <AnimatePresence initial={false} custom={card.fx}>
+              {card.win === "open" && (
+                <ContactsWindow
+                  key="card"
+                  fx={card.fx}
+                  windowRef={card.ref}
+                  onClose={card.close}
+                  onMinimize={card.minimize}
+                  onTitlePointerDown={canDrag ? (e) => cardDrag.start(e) : undefined}
+                />
+              )}
+            </AnimatePresence>
+          </motion.div>
+          <AnimatePresence initial={false}>
             {card.win === "closed" && (
               <DesktopShortcut key="card-shortcut" label="Contactos" aria="Abrir Contactos" onOpen={card.open} buttonRef={cardShortcutRef}>
                 <ContactsAppIcon />
@@ -205,6 +299,13 @@ export default function ContactDesktop() {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* The area the windows can be dragged in: the desktop under the menu bar. */}
+      <div
+        ref={boundsRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-2 bottom-2 top-[calc(34px+0.5rem)] max-lg:hidden"
+      />
 
       <MiniDock show={mail.win === "minimized" || card.win === "minimized"}>
         {mail.win === "minimized" && (

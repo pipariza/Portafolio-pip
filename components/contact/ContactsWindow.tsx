@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode, type Ref } from "react";
+import { useState, type PointerEvent, type ReactNode, type Ref } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { CONTACT } from "@/lib/config";
 import {
@@ -72,13 +72,23 @@ export default function ContactsWindow({
   windowRef,
   onClose,
   onMinimize,
+  onTitlePointerDown,
 }: {
   fx: WindowFx;
   windowRef: Ref<HTMLDivElement>;
   onClose: () => void;
   onMinimize: () => void;
+  /** Drag the window by its title bar (only given where windows can be dragged). */
+  onTitlePointerDown?: (event: PointerEvent<HTMLElement>) => void;
 }) {
   const reduce = useReducedMotion();
+
+  function startDrag(event: PointerEvent<HTMLElement>) {
+    if (!onTitlePointerDown) return;
+    // The buttons in the bar keep working as buttons.
+    if ((event.target as HTMLElement).closest("button, a")) return;
+    onTitlePointerDown(event);
+  }
 
   return (
     <motion.div
@@ -88,9 +98,12 @@ export default function ContactsWindow({
       initial="hidden"
       animate="shown"
       exit="gone"
-      className="relative w-full overflow-hidden rounded-[14px] bg-[rgba(38,38,41,0.9)] text-[#f5f5f7] shadow-[0_0_0_0.5px_rgba(255,255,255,0.14),0_40px_80px_-20px_rgba(0,0,0,0.7),0_12px_28px_-10px_rgba(0,0,0,0.5)] backdrop-blur-[40px] backdrop-saturate-[1.6]"
+      className="relative w-full overflow-hidden rounded-[14px] bg-[rgba(38,38,41,0.9)] lg:h-full text-[#f5f5f7] shadow-[0_0_0_0.5px_rgba(255,255,255,0.14),0_40px_80px_-20px_rgba(0,0,0,0.7),0_12px_28px_-10px_rgba(0,0,0,0.5)] backdrop-blur-[40px] backdrop-saturate-[1.6]"
     >
-      <div className="relative flex h-[52px] items-center border-b border-white/[0.09] bg-[rgba(54,54,58,0.92)] px-4">
+      <div
+        onPointerDown={startDrag}
+        className="relative flex h-[52px] select-none items-center border-b border-white/[0.09] bg-[rgba(54,54,58,0.92)] px-4 lg:touch-none"
+      >
         <TrafficLights fixedSize canZoom={false} onClose={onClose} onMinimize={onMinimize} onZoom={() => {}} />
         <p className="pointer-events-none absolute inset-x-0 text-center text-[13px] font-semibold text-white/60">
           Contactos
