@@ -196,7 +196,7 @@ export default function VideoModal({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
           // --reserve: the height the title, the toolbar and the margins take; the video gets the rest.
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-3 bg-black/70 px-3 backdrop-blur-xl [--reserve:9rem] [@media(max-height:520px)]:[--reserve:6rem]"
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-3 bg-black/35 px-3 backdrop-blur-md [--reserve:9rem] [@media(max-height:520px)]:[--reserve:6rem]"
           onClick={onClose}
         >
           <h2 className="text-[15px] font-extrabold uppercase leading-none tracking-[0.04em] text-white md:text-[20px] [@media(max-height:520px)]:hidden">
@@ -217,7 +217,7 @@ export default function VideoModal({
                 width: "max(calc(var(--vw) + 1.5rem), min(300px, calc(100vw - 1.5rem)))",
               } as CSSProperties
             }
-            className="flex flex-col overflow-hidden rounded-[14px] bg-[rgba(38,38,41,0.9)] shadow-[0_0_0_0.5px_rgba(255,255,255,0.18),0_40px_90px_-20px_rgba(0,0,0,0.8)] backdrop-blur-[40px] backdrop-saturate-[1.6]"
+            className="flex flex-col overflow-hidden rounded-[14px] bg-[rgba(34,34,38,0.5)] shadow-[0_0_0_0.5px_rgba(255,255,255,0.28),0_40px_90px_-20px_rgba(0,0,0,0.7)] backdrop-blur-[40px] backdrop-saturate-[1.8]"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex h-[52px] shrink-0 items-center gap-1 pl-1 pr-1">
