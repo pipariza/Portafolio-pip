@@ -126,12 +126,8 @@ export default function VideoSection() {
         <h2 className="text-[13vw] leading-[0.95] md:text-[52px] md:leading-[1.05] font-extrabold uppercase">
           Edición de
           <br />
-          Video Vertical
+          Video
         </h2>
-      </div>
-
-      <div className="md:absolute md:right-10 lg:right-16 md:top-1/2 md:-translate-y-1/2 px-6 md:px-0 text-center md:text-right mb-14 md:mb-0">
-        <p className="italic font-medium text-2xl md:text-[26px]">Motion</p>
       </div>
 
       <div
