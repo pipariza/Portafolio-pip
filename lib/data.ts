@@ -528,38 +528,48 @@ export type AppProject = {
   color: string;
   /** Path under /public, e.g. "/apps/app-uno.jpg". Falls back to `color` when unset. */
   image?: string;
+  /** The small line above the name on the app's page (e.g. where the app was built). */
+  kicker?: string;
+  /** Apps with an interactive "how it works" demo on their page (components/apps/demo). */
+  demo?: DemoId;
 };
 
+/** The apps that have a step-by-step demo; their steps live in lib/i18n/app-demos.ts. */
+export type DemoId = "tareas" | "cronogramas" | "asistente";
+
 /** The apps' own data; their role and description are in lib/i18n/projects.ts (`getApps(lang)`). */
-export type AppData = Omit<AppProject, "role" | "description">;
+export type AppData = Omit<AppProject, "role" | "description" | "kicker">;
 
 export const appData: AppData[] = [
   {
-    slug: "app-uno",
-    name: "App Uno",
-    label: "APP UNO",
-    year: "2025",
-    stack: "Next.js, OpenAI API, Postgres",
+    slug: "tareas",
+    name: "Tareas",
+    label: "TAREAS",
+    year: "2026",
+    stack: "Next.js, Supabase, Resend",
     rotation: -6,
     color: "#35342f",
+    demo: "tareas",
   },
   {
-    slug: "app-dos",
-    name: "App Dos",
-    label: "APP DOS",
-    year: "2025",
-    stack: "Next.js, Vercel AI SDK",
+    slug: "cronogramas",
+    name: "Cronogramas",
+    label: "CRONOGRAMAS",
+    year: "2026",
+    stack: "Next.js, Supabase Storage, dnd-kit",
     rotation: 4,
     color: "#3d3b36",
+    demo: "cronogramas",
   },
   {
-    slug: "app-tres",
-    name: "App Tres",
-    label: "APP TRES",
-    year: "2024",
-    stack: "React, Node, Claude API",
+    slug: "asistente-ia",
+    name: "Asistente IA",
+    label: "ASISTENTE IA",
+    year: "2026",
+    stack: "Gemini API, Next.js, Supabase",
     rotation: -3,
     color: "#2e2d2b",
+    demo: "asistente",
   },
   {
     slug: "app-cuatro",

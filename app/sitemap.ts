@@ -1,15 +1,16 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/config";
-import { projectData } from "@/lib/data";
+import { appData, projectData } from "@/lib/data";
 import { locales } from "@/lib/i18n/config";
 import { localizeHref } from "@/lib/i18n/routes";
 
-// The main pages and each Work project (the Apps detail pages are still placeholders).
+// The main pages, each Work project and each real app (the placeholder apps are left out).
 const PATHS = [
   "/",
   "/work",
   ...projectData.map((project) => `/work/${project.slug}`),
   "/apps",
+  ...appData.filter((app) => app.demo).map((app) => `/apps/${app.slug}`),
   "/video",
   "/about",
   "/contacto",

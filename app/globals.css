@@ -96,3 +96,14 @@ body {
   background: rgba(128, 128, 128, 0.35);
   border-radius: 9999px;
 }
+
+/* The progress bar of the current step of an app's "how it works" demo (components/apps/demo):
+   when it finishes, the demo moves to the next step. */
+@keyframes demo-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}

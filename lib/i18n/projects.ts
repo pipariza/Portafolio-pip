@@ -57,27 +57,33 @@ export function getProjects(lang: Locale): Project[] {
   });
 }
 
-// Placeholder apps of the Apps page: their texts will be replaced by the real ones.
-const APP_TEXTS: Record<string, { role: Bi; description: Bi }> = {
-  "app-uno": {
-    role: { es: "Producto & Desarrollo", en: "Product & Development" },
+// The apps of the Apps page. The first three are the real modules of Visual's internal
+// platform (their step-by-step demo is in lib/i18n/app-demos.ts); the rest are placeholders
+// whose texts will be replaced by the real ones.
+const VISUAL_KICKER: Bi = { es: "Plataforma interna de Visual", en: "Visual's internal platform" };
+const APP_TEXTS: Record<string, { role: Bi; description: Bi; kicker?: Bi }> = {
+  tareas: {
+    kicker: VISUAL_KICKER,
+    role: { es: "Producto & Desarrollo Full-stack", en: "Product & Full-stack Development" },
     description: {
-      es: "Aplicativo con IA para automatizar reportes internos a partir de datos crudos.",
-      en: "AI app that automates internal reports from raw data.",
+      es: "Organiza el trabajo del equipo por semanas: el admin asigna, cada colaborador ve y avanza solo lo suyo, y el sistema avisa por correo antes de que algo venza.",
+      en: "Organizes the team's work by week: the admin assigns, each collaborator sees and moves forward only their own tasks, and the system sends an email before anything is due.",
     },
   },
-  "app-dos": {
-    role: { es: "Desarrollo Full-stack", en: "Full-stack Development" },
+  cronogramas: {
+    kicker: VISUAL_KICKER,
+    role: { es: "Producto & Desarrollo Full-stack", en: "Product & Full-stack Development" },
     description: {
-      es: "Asistente conversacional para soporte de primer nivel.",
-      en: "Conversational assistant for first-level support.",
+      es: "Planea las publicaciones de redes de cada marca en una grilla como la de Instagram. El cliente revisa, edita captions, deja notas y aprueba desde un link, sin crear cuenta.",
+      en: "Plans each brand's social media posts on an Instagram-like grid. The client reviews, edits captions, leaves notes and approves from a link, without creating an account.",
     },
   },
-  "app-tres": {
-    role: { es: "Producto & Diseño", en: "Product & Design" },
+  "asistente-ia": {
+    kicker: VISUAL_KICKER,
+    role: { es: "Producto & Desarrollo con IA", en: "Product & AI Development" },
     description: {
-      es: "Generador de propuestas comerciales asistido por IA.",
-      en: "AI-assisted commercial proposal generator.",
+      es: "Un chat con IA dentro de la plataforma que responde, en lenguaje natural, sobre las tareas y los cronogramas que cada persona tiene permitido ver.",
+      en: "An AI chat inside the platform that answers, in plain language, about the tasks and schedules each person is allowed to see.",
     },
   },
   "app-cuatro": {
@@ -99,6 +105,6 @@ const APP_TEXTS: Record<string, { role: Bi; description: Bi }> = {
 export function getApps(lang: Locale): AppProject[] {
   return appData.map((a) => {
     const text = APP_TEXTS[a.slug];
-    return { ...a, role: text.role[lang], description: text.description[lang] };
+    return { ...a, role: text.role[lang], description: text.description[lang], kicker: text.kicker?.[lang] };
   });
 }
