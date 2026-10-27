@@ -46,7 +46,8 @@ import {
 function Widget({ className = "", children }: { className?: string; children: ReactNode }) {
   return (
     <div
-      className={`min-w-0 rounded-[20px] bg-white/60 shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.7),0_18px_40px_-16px_rgba(40,50,50,0.4)] backdrop-blur-3xl backdrop-saturate-150 ${className}`}
+      // The same glass as the dock (and the Apps page's): a faint dark tint, a hairline border, a soft blur.
+      className={`min-w-0 rounded-[20px] border border-[rgba(20,19,16,0.08)] bg-[rgba(20,19,16,0.05)] backdrop-blur-[18px] ${className}`}
     >
       {children}
     </div>
