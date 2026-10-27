@@ -496,12 +496,13 @@ function Dock({
           >
             <span
               className={`absolute inset-0 flex items-center justify-center overflow-hidden rounded-[14px] text-[15px] font-bold tracking-tight shadow-[0_6px_14px_-4px_rgba(0,0,0,0.4),0_0_0_0.5px_rgba(0,0,0,0.18)] transition-transform duration-200 ease-out group-hover/dock:-translate-y-2 group-hover/dock:scale-110 sm:text-[17px] lg:text-[14px] xl:text-[19px] ${
-                on ? "-translate-y-1.5 scale-105" : ""
-              }`}
+                dock.logo ? "ring-1 ring-black/10" : ""
+              } ${on ? "-translate-y-1.5 scale-105" : ""}`}
               style={{ background: dock.bg, color: dock.fg }}
             >
               {dock.logo ? (
-                <Image src={dock.logo} alt="" fill sizes="64px" className="object-contain p-2" />
+                // The brand's own square icon, edge to edge.
+                <Image src={dock.logo} alt="" fill sizes="64px" className="object-cover" />
               ) : (
                 dock.label
               )}

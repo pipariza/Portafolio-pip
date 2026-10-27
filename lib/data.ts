@@ -69,14 +69,14 @@ export type Project = {
   layout?: "mac";
   /** Desktop wallpaper colors for the Mac layout: top-left glow, middle, bottom-right. */
   wallpaper?: [string, string, string];
-  /** Dock icon in the Mac layout: a flat color with initials until the brand's logo (`logo`, path under /public) is added. */
+  /** Dock icon in the Mac layout: the brand's `logo` (a complete square icon, path under /public, shown full bleed), or a flat color with initials when there is none. `bg` also colors the little site icon on the Safari tabs. */
   dock?: { bg: string; fg: string; label: string; logo?: string };
 };
 
 export const projects: Project[] = [
   {
     slug: "visual-living",
-    dock: { bg: "#161616", fg: "#ffffff", label: "VL" },
+    dock: { bg: "#161616", fg: "#ffffff", label: "VL", logo: "/work/visual-living/logo.png" },
     name: "Visual Living",
     role: "Diseño & Desarrollo web",
     year: "2025",
@@ -191,7 +191,7 @@ export const projects: Project[] = [
   },
   {
     slug: "el-departamento",
-    dock: { bg: "#22e48f", fg: "#06210f", label: "DP" },
+    dock: { bg: "#22e48f", fg: "#06210f", label: "DP", logo: "/work/el-departamento/logo.png" },
     layout: "mac",
     wallpaper: ["#e6f3ec", "#c3cde0", "#6b739a"],
     name: "El Departamento",
@@ -288,7 +288,7 @@ export const projects: Project[] = [
   },
   {
     slug: "el-costurero-de-meme",
-    dock: { bg: "#a9722b", fg: "#fff7e6", label: "CM" },
+    dock: { bg: "#a9722b", fg: "#fff7e6", label: "CM", logo: "/work/el-costurero-de-meme/logo.png" },
     layout: "mac",
     wallpaper: ["#fcefe4", "#eadacd", "#c4a088"],
     name: "El Costurero de Meme",
@@ -352,7 +352,7 @@ export const projects: Project[] = [
   },
   {
     slug: "mar-de-palma",
-    dock: { bg: "#a87b5b", fg: "#ffffff", label: "MP" },
+    dock: { bg: "#a87b5b", fg: "#ffffff", label: "MP", logo: "/work/mar-de-palma/logo.png" },
     layout: "mac",
     wallpaper: ["#f9efe3", "#ebdac7", "#b79b7e"],
     name: "Mar de Palma",
@@ -476,7 +476,7 @@ export const projects: Project[] = [
   },
   {
     slug: "feria-eva",
-    dock: { bg: "#d9739a", fg: "#ffffff", label: "EV" },
+    dock: { bg: "#d9739a", fg: "#ffffff", label: "EV", logo: "/work/feria-eva/logo.png" },
     layout: "mac",
     wallpaper: ["#fde8eb", "#e9c9c8", "#b98a8c"],
     name: "Feria EVA",
