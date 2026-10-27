@@ -77,13 +77,13 @@ export function DockTile({
       <span
         className={`absolute inset-0 block overflow-hidden rounded-[10px] transition-transform duration-200 ease-out group-hover/tile:-translate-y-1.5 group-focus-visible/tile:ring-2 group-focus-visible/tile:ring-[#0a84ff] ${
           dark
-            ? "bg-[#2a2166] shadow-[0_6px_14px_-4px_rgba(8,4,40,0.6),0_0_0_0.5px_rgba(196,185,255,0.35)]"
+            ? "bg-[#26262a] shadow-[0_6px_14px_-4px_rgba(0,0,0,0.6),0_0_0_0.5px_rgba(255,255,255,0.22)]"
             : "bg-white shadow-[0_6px_14px_-4px_rgba(0,0,0,0.4),0_0_0_0.5px_rgba(0,0,0,0.25)]"
         }`}
       >
         <span
           className={`absolute inset-x-0 top-0 flex h-[24%] items-center gap-[7%] px-[9%] ${
-            dark ? "bg-[#4c3fa8]" : "bg-[#f3f1ee]"
+            dark ? "bg-[#3a3a3e]" : "bg-[#f3f1ee]"
           }`}
         >
           <i className="block h-[24%] w-[9%] rounded-full bg-[#ff5f57]" />
@@ -117,7 +117,7 @@ export function MiniDock({
           exit={{ opacity: 0, y: 36, transition: { duration: 0.2 } }}
           className={`fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-1/2 z-[60] flex -translate-x-1/2 items-end gap-3 rounded-[26px] px-3.5 pb-2.5 pt-2.5 backdrop-blur-3xl backdrop-saturate-150 ${
             dark
-              ? "bg-[#8b7bff]/[0.22] shadow-[inset_0_0_0_0.5px_rgba(220,212,255,0.3),0_0_0_0.5px_rgba(10,4,44,0.4),0_18px_40px_-12px_rgba(10,4,44,0.75)]"
+              ? "bg-white/[0.12] shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.22),0_0_0_0.5px_rgba(0,0,0,0.3),0_18px_40px_-12px_rgba(0,0,0,0.7)]"
               : "bg-white/60 shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.9),0_0_0_0.5px_rgba(0,0,0,0.14),0_18px_40px_-12px_rgba(30,40,40,0.45)]"
           }`}
         >

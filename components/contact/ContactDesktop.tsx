@@ -21,7 +21,7 @@ import { ContactsAppIcon, MailAppIcon } from "./icons";
 
 const WALLPAPER = {
   background:
-    "radial-gradient(900px 620px at 12% 6%, rgba(112,108,255,0.75), transparent 65%), radial-gradient(1000px 720px at 92% 100%, rgba(236,72,153,0.55), transparent 62%), radial-gradient(760px 540px at 64% 42%, rgba(34,196,190,0.42), transparent 70%), linear-gradient(135deg, #14123a, #2d1259)",
+    "radial-gradient(900px 600px at 14% 8%, rgba(86,104,170,0.55), transparent 65%), radial-gradient(1000px 700px at 90% 100%, rgba(122,78,150,0.5), transparent 62%), radial-gradient(700px 500px at 62% 42%, rgba(40,70,96,0.55), transparent 70%), linear-gradient(135deg, #10131b, #1a1626)",
 };
 
 // Windows can be dragged from lg up; below that they are stacked in the page.
@@ -226,7 +226,7 @@ export default function ContactDesktop() {
             <span className="absolute inset-x-[12%] top-[38%] h-[7%] rounded-full bg-white/25" />
             <span className="absolute inset-x-[12%] top-[52%] h-[7%] rounded-full bg-white/15" />
             <span className="absolute left-[12%] top-[66%] h-[7%] w-[45%] rounded-full bg-white/15" />
-            <span className="absolute bottom-[9%] right-[9%] h-[14%] w-[30%] rounded-full bg-[#8b7bff]" />
+            <span className="absolute bottom-[9%] right-[9%] h-[14%] w-[30%] rounded-full bg-[#0a84ff]" />
           </DockTile>
         )}
         {card.win === "minimized" && (
