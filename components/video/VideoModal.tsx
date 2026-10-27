@@ -148,7 +148,7 @@ const TOOL_BUTTON =
 /**
  * The viewer drawn like macOS's Quick Look window: a dark glass window with a
  * toolbar (close, the clip's name, previous / next) over a dimmed page, and the
- * video inside it with rounded corners. The page's title sits above the window.
+ * video inside it with rounded corners.
  */
 export default function VideoModal({
   clip,
@@ -195,15 +195,10 @@ export default function VideoModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
-          // --reserve: the height the title, the toolbar and the margins take; the video gets the rest.
-          // The title above the window is for phones only: from md up it stays out of the way.
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-3 bg-black/35 px-3 backdrop-blur-md [--reserve:9rem] md:[--reserve:6.5rem] [@media(max-height:520px)]:[--reserve:6rem]"
+          // --reserve: the height the toolbar and the margins take; the video gets the rest.
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/35 px-3 backdrop-blur-md [--reserve:6.5rem]"
           onClick={onClose}
         >
-          <h2 className="text-[15px] font-extrabold uppercase leading-none tracking-[0.04em] text-white md:hidden [@media(max-height:520px)]:hidden">
-            Edición de video
-          </h2>
-
           <motion.div
             key={clip.id}
             initial={{ opacity: 0, scale: 0.94 }}
@@ -215,7 +210,7 @@ export default function VideoModal({
             style={
               {
                 "--vw": "min(calc((100dvh - var(--reserve)) * 9 / 16), calc(100vw - 3.5rem))",
-                width: "max(calc(var(--vw) + 1.5rem), min(300px, calc(100vw - 1.5rem)))",
+                width: "max(calc(var(--vw) + 1rem), min(300px, calc(100vw - 1.5rem)))",
               } as CSSProperties
             }
             className="flex flex-col overflow-hidden rounded-[14px] bg-[rgba(34,34,38,0.5)] shadow-[0_0_0_0.5px_rgba(255,255,255,0.28),0_40px_90px_-20px_rgba(0,0,0,0.7)] backdrop-blur-[40px] backdrop-saturate-[1.8]"
@@ -266,7 +261,7 @@ export default function VideoModal({
             </div>
 
             <div
-              className="relative mx-3 mb-3 shrink-0 self-center overflow-hidden rounded-[10px] bg-black"
+              className="relative mx-2 mb-2 shrink-0 self-center overflow-hidden rounded-lg bg-black"
               style={{ width: "var(--vw)", aspectRatio: "9 / 16" }}
             >
               <ModalPlayer
