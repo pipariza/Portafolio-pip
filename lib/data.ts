@@ -532,13 +532,19 @@ export type AppProject = {
   kicker?: string;
   /** Apps with an interactive "how it works" demo on their page (components/apps/demo). */
   demo?: DemoId;
+  /** Why the app was built (strategic goal); localized in lib/i18n/projects.ts. */
+  objective?: string;
+  /** Hours it took to build (shown as "Tiempo de construcción"). Left out when not known. */
+  hours?: number;
+  /** The tools used (names, the same in both languages); replaces `stack` on the page when set. */
+  tools?: string[];
 };
 
 /** The apps that have a step-by-step demo; their steps live in lib/i18n/app-demos.ts. */
 export type DemoId = "tareas" | "cronogramas" | "asistente";
 
 /** The apps' own data; their role and description are in lib/i18n/projects.ts (`getApps(lang)`). */
-export type AppData = Omit<AppProject, "role" | "description" | "kicker">;
+export type AppData = Omit<AppProject, "role" | "description" | "kicker" | "objective">;
 
 export const appData: AppData[] = [
   {
@@ -550,6 +556,8 @@ export const appData: AppData[] = [
     rotation: -6,
     color: "#35342f",
     demo: "tareas",
+    hours: 25,
+    tools: ["Claude Code", "Next.js", "React", "TypeScript", "Tailwind CSS", "Supabase (Auth, Postgres, RLS)", "Resend", "Gemini API", "Vercel"],
   },
   {
     slug: "cronogramas",
@@ -560,6 +568,8 @@ export const appData: AppData[] = [
     rotation: 4,
     color: "#3d3b36",
     demo: "cronogramas",
+    hours: 20,
+    tools: ["Claude Code", "Next.js", "React", "TypeScript", "Tailwind CSS", "Supabase (Postgres, Storage, RLS)", "dnd-kit", "JSZip", "pdf-lib", "tus-js-client", "Vercel"],
   },
   {
     slug: "asistente-ia",
@@ -570,6 +580,7 @@ export const appData: AppData[] = [
     rotation: -3,
     color: "#2e2d2b",
     demo: "asistente",
+    tools: ["Gemini API", "Claude Code", "Next.js", "Supabase", "Vercel"],
   },
   {
     slug: "app-cuatro",

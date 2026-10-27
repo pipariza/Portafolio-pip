@@ -55,7 +55,16 @@ export default async function AppDetailPage({
             {app.kicker ?? pick(lang, "Aplicativo con IA", "AI-powered app")}
           </p>
           <h1 className="text-[2.5rem] leading-tight min-[400px]:text-5xl md:text-6xl font-medium mb-8">{app.name}</h1>
-          <p className="max-w-xl text-base md:text-lg text-ink/70 mb-14">{app.description}</p>
+          <p className="max-w-xl text-base md:text-lg text-ink/70 mb-10">{app.description}</p>
+
+          {app.objective && (
+            <div className="max-w-2xl border-t border-ink/10 pt-6 mb-14">
+              <h2 className="text-[11px] font-medium uppercase tracking-[0.08em] text-ink/60 mb-3">
+                {pick(lang, "Objetivo", "Goal")}
+              </h2>
+              <p className="text-[17px] md:text-xl font-medium leading-snug text-ink">{app.objective}</p>
+            </div>
+          )}
 
           {app.demo ? (
             <div className="mb-16">
@@ -78,6 +87,45 @@ export default async function AppDetailPage({
             </div>
           )}
 
+          {app.tools ? (
+            <div className="mb-20 space-y-8">
+              <div className="grid max-w-xl grid-cols-2 gap-6 sm:grid-cols-3">
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.08em] text-ink/60 mb-1">{pick(lang, "Rol", "Role")}</p>
+                  <p className="text-sm font-medium">{app.role}</p>
+                </div>
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.08em] text-ink/60 mb-1">{pick(lang, "Año", "Year")}</p>
+                  <p className="text-sm font-medium">{app.year}</p>
+                </div>
+                {app.hours && (
+                  <div>
+                    <p className="text-[11px] uppercase tracking-[0.08em] text-ink/60 mb-1">
+                      {pick(lang, "Tiempo de construcción", "Build time")}
+                    </p>
+                    <p className="text-sm font-medium">
+                      {app.hours} {pick(lang, "horas", "hours")}
+                    </p>
+                  </div>
+                )}
+              </div>
+              <div>
+                <h2 className="text-[11px] font-normal uppercase tracking-[0.08em] text-ink/60 mb-3">
+                  {pick(lang, "Herramientas", "Tools")}
+                </h2>
+                <ul className="flex max-w-2xl flex-wrap gap-2">
+                  {app.tools.map((tool) => (
+                    <li
+                      key={tool}
+                      className="rounded-full border border-ink/20 px-3 py-1.5 text-[13px] font-medium text-ink/80"
+                    >
+                      {tool}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ) : (
           <div className="grid grid-cols-3 gap-6 max-w-md mb-20">
             <div>
               <p className="text-[11px] uppercase tracking-[0.08em] text-ink/60 mb-1">{pick(lang, "Rol", "Role")}</p>
@@ -92,6 +140,7 @@ export default async function AppDetailPage({
               <p className="text-sm font-medium">{app.stack}</p>
             </div>
           </div>
+          )}
 
           <div className="flex items-center justify-between border-t border-ink/10 pt-8 text-xs font-medium uppercase tracking-[0.05em]">
             <Link href={href(`/apps/${prev.slug}`)} data-cursor-hover>

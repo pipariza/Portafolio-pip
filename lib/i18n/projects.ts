@@ -61,9 +61,13 @@ export function getProjects(lang: Locale): Project[] {
 // platform (their step-by-step demo is in lib/i18n/app-demos.ts); the rest are placeholders
 // whose texts will be replaced by the real ones.
 const VISUAL_KICKER: Bi = { es: "Plataforma interna de Visual", en: "Visual's internal platform" };
-const APP_TEXTS: Record<string, { role: Bi; description: Bi; kicker?: Bi }> = {
+const APP_TEXTS: Record<string, { role: Bi; description: Bi; kicker?: Bi; objective?: Bi }> = {
   tareas: {
     kicker: VISUAL_KICKER,
+    objective: {
+      es: "Que cada colaborador tenga su semana organizada y fácil de entender, con un seguimiento claro que mejore su experiencia de trabajo y la del admin, y sumar un asistente de IA que responde sobre el trabajo en curso.",
+      en: "Give every collaborator a well-organized, easy-to-understand week, with clear follow-up that improves the work experience for them and for the admin, and add an AI assistant that answers questions about the work in progress.",
+    },
     role: { es: "Producto & Desarrollo Full-stack", en: "Product & Full-stack Development" },
     description: {
       es: "Organiza el trabajo del equipo por semanas: el admin asigna, cada colaborador ve y avanza solo lo suyo, y el sistema avisa por correo antes de que algo venza.",
@@ -72,6 +76,10 @@ const APP_TEXTS: Record<string, { role: Bi; description: Bi; kicker?: Bi }> = {
   },
   cronogramas: {
     kicker: VISUAL_KICKER,
+    objective: {
+      es: "Ahorrarle tiempo al cliente y mejorar la experiencia de colaboradores y clientes al revisar contenido, con un programa liviano: se usa desde el navegador y el cliente entra con un link, sin crear cuenta.",
+      en: "Save the client time and improve the experience of both collaborators and clients when reviewing content, with a lightweight program: it runs in the browser and the client joins with a link, without creating an account.",
+    },
     role: { es: "Producto & Desarrollo Full-stack", en: "Product & Full-stack Development" },
     description: {
       es: "Planea las publicaciones de redes de cada marca en una grilla como la de Instagram. El cliente revisa, edita captions, deja notas y aprueba desde un link, sin crear cuenta.",
@@ -80,6 +88,10 @@ const APP_TEXTS: Record<string, { role: Bi; description: Bi; kicker?: Bi }> = {
   },
   "asistente-ia": {
     kicker: VISUAL_KICKER,
+    objective: {
+      es: "Dar respuestas rápidas sobre el trabajo en curso: que cualquier persona del equipo consulte sus tareas y los cronogramas con una sola pregunta, sin recorrer pantallas.",
+      en: "Give quick answers about the work in progress: anyone on the team can check their tasks and the schedules with a single question, without going through screens.",
+    },
     role: { es: "Producto & Desarrollo con IA", en: "Product & AI Development" },
     description: {
       es: "Un chat con IA dentro de la plataforma que responde, en lenguaje natural, sobre las tareas y los cronogramas que cada persona tiene permitido ver.",
@@ -105,6 +117,6 @@ const APP_TEXTS: Record<string, { role: Bi; description: Bi; kicker?: Bi }> = {
 export function getApps(lang: Locale): AppProject[] {
   return appData.map((a) => {
     const text = APP_TEXTS[a.slug];
-    return { ...a, role: text.role[lang], description: text.description[lang], kicker: text.kicker?.[lang] };
+    return { ...a, role: text.role[lang], description: text.description[lang], kicker: text.kicker?.[lang], objective: text.objective?.[lang] };
   });
 }
