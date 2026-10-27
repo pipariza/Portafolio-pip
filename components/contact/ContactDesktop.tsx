@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode, type Ref } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { AnimatePresence, animate, motion, useDragControls, useMotionValue } from "framer-motion";
-import { EASE, useMacWindow } from "@/components/mac/window";
+import { useMacWindow } from "@/components/mac/window";
+import { DesktopShortcut, DockTile, MiniDock } from "@/components/mac/dock";
 import MailWindow, { EMPTY_DRAFT, type Draft } from "./MailWindow";
 import ContactsWindow from "./ContactsWindow";
 import Notification, { type Toast } from "./Notification";
@@ -31,95 +32,6 @@ function subscribeDrag(onChange: () => void) {
   return () => query.removeEventListener("change", onChange);
 }
 const canDragNow = () => window.matchMedia(DRAG_QUERY).matches;
-
-/** What is left where a window was, once it is closed. */
-function DesktopShortcut({
-  label,
-  aria,
-  onOpen,
-  buttonRef,
-  children,
-}: {
-  label: string;
-  aria: string;
-  onOpen: () => void;
-  buttonRef: Ref<HTMLButtonElement>;
-  children: ReactNode;
-}) {
-  return (
-    <motion.button
-      ref={buttonRef}
-      type="button"
-      onClick={onOpen}
-      aria-label={aria}
-      data-cursor-hover
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1, transition: { duration: 0.3, ease: EASE } }}
-      exit={{ opacity: 0, transition: { duration: 0.12 } }}
-      className="group/shortcut absolute inset-0 m-auto flex h-fit w-fit flex-col items-center gap-2.5 rounded-2xl p-3 outline-none"
-    >
-      <span className="block h-[76px] w-[76px] transition-transform duration-200 group-hover/shortcut:scale-105 group-focus-visible/shortcut:scale-105">
-        {children}
-      </span>
-      <span className="rounded-md bg-black/55 px-2 py-0.5 text-[12.5px] font-medium text-white backdrop-blur-md group-focus-visible/shortcut:ring-2 group-focus-visible/shortcut:ring-[#0a84ff]">
-        {label}
-      </span>
-    </motion.button>
-  );
-}
-
-/** A minimized window in the dock: click it to bring the window back. */
-function DockTile({
-  title,
-  onRestore,
-  buttonRef,
-  children,
-}: {
-  title: string;
-  onRestore: () => void;
-  buttonRef: Ref<HTMLButtonElement>;
-  children: ReactNode;
-}) {
-  return (
-    <button
-      ref={buttonRef}
-      type="button"
-      onClick={onRestore}
-      aria-label={`Restaurar ${title}`}
-      title={title}
-      data-cursor-hover
-      className="group/tile relative h-12 w-12 shrink-0 outline-none sm:h-14 sm:w-14"
-    >
-      <span className="absolute inset-0 block overflow-hidden rounded-[10px] bg-[#26262a] shadow-[0_6px_14px_-4px_rgba(0,0,0,0.6),0_0_0_0.5px_rgba(255,255,255,0.22)] transition-transform duration-200 ease-out group-hover/tile:-translate-y-1.5 group-focus-visible/tile:ring-2 group-focus-visible/tile:ring-[#0a84ff]">
-        <span className="absolute inset-x-0 top-0 flex h-[24%] items-center gap-[7%] bg-[#3a3a3e] px-[9%]">
-          <i className="block h-[24%] w-[9%] rounded-full bg-[#ff5f57]" />
-          <i className="block h-[24%] w-[9%] rounded-full bg-[#febc2e]" />
-          <i className="block h-[24%] w-[9%] rounded-full bg-[#28c840]" />
-        </span>
-        {children}
-      </span>
-    </button>
-  );
-}
-
-/** The dock only shows up while a window is minimized. */
-function MiniDock({ show, children }: { show: boolean; children: ReactNode }) {
-  return (
-    <AnimatePresence>
-      {show && (
-        <motion.nav
-          aria-label="Ventanas minimizadas"
-          initial={{ opacity: 0, y: 36 }}
-          animate={{ opacity: 1, y: 0, transition: { duration: 0.35, ease: EASE } }}
-          exit={{ opacity: 0, y: 36, transition: { duration: 0.2 } }}
-          className="fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-1/2 z-[60] flex -translate-x-1/2 items-end gap-3 rounded-[26px] bg-white/[0.12] px-3.5 pb-2.5 pt-2.5 shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.22),0_0_0_0.5px_rgba(0,0,0,0.3),0_18px_40px_-12px_rgba(0,0,0,0.7)] backdrop-blur-3xl backdrop-saturate-150"
-        >
-          {children}
-        </motion.nav>
-      )}
-    </AnimatePresence>
-  );
-}
 
 export default function ContactDesktop() {
   const deskRef = useRef<HTMLDivElement>(null);
@@ -308,9 +220,9 @@ export default function ContactDesktop() {
         className="pointer-events-none absolute inset-x-2 bottom-2 top-[calc(34px+0.5rem)] max-lg:hidden"
       />
 
-      <MiniDock show={mail.win === "minimized" || card.win === "minimized"}>
+      <MiniDock tone="dark" show={mail.win === "minimized" || card.win === "minimized"}>
         {mail.win === "minimized" && (
-          <DockTile title="Nuevo mensaje" onRestore={mail.open} buttonRef={mailTileRef}>
+          <DockTile tone="dark" title="Nuevo mensaje" onRestore={mail.open} buttonRef={mailTileRef}>
             <span className="absolute inset-x-[12%] top-[38%] h-[7%] rounded-full bg-white/25" />
             <span className="absolute inset-x-[12%] top-[52%] h-[7%] rounded-full bg-white/15" />
             <span className="absolute left-[12%] top-[66%] h-[7%] w-[45%] rounded-full bg-white/15" />
@@ -318,7 +230,7 @@ export default function ContactDesktop() {
           </DockTile>
         )}
         {card.win === "minimized" && (
-          <DockTile title="Contactos" onRestore={card.open} buttonRef={cardTileRef}>
+          <DockTile tone="dark" title="Contactos" onRestore={card.open} buttonRef={cardTileRef}>
             <span className="absolute left-1/2 top-[32%] h-[34%] w-[34%] -translate-x-1/2 rounded-full bg-gradient-to-br from-[#7aa2ff] to-[#7a4e96]" />
             <span className="absolute inset-x-[16%] top-[72%] h-[7%] rounded-full bg-white/25" />
             <span className="absolute inset-x-[26%] top-[84%] h-[7%] rounded-full bg-white/15" />

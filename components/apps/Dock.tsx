@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence } from "framer-motion";
 import { dockItems, type DockItem } from "@/lib/dock";
@@ -24,6 +24,17 @@ export default function Dock() {
   const [openIds, setOpenIds] = useState<string[]>([]);
   const [exitMode, setExitMode] = useState<ExitMode>("close");
   const layerRef = useRef<HTMLDivElement>(null);
+
+  // /apps#cv (the "Saber más" button of the About page) opens that note as soon as the desktop is up.
+  useEffect(() => {
+    const id = window.location.hash.slice(1);
+    if (!dockItems.some((item) => item.id === id && "window" in item)) return;
+    const timer = window.setTimeout(
+      () => setOpenIds((ids) => (ids.includes(id) ? ids : [...ids, id])),
+      350,
+    );
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const bringToFront = (id: string) =>
     setOpenIds((ids) =>
