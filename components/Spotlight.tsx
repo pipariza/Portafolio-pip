@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { CONTACT } from "@/lib/config";
 import { OPEN_SPOTLIGHT } from "@/lib/spotlight";
+import { zoomOutThen } from "@/lib/zoom";
 import { ChatGlyph, InstagramGlyph, LinkedInGlyph } from "@/components/contact/icons";
 import {
   BrowserGlyph,
@@ -165,6 +166,8 @@ export default function Spotlight({ projects }: { projects: { slug: string; name
       // The Apps desktop only reads the hash when it loads.
       window.location.hash = "cv";
       window.location.reload();
+    } else if (item.href === "/" && pathname !== "/") {
+      zoomOutThen(pathname, () => router.push("/"));
     } else {
       router.push(item.href);
     }

@@ -14,7 +14,7 @@ import {
 } from "@/components/mac/window";
 import { DesktopShortcut } from "@/components/mac/dock";
 import { SOFT_GRAY, wallpaperStyle } from "@/components/mac/wallpaper";
-import { setZoomOrigin } from "@/lib/zoom";
+import { cameFromSection, setZoomOrigin } from "@/lib/zoom";
 import { MailAppIcon } from "@/components/contact/icons";
 import {
   AppsAppIcon,
@@ -170,6 +170,7 @@ function DockTooltip({ label }: { label: string }) {
 function HomeDock({
   minimized,
   leaving,
+  arriving,
   onGo,
   onOpenFinder,
   navRef,
@@ -177,17 +178,22 @@ function HomeDock({
 }: {
   minimized: boolean;
   leaving: boolean;
+  /** The home was reached from another page: the dock fades in. */
+  arriving: boolean;
   onGo: Go;
   onOpenFinder: () => void;
   navRef: Ref<HTMLElement>;
   restoreRef: Ref<HTMLButtonElement>;
 }) {
   return (
-    <nav
+    <motion.nav
       ref={navRef}
       aria-label="Páginas"
       data-theme="light"
-      className={`glass-pill fixed bottom-3 left-1/2 z-[60] flex w-max max-w-[calc(100vw-12px)] -translate-x-1/2 items-end gap-1.5 rounded-full border px-3.5 pb-1.5 pt-1.5 transition-opacity duration-200 md:bottom-8 md:gap-2 md:px-5 md:pb-2 ${leaving ? "opacity-0" : ""}`}
+      initial={arriving ? { opacity: 0 } : false}
+      animate={{ opacity: leaving ? 0 : 1 }}
+      transition={leaving ? { duration: 0.2 } : { duration: 0.5, ease: EASE }}
+      className="glass-pill fixed bottom-3 left-1/2 z-[60] flex w-max max-w-[calc(100vw-12px)] -translate-x-1/2 items-end gap-1.5 rounded-full border px-3.5 pb-1.5 pt-1.5 md:bottom-8 md:gap-2 md:px-5 md:pb-2"
     >
       {/* The Finder is the page you are on: it brings its window back if you closed it. */}
       <button
@@ -258,7 +264,7 @@ function HomeDock({
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </motion.nav>
   );
 }
 
@@ -275,6 +281,8 @@ export default function HomeDesktop({
   const router = useRouter();
   const deskRef = useRef<HTMLDivElement>(null);
   const [leaving, setLeaving] = useState(false);
+  // Coming back from a page (menu, Spotlight, the back button): the desktop zooms in softly.
+  const [arriving] = useState(cameFromSection);
   const dockRef = useRef<HTMLElement>(null);
   const shortcutRef = useRef<HTMLButtonElement>(null);
   const restoreRef = useRef<HTMLButtonElement>(null);
@@ -305,12 +313,18 @@ export default function HomeDesktop({
     e.preventDefault();
     if (leaving) return;
     const r = e.currentTarget.getBoundingClientRect();
-    setZoomOrigin({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
+    setZoomOrigin({ x: r.left + r.width / 2, y: r.top + r.height / 2 }, href);
     setLeaving(true);
     window.setTimeout(() => router.push(href), reduce ? 0 : 180);
   };
 
-  const fade = `transition-opacity duration-200 ${leaving ? "opacity-0" : ""}`;
+  // Fades out when you leave, grows in a little (or just fades) when you come back.
+  const enter = reduce ? { opacity: 0 } : { opacity: 0, scale: 1.05 };
+  const blockMotion = {
+    initial: arriving ? enter : (false as const),
+    animate: { opacity: leaving ? 0 : 1, scale: 1 },
+    transition: leaving ? { duration: 0.2 } : { duration: 0.5, ease: EASE },
+  };
 
   const areas: Area[] = [
     { href: "/work", title: "Diseño Web", sub: `${projectCount} proyectos`, Icon: WebAppIcon },
@@ -325,7 +339,10 @@ export default function HomeDesktop({
       style={WALLPAPER}
     >
       {/* Tablet and desktop: widgets and the Finder window. */}
-      <div className={`hidden h-full flex-col items-center justify-center gap-4 px-5 pb-[104px] pt-[calc(34px+12px)] md:flex ${fade}`}>
+      <motion.div
+        {...blockMotion}
+        className="hidden h-full flex-col items-center justify-center gap-4 px-5 pb-[104px] pt-[calc(34px+12px)] md:flex"
+      >
         {/* From lg up the widgets sit in the corners; below, in a row above the window. */}
         <div className="flex w-[min(728px,100%)] items-stretch justify-between gap-4 lg:contents">
           <NotesWidget onGo={go} className="md:w-[220px] lg:absolute lg:left-6 lg:top-[calc(34px+24px)] lg:w-[200px]" />
@@ -406,10 +423,10 @@ export default function HomeDesktop({
             )}
           </AnimatePresence>
         </div>
-      </div>
+      </motion.div>
 
       {/* Phone: an iPhone home screen. */}
-      <div className={`px-5 pb-28 pt-[calc(34px+18px)] md:hidden ${fade}`}>
+      <motion.div {...blockMotion} className="px-5 pb-28 pt-[calc(34px+18px)] md:hidden">
         <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-[1fr_auto]">
           <NotesWidget onGo={go} />
           <ClockWidget className="w-[124px] max-[399px]:hidden" />
@@ -421,9 +438,9 @@ export default function HomeDesktop({
             </li>
           ))}
         </ul>
-      </div>
+      </motion.div>
 
-      <HomeDock minimized={win === "minimized"} leaving={leaving} onGo={go} onOpenFinder={open} navRef={dockRef} restoreRef={restoreRef} />
+      <HomeDock minimized={win === "minimized"} leaving={leaving} arriving={arriving} onGo={go} onOpenFinder={open} navRef={dockRef} restoreRef={restoreRef} />
     </div>
   );
 }

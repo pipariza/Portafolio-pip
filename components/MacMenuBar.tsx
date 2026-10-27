@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore, type MouseEvent } from "react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { openSpotlight } from "@/lib/spotlight";
+import { zoomOutThen } from "@/lib/zoom";
 
 export type MacMenuLink = { href: string; label: string; active: boolean };
 
@@ -100,7 +102,18 @@ export default function MacMenuBar({
   theme: "light" | "dark";
 }) {
   const skin = SKIN[theme];
+  const router = useRouter();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+  // Going home from a page: the page shrinks toward the icon it came from first (lib/zoom.ts).
+  // A click with a modifier key (new tab) is left alone.
+  const goHome = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href !== "/" || pathname === "/") return;
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    zoomOutThen(pathname, () => router.push("/"));
+  };
   // The snapshot is a string that only changes with the minute, so the bar
   // re-renders once a minute even though the clock is checked every second.
   const clock = useSyncExternalStore(subscribeClock, clockSnapshot, () => "");
@@ -123,7 +136,11 @@ export default function MacMenuBar({
       >
         <nav aria-label="Principal" className="flex min-w-0 items-center gap-2.5 md:gap-3">
           <AppleLogo />
-          <Link href="/" className={`-mx-1.5 rounded-md px-1.5 py-[3px] font-bold transition-colors ${skin.hover}`}>
+          <Link
+            href="/"
+            onClick={(e) => goHome(e, "/")}
+            className={`-mx-1.5 rounded-md px-1.5 py-[3px] font-bold transition-colors ${skin.hover}`}
+          >
             Pip Ariza
           </Link>
           <ul className="hidden items-center md:flex">
@@ -131,6 +148,7 @@ export default function MacMenuBar({
               <li key={link.href}>
                 <Link
                   href={link.href}
+                  onClick={(e) => goHome(e, link.href)}
                   aria-current={link.active ? "page" : undefined}
                   className={`${item} ${link.active ? `${skin.active} font-semibold` : ""}`}
                 >
@@ -201,7 +219,10 @@ export default function MacMenuBar({
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  onClick={() => setOpen(false)}
+                  onClick={(e) => {
+                    setOpen(false);
+                    goHome(e, link.href);
+                  }}
                   aria-current={link.active ? "page" : undefined}
                   className={`flex h-11 items-center rounded-lg px-3 text-[15px] ${
                     link.active ? `${skin.menuActive} font-semibold` : "font-medium"
