@@ -24,7 +24,7 @@ export default function Nav() {
 
   return (
     <MacMenuBar
-      theme={theme}
+      theme={pathname === "/contacto" ? "dusk" : theme}
       links={LINKS.map((link) => ({ ...link, active: isLinkActive(pathname, link.href) }))}
     />
   );

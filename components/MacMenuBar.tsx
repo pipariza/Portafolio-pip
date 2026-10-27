@@ -16,6 +16,15 @@ const SKIN = {
     menuActive: "bg-black/[0.07]",
     scrim: "bg-black/30",
   },
+  // The contact page: the dark bar, tinted like its wallpaper.
+  dusk: {
+    bar: "bg-[#1c1450]/55 text-white shadow-[0_0.5px_0_rgba(196,185,255,0.22)]",
+    hover: "hover:bg-white/15 focus-visible:bg-white/15",
+    active: "bg-white/[0.16]",
+    menu: "border-white/[0.14] bg-[#241a5c]/95 text-white",
+    menuActive: "bg-white/[0.14]",
+    scrim: "bg-black/50",
+  },
   dark: {
     bar: "bg-[#161616]/60 text-white shadow-[0_0.5px_0_rgba(255,255,255,0.14)]",
     hover: "hover:bg-white/15 focus-visible:bg-white/15",
@@ -86,7 +95,7 @@ export default function MacMenuBar({
   theme,
 }: {
   links: MacMenuLink[];
-  theme: "light" | "dark";
+  theme: "light" | "dark" | "dusk";
 }) {
   const skin = SKIN[theme];
   const [open, setOpen] = useState(false);
