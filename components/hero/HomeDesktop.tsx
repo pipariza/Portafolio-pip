@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useSyncExternalStore, type ComponentType, type Ref } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type ComponentType, type MouseEvent, type Ref } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   EASE,
@@ -12,7 +13,8 @@ import {
   useMacWindow,
 } from "@/components/mac/window";
 import { DesktopShortcut } from "@/components/mac/dock";
-import { wallpaperStyle } from "@/components/mac/wallpaper";
+import { SOFT_GRAY, wallpaperStyle } from "@/components/mac/wallpaper";
+import { setZoomOrigin } from "@/lib/zoom";
 import { MailAppIcon } from "@/components/contact/icons";
 import {
   AppsAppIcon,
@@ -37,7 +39,10 @@ import {
  * the three areas as app icons, the dock at the bottom.
  */
 
-const WALLPAPER = wallpaperStyle(["#f3f0ea", "#d9dad7", "#97a2a7"]);
+const WALLPAPER = wallpaperStyle(SOFT_GRAY);
+
+/** What a link of the desktop does when clicked: the home fades out and the next page grows from the link. */
+type Go = (e: MouseEvent<HTMLAnchorElement>, href: string) => void;
 
 type Glyph = ComponentType<{ className?: string }>;
 
@@ -89,7 +94,7 @@ function clockStamp() {
 const WIDGET =
   "rounded-[18px] border border-[rgba(20,19,16,0.08)] bg-[rgba(20,19,16,0.05)] p-4 backdrop-blur-[18px]";
 
-function NotesWidget({ className = "" }: { className?: string }) {
+function NotesWidget({ className = "", onGo }: { className?: string; onGo: Go }) {
   return (
     <div className={`${WIDGET} ${className}`}>
       <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-black/50">Notas</p>
@@ -98,6 +103,7 @@ function NotesWidget({ className = "" }: { className?: string }) {
       </p>
       <Link
         href="/contacto"
+        onClick={(e) => onGo(e, "/contacto")}
         data-cursor-hover
         className="group/avail mt-3 inline-flex items-center gap-2 rounded-md text-[12.5px] text-black/70 outline-none hover:text-black focus-visible:ring-2 focus-visible:ring-[#0a84ff]"
       >
@@ -130,10 +136,11 @@ function ClockWidget({ className = "" }: { className?: string }) {
 
 type Area = { href: string; title: string; sub: string; Icon: Glyph };
 
-function AreaItem({ area, size }: { area: Area; size: string }) {
+function AreaItem({ area, size, onGo }: { area: Area; size: string; onGo: Go }) {
   return (
     <Link
       href={area.href}
+      onClick={(e) => onGo(e, area.href)}
       data-cursor-hover
       className="group/area flex flex-col items-center gap-2 rounded-xl px-1 py-3 text-center outline-none focus-visible:ring-2 focus-visible:ring-[#0a84ff]"
     >
@@ -162,11 +169,15 @@ function DockTooltip({ label }: { label: string }) {
 
 function HomeDock({
   minimized,
+  leaving,
+  onGo,
   onOpenFinder,
   navRef,
   restoreRef,
 }: {
   minimized: boolean;
+  leaving: boolean;
+  onGo: Go;
   onOpenFinder: () => void;
   navRef: Ref<HTMLElement>;
   restoreRef: Ref<HTMLButtonElement>;
@@ -176,7 +187,7 @@ function HomeDock({
       ref={navRef}
       aria-label="Páginas"
       data-theme="light"
-      className="glass-pill fixed bottom-3 left-1/2 z-[60] flex w-max max-w-[calc(100vw-12px)] -translate-x-1/2 items-end gap-1.5 rounded-full border px-3.5 pb-1.5 pt-1.5 md:bottom-8 md:gap-2 md:px-5 md:pb-2"
+      className={`glass-pill fixed bottom-3 left-1/2 z-[60] flex w-max max-w-[calc(100vw-12px)] -translate-x-1/2 items-end gap-1.5 rounded-full border px-3.5 pb-1.5 pt-1.5 transition-opacity duration-200 md:bottom-8 md:gap-2 md:px-5 md:pb-2 ${leaving ? "opacity-0" : ""}`}
     >
       {/* The Finder is the page you are on: it brings its window back if you closed it. */}
       <button
@@ -200,6 +211,7 @@ function HomeDock({
         <Link
           key={href}
           href={href}
+          onClick={(e) => onGo(e, href)}
           aria-label={label}
           data-cursor-hover
           className={`group/dock outline-none ${DOCK_ICON}`}
@@ -260,7 +272,9 @@ export default function HomeDesktop({
   clipCount: number;
 }) {
   const reduce = useReducedMotion();
+  const router = useRouter();
   const deskRef = useRef<HTMLDivElement>(null);
+  const [leaving, setLeaving] = useState(false);
   const dockRef = useRef<HTMLElement>(null);
   const shortcutRef = useRef<HTMLButtonElement>(null);
   const restoreRef = useRef<HTMLButtonElement>(null);
@@ -284,6 +298,20 @@ export default function HomeDesktop({
     if (win === "minimized") restoreRef.current?.focus({ preventScroll: true });
   }, [win]);
 
+  // Clicking an icon: the desktop fades out and the next page grows from that icon (app/template.tsx).
+  // A click with a modifier key (new tab) is left alone.
+  const go: Go = (e, href) => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    if (leaving) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    setZoomOrigin({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
+    setLeaving(true);
+    window.setTimeout(() => router.push(href), reduce ? 0 : 180);
+  };
+
+  const fade = `transition-opacity duration-200 ${leaving ? "opacity-0" : ""}`;
+
   const areas: Area[] = [
     { href: "/work", title: "Diseño Web", sub: `${projectCount} proyectos`, Icon: WebAppIcon },
     { href: "/apps", title: "Aplicativos Web", sub: "Productos con IA", Icon: AppsAppIcon },
@@ -297,10 +325,10 @@ export default function HomeDesktop({
       style={WALLPAPER}
     >
       {/* Tablet and desktop: widgets and the Finder window. */}
-      <div className="hidden h-full flex-col items-center justify-center gap-4 px-5 pb-[104px] pt-[calc(34px+12px)] md:flex">
+      <div className={`hidden h-full flex-col items-center justify-center gap-4 px-5 pb-[104px] pt-[calc(34px+12px)] md:flex ${fade}`}>
         {/* From lg up the widgets sit in the corners; below, in a row above the window. */}
         <div className="flex w-[min(728px,100%)] items-stretch justify-between gap-4 lg:contents">
-          <NotesWidget className="md:w-[220px] lg:absolute lg:left-6 lg:top-[calc(34px+24px)] lg:w-[200px]" />
+          <NotesWidget onGo={go} className="md:w-[220px] lg:absolute lg:left-6 lg:top-[calc(34px+24px)] lg:w-[200px]" />
           <ClockWidget className="md:w-[150px] lg:absolute lg:right-6 lg:top-[calc(34px+24px)]" />
         </div>
 
@@ -345,6 +373,7 @@ export default function HomeDesktop({
                         <li key={href}>
                           <Link
                             href={href}
+                            onClick={(e) => go(e, href)}
                             data-cursor-hover
                             className="flex items-center gap-2 rounded-md px-2 py-1.5 text-black/80 outline-none transition-colors hover:bg-black/[0.06] focus-visible:ring-2 focus-visible:ring-[#0a84ff]"
                           >
@@ -358,7 +387,7 @@ export default function HomeDesktop({
 
                   <div className="grid min-w-0 flex-1 grid-cols-3 content-center gap-1 px-3">
                     {areas.map((area) => (
-                      <AreaItem key={area.href} area={area} size="h-20 w-20 lg:h-24 lg:w-24 2xl:h-32 2xl:w-32" />
+                      <AreaItem key={area.href} area={area} onGo={go} size="h-20 w-20 lg:h-24 lg:w-24 2xl:h-32 2xl:w-32" />
                     ))}
                   </div>
                 </div>
@@ -380,21 +409,21 @@ export default function HomeDesktop({
       </div>
 
       {/* Phone: an iPhone home screen. */}
-      <div className="px-5 pb-28 pt-[calc(34px+18px)] md:hidden">
+      <div className={`px-5 pb-28 pt-[calc(34px+18px)] md:hidden ${fade}`}>
         <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-[1fr_auto]">
-          <NotesWidget />
+          <NotesWidget onGo={go} />
           <ClockWidget className="w-[124px] max-[399px]:hidden" />
         </div>
         <ul className="mt-10 grid grid-cols-3 gap-x-2">
           {areas.map((area) => (
             <li key={area.href}>
-              <AreaItem area={area} size="h-[72px] w-[72px]" />
+              <AreaItem area={area} onGo={go} size="h-[72px] w-[72px]" />
             </li>
           ))}
         </ul>
       </div>
 
-      <HomeDock minimized={win === "minimized"} onOpenFinder={open} navRef={dockRef} restoreRef={restoreRef} />
+      <HomeDock minimized={win === "minimized"} leaving={leaving} onGo={go} onOpenFinder={open} navRef={dockRef} restoreRef={restoreRef} />
     </div>
   );
 }

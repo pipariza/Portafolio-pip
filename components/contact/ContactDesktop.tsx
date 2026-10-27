@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { AnimatePresence, animate, motion, useDragControls, useMotionValue } from "framer-motion";
 import { useMacWindow } from "@/components/mac/window";
 import { DesktopShortcut, DockTile, MiniDock } from "@/components/mac/dock";
-import { wallpaperStyle } from "@/components/mac/wallpaper";
+import { SOFT_GRAY, wallpaperStyle } from "@/components/mac/wallpaper";
 import MailWindow, { EMPTY_DRAFT, type Draft } from "./MailWindow";
 import ContactsWindow from "./ContactsWindow";
 import Notification, { type Toast } from "./Notification";
@@ -21,7 +21,7 @@ import { ContactsAppIcon, MailAppIcon } from "./icons";
  */
 
 // The same stack of glows as the Work projects' wallpapers, in soft grays.
-const WALLPAPER = wallpaperStyle(["#f3f0ea", "#d9dad7", "#97a2a7"]);
+const WALLPAPER = wallpaperStyle(SOFT_GRAY);
 
 // Windows can be dragged from lg up; below that they are stacked in the page.
 const DRAG_QUERY = "(min-width: 1024px)";
