@@ -21,7 +21,7 @@ const SectionThemeContext = createContext<SectionThemeContextValue | null>(null)
 // Pages that are light. Each page's ThemeSection confirms its theme once it
 // mounts, but the menu bar is rendered before that, so without a starting guess
 // the server-rendered bar would flash dark on every light page.
-const LIGHT_PATHS = ["/work", "/apps", "/about", "/video"];
+const LIGHT_PATHS = ["/work", "/apps", "/about", "/video", "/contacto"];
 
 export function SectionThemeProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();

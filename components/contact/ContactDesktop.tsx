@@ -10,7 +10,7 @@ import Notification, { type Toast } from "./Notification";
 import { ContactsAppIcon, MailAppIcon } from "./icons";
 
 /*
- * The contact page as a macOS desktop, like the Work projects: a dusk
+ * The contact page as a macOS desktop, like the Work projects: a soft gray
  * wallpaper (the same stack of radial glows), the site's own menu bar above it,
  * and two windows with working traffic lights: Mail ("Nuevo mensaje", the
  * form) and Contacts (Pip's card). A closed window leaves its app icon on the
@@ -19,9 +19,10 @@ import { ContactsAppIcon, MailAppIcon } from "./icons";
  * under the menu bar) and the one you touch comes to the front.
  */
 
+// The same stack of glows as the Work projects' wallpapers, in soft grays.
+const WALLPAPER_COLORS = ["#f3f0ea", "#d9dad7", "#97a2a7"];
 const WALLPAPER = {
-  background:
-    "radial-gradient(900px 600px at 14% 8%, rgba(86,104,170,0.55), transparent 65%), radial-gradient(1000px 700px at 90% 100%, rgba(122,78,150,0.5), transparent 62%), radial-gradient(700px 500px at 62% 42%, rgba(40,70,96,0.55), transparent 70%), linear-gradient(135deg, #10131b, #1a1626)",
+  background: `radial-gradient(900px 600px at 18% 8%, ${WALLPAPER_COLORS[0]}, transparent 70%), radial-gradient(1000px 700px at 92% 96%, ${WALLPAPER_COLORS[2]}, transparent 65%), radial-gradient(700px 500px at 60% 40%, ${WALLPAPER_COLORS[1]}, transparent 70%), linear-gradient(135deg, ${WALLPAPER_COLORS[0]}, ${WALLPAPER_COLORS[2]})`,
 };
 
 // Windows can be dragged from lg up; below that they are stacked in the page.
@@ -125,7 +126,7 @@ export default function ContactDesktop() {
   return (
     <div
       ref={deskRef}
-      className="relative w-full overflow-hidden text-white lg:h-screen lg:min-h-[700px] xl:min-h-[660px]"
+      className="relative w-full overflow-hidden text-[#1d1d1f] lg:h-screen lg:min-h-[700px] xl:min-h-[684px]"
       style={WALLPAPER}
     >
       <div className="flex flex-col gap-4 px-3 pb-24 pt-[calc(34px+14px)] lg:absolute lg:inset-0 lg:flex-row lg:items-center lg:justify-center lg:gap-10 lg:px-10 lg:pb-0 lg:pt-[34px] 2xl:gap-14">
@@ -188,7 +189,7 @@ export default function ContactDesktop() {
             dragElastic={0}
             dragMomentum={false}
             onPointerDown={() => setFront("card")}
-            className="w-full lg:h-[600px] 2xl:h-[640px]"
+            className="w-full lg:h-[624px] 2xl:h-[640px]"
           >
             <AnimatePresence initial={false} custom={card.fx}>
               {card.win === "open" && (
@@ -220,20 +221,20 @@ export default function ContactDesktop() {
         className="pointer-events-none absolute inset-x-2 bottom-2 top-[calc(34px+0.5rem)] max-lg:hidden"
       />
 
-      <MiniDock tone="dark" show={mail.win === "minimized" || card.win === "minimized"}>
+      <MiniDock tone="light" show={mail.win === "minimized" || card.win === "minimized"}>
         {mail.win === "minimized" && (
-          <DockTile tone="dark" title="Nuevo mensaje" onRestore={mail.open} buttonRef={mailTileRef}>
-            <span className="absolute inset-x-[12%] top-[38%] h-[7%] rounded-full bg-white/25" />
-            <span className="absolute inset-x-[12%] top-[52%] h-[7%] rounded-full bg-white/15" />
-            <span className="absolute left-[12%] top-[66%] h-[7%] w-[45%] rounded-full bg-white/15" />
+          <DockTile tone="light" title="Nuevo mensaje" onRestore={mail.open} buttonRef={mailTileRef}>
+            <span className="absolute inset-x-[12%] top-[38%] h-[7%] rounded-full bg-black/25" />
+            <span className="absolute inset-x-[12%] top-[52%] h-[7%] rounded-full bg-black/15" />
+            <span className="absolute left-[12%] top-[66%] h-[7%] w-[45%] rounded-full bg-black/15" />
             <span className="absolute bottom-[9%] right-[9%] h-[14%] w-[30%] rounded-full bg-[#0a84ff]" />
           </DockTile>
         )}
         {card.win === "minimized" && (
-          <DockTile tone="dark" title="Contactos" onRestore={card.open} buttonRef={cardTileRef}>
+          <DockTile tone="light" title="Contactos" onRestore={card.open} buttonRef={cardTileRef}>
             <span className="absolute left-1/2 top-[32%] h-[34%] w-[34%] -translate-x-1/2 rounded-full bg-gradient-to-br from-[#7aa2ff] to-[#7a4e96]" />
-            <span className="absolute inset-x-[16%] top-[72%] h-[7%] rounded-full bg-white/25" />
-            <span className="absolute inset-x-[26%] top-[84%] h-[7%] rounded-full bg-white/15" />
+            <span className="absolute inset-x-[16%] top-[72%] h-[7%] rounded-full bg-black/25" />
+            <span className="absolute inset-x-[26%] top-[84%] h-[7%] rounded-full bg-black/15" />
           </DockTile>
         )}
       </MiniDock>
