@@ -3,14 +3,20 @@
 const base = {
   fill: "none",
   stroke: "currentColor",
-  strokeWidth: 1.8,
+  strokeWidth: 1.4,
   strokeLinecap: "round",
   strokeLinejoin: "round",
 } as const;
 
-export function EnvelopeGlyph({ className = "h-5 w-5" }: { className?: string }) {
+export function EnvelopeGlyph({
+  className = "h-5 w-5",
+  strokeWidth = base.strokeWidth,
+}: {
+  className?: string;
+  strokeWidth?: number;
+}) {
   return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden="true" {...base}>
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true" {...base} strokeWidth={strokeWidth}>
       <rect x="3" y="5.5" width="18" height="13" rx="2.5" />
       <path d="m4 7.5 8 6 8-6" />
     </svg>
@@ -67,7 +73,7 @@ export function MailAppIcon({ className = "h-full w-full" }: { className?: strin
     <span
       className={`flex items-center justify-center rounded-[22%] bg-gradient-to-b from-[#4cb0ff] to-[#0a64f0] text-white shadow-[0_6px_14px_-4px_rgba(10,100,240,0.7),inset_0_0_0_0.5px_rgba(255,255,255,0.35)] ${className}`}
     >
-      <EnvelopeGlyph className="h-[52%] w-[52%]" />
+      <EnvelopeGlyph className="h-[52%] w-[52%]" strokeWidth={1.8} />
     </span>
   );
 }
