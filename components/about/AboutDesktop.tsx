@@ -11,6 +11,7 @@ import {
   useMacWindow,
 } from "@/components/mac/window";
 import { DesktopShortcut, DockTile, MiniDock } from "@/components/mac/dock";
+import { wallpaperStyle } from "@/components/mac/wallpaper";
 
 /*
  * About as a macOS desktop, like the rest of the site: a light wallpaper (the
@@ -27,10 +28,7 @@ const STATS = [
   { value: "IA", label: "Foco en aplicativos" },
 ];
 
-const WALLPAPER = ["#f3efe6", "#dcd6e6", "#9aa3c4"];
-const WALLPAPER_STYLE = {
-  background: `radial-gradient(900px 600px at 18% 8%, ${WALLPAPER[0]}, transparent 70%), radial-gradient(1000px 700px at 92% 96%, ${WALLPAPER[2]}, transparent 65%), radial-gradient(700px 500px at 60% 40%, ${WALLPAPER[1]}, transparent 70%), linear-gradient(135deg, ${WALLPAPER[0]}, ${WALLPAPER[2]})`,
-};
+const WALLPAPER_STYLE = wallpaperStyle(["#f3efe6", "#dcd6e6", "#9aa3c4"]);
 
 export default function AboutDesktop() {
   const reduce = useReducedMotion();
