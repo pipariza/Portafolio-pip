@@ -35,8 +35,8 @@ export function DesktopAppIcon({
       >
         {app.image ? (
           <Image src={app.image} alt={app.name} fill sizes="80px" className="object-cover" />
-        ) : app.demo ? (
-          <AppGlyph demo={app.demo} size={36} />
+        ) : (app.glyph ?? app.demo) ? (
+          <AppGlyph glyph={(app.glyph ?? app.demo)!} size={36} />
         ) : (
           app.name.slice(0, 2).toUpperCase()
         )}
@@ -62,8 +62,8 @@ export function GridAppIcon({ app }: { app: AppProject }) {
       >
         {app.image ? (
           <Image src={app.image} alt={app.name} fill sizes="64px" className="object-cover" />
-        ) : app.demo ? (
-          <AppGlyph demo={app.demo} size={30} />
+        ) : (app.glyph ?? app.demo) ? (
+          <AppGlyph glyph={(app.glyph ?? app.demo)!} size={30} />
         ) : (
           app.name.slice(0, 2).toUpperCase()
         )}

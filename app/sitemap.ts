@@ -10,7 +10,7 @@ const PATHS = [
   "/work",
   ...projectData.map((project) => `/work/${project.slug}`),
   "/apps",
-  ...appData.filter((app) => app.demo).map((app) => `/apps/${app.slug}`),
+  ...appData.filter((app) => app.tools).map((app) => `/apps/${app.slug}`),
   "/video",
   "/about",
   "/contacto",

@@ -1,7 +1,7 @@
-import type { DemoId } from "@/lib/data";
+import type { GlyphId } from "@/lib/data";
 
-/** The white line icon on the desktop tile of each app with a demo (Tareas, Cronogramas). */
-export function AppGlyph({ demo, size }: { demo: DemoId; size: number }) {
+/** The white line icon on the desktop tile of each real app (Tareas, Cronogramas, Macros). */
+export function AppGlyph({ glyph, size }: { glyph: GlyphId; size: number }) {
   const common = {
     width: size,
     height: size,
@@ -13,7 +13,15 @@ export function AppGlyph({ demo, size }: { demo: DemoId; size: number }) {
     strokeLinejoin: "round" as const,
     "aria-hidden": true,
   };
-  if (demo === "tareas")
+  if (glyph === "macros")
+    return (
+      <svg {...common}>
+        <path d="M12 3.2a8.8 8.8 0 1 1-8.8 8.8" />
+        <path d="M12 7.6a4.4 4.4 0 1 1-4.4 4.4" />
+        <circle cx="12" cy="12" r="0.9" fill="currentColor" />
+      </svg>
+    );
+  if (glyph === "tareas")
     return (
       <svg {...common}>
         <rect x="4" y="4" width="16" height="16" rx="2.5" />

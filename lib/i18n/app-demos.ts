@@ -106,3 +106,60 @@ export const DEMO_UI = {
   of: { es: "de", en: "of" } satisfies Bi,
   screen: { es: "Pantalla de la plataforma", en: "Platform screen" } satisfies Bi,
 };
+
+/** What an app does, as short cards, for the apps that do not have a step-by-step demo yet. */
+export const APP_FEATURES: Record<string, { title: Bi; text: Bi }[]> = {
+  macros: [
+    {
+      title: { es: "Registro diario", en: "Daily log" },
+      text: {
+        es: "Busca un alimento o una receta, pon los gramos y los macros se calculan y se guardan.",
+        en: "Search a food or a recipe, enter the grams and the macros are worked out and saved.",
+      },
+    },
+    {
+      title: { es: "Los macros del día", en: "Today's macros" },
+      text: {
+        es: "Calorías, proteína, carbohidratos y grasa de cada persona, lado a lado, con anillos de progreso.",
+        en: "Calories, protein, carbs and fat for each person, side by side, with progress rings.",
+      },
+    },
+    {
+      title: { es: "Recetas y despensa", en: "Recipes and pantry" },
+      text: {
+        es: "Recetas con macros calculados al instante y sugerencias según lo que hay en la despensa.",
+        en: "Recipes with instantly calculated macros and suggestions based on what is in the pantry.",
+      },
+    },
+    {
+      title: { es: "Plan semanal y compras", en: "Weekly plan and shopping" },
+      text: {
+        es: "La semana planeada y una lista de compras para no improvisar.",
+        en: "The week planned out and a shopping list so nothing is improvised.",
+      },
+    },
+    {
+      title: { es: "IA que ayuda", en: "AI that helps" },
+      text: {
+        es: "Calcula los macros de un alimento con su nombre, registra una comida describiéndola y propone los ingredientes de una receta.",
+        en: "Works out a food's macros from its name, logs a meal from a description and drafts a recipe's ingredients.",
+      },
+    },
+    {
+      title: { es: "Progreso y reportes", en: "Progress and reports" },
+      text: {
+        es: "Historial con gráficas y reportes en PDF y CSV.",
+        en: "History with charts and reports in PDF and CSV.",
+      },
+    },
+    {
+      title: { es: "Sin contraseñas", en: "No passwords" },
+      text: {
+        es: "Un código de casa compartido entra a los dos. Se instala como app y se puede consultar sin conexión.",
+        en: "A shared household code gets both people in. It installs as an app and can be read offline.",
+      },
+    },
+  ],
+};
+
+export const FEATURES_HEADING: Bi = { es: "Qué hace", en: "What it does" };

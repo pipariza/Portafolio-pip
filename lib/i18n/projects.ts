@@ -86,6 +86,18 @@ const APP_TEXTS: Record<string, { role: Bi; description: Bi; kicker?: Bi; object
       en: "Plans each brand's social media posts on an Instagram-like grid. The client reviews, edits captions, leaves notes and approves from a link, without creating an account.",
     },
   },
+  macros: {
+    kicker: { es: "App instalable (PWA) con IA", en: "Installable app (PWA) with AI" },
+    role: { es: "Producto & Desarrollo Full-stack con IA", en: "Product & Full-stack AI Development" },
+    description: {
+      es: "Planifica y registra las comidas de dos personas con los macros en gramos: recetas, plan semanal, lista de compras y progreso, todo desde un código de casa compartido, sin contraseñas.",
+      en: "Plans and logs the meals of two people with macros in grams: recipes, weekly plan, shopping list and progress, all from a shared household code, with no passwords.",
+    },
+    objective: {
+      es: "Que dos personas coman mejor sin complicarse: contar macros sin hojas de cálculo, convertir lo que hay en la despensa en recetas y dejar que la IA haga el trabajo pesado, como calcular un alimento o registrar una comida con solo describirla.",
+      en: "Help two people eat better without the hassle: count macros without spreadsheets, turn what is in the pantry into recipes and let AI do the heavy lifting, like working out a food's macros or logging a meal just by describing it.",
+    },
+  },
   "app-cuatro": {
     role: { es: "Desarrollo Front-end", en: "Front-end Development" },
     description: {

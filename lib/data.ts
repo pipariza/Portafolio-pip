@@ -532,6 +532,8 @@ export type AppProject = {
   kicker?: string;
   /** Apps with an interactive "how it works" demo on their page (components/apps/demo). */
   demo?: DemoId;
+  /** The line icon of the desktop tile (defaults to the demo's); apps without a demo yet can have one. */
+  glyph?: GlyphId;
   /** Why the app was built (strategic goal); localized in lib/i18n/projects.ts. */
   objective?: string;
   /** Hours it took to build (shown as "Tiempo de construcción"). Left out when not known. */
@@ -542,6 +544,8 @@ export type AppProject = {
 
 /** The apps that have a step-by-step demo; their steps live in lib/i18n/app-demos.ts. */
 export type DemoId = "tareas" | "cronogramas";
+/** The line icons of the desktop tiles (components/apps/demo/glyphs.tsx). */
+export type GlyphId = DemoId | "macros";
 
 /** The apps' own data; their role and description are in lib/i18n/projects.ts (`getApps(lang)`). */
 export type AppData = Omit<AppProject, "role" | "description" | "kicker" | "objective">;
@@ -570,6 +574,18 @@ export const appData: AppData[] = [
     demo: "cronogramas",
     hours: 20,
     tools: ["Claude Code", "Next.js", "React", "TypeScript", "Tailwind CSS", "Supabase (Postgres, Storage, RLS)", "dnd-kit", "JSZip", "pdf-lib", "tus-js-client", "Vercel"],
+  },
+  {
+    slug: "macros",
+    name: "Macros",
+    label: "MACROS",
+    year: "2026",
+    stack: "Next.js, Supabase, Gemini API",
+    rotation: -3,
+    color: "#2e2d2b",
+    glyph: "macros",
+    // No `hours` yet (Pip has not said how long it took) and no `demo` until the real interface is captured.
+    tools: ["Claude Code", "Next.js", "React", "TypeScript", "Tailwind CSS", "Supabase (Postgres)", "Recharts", "jsPDF", "Gemini API", "Vercel"],
   },
   {
     slug: "app-cuatro",
