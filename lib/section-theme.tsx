@@ -7,7 +7,6 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { usePathname } from "next/navigation";
 
 export type SectionTheme = "dark" | "light";
 
@@ -18,16 +17,11 @@ type SectionThemeContextValue = {
 
 const SectionThemeContext = createContext<SectionThemeContextValue | null>(null);
 
-// Pages that are light. Each page's ThemeSection confirms its theme once it
-// mounts, but the menu bar is rendered before that, so without a starting guess
-// the server-rendered bar would flash dark on every light page.
-const LIGHT_PATHS = ["/", "/work", "/apps", "/about", "/video", "/contacto"];
-
+// Every page of the site is a light desktop now. Each page's ThemeSection confirms its
+// theme once it mounts, but the menu bar is rendered before that, so the starting guess has
+// to be the right one or the server-rendered bar would flash dark.
 export function SectionThemeProvider({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
-  const [theme, setTheme] = useState<SectionTheme>(
-    LIGHT_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`)) ? "light" : "dark",
-  );
+  const [theme, setTheme] = useState<SectionTheme>("light");
   return (
     <SectionThemeContext.Provider value={{ theme, setTheme }}>
       {children}
