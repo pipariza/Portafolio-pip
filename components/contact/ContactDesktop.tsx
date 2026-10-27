@@ -124,7 +124,7 @@ export default function ContactDesktop() {
   return (
     <div
       ref={deskRef}
-      className="relative w-full overflow-hidden text-[#1d1d1f] lg:h-screen lg:min-h-[700px] xl:min-h-[684px]"
+      className="relative w-full overflow-hidden text-[#1d1d1f] lg:h-screen lg:min-h-[716px] xl:min-h-[712px]"
       style={WALLPAPER}
     >
       <div className="flex flex-col gap-4 px-3 pb-24 pt-[calc(34px+14px)] lg:absolute lg:inset-0 lg:flex-row lg:items-center lg:justify-center lg:gap-10 lg:px-10 lg:pb-0 lg:pt-[34px] 2xl:gap-14">
@@ -187,7 +187,7 @@ export default function ContactDesktop() {
             dragElastic={0}
             dragMomentum={false}
             onPointerDown={() => setFront("card")}
-            className="w-full lg:h-[624px] 2xl:h-[640px]"
+            className="w-full lg:h-[652px] 2xl:h-[660px]"
           >
             <AnimatePresence initial={false} custom={card.fx}>
               {card.win === "open" && (

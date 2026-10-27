@@ -3,7 +3,7 @@ import NotFoundAlert from "@/components/NotFoundAlert";
 
 export default function NotFound() {
   return (
-    <main>
+    <main id="contenido" tabIndex={-1} className="outline-none">
       <ThemeSection theme="light" className="w-full">
         <NotFoundAlert />
       </ThemeSection>

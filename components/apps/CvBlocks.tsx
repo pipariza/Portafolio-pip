@@ -27,7 +27,7 @@ export function EntryList({ entries }: { entries: Entries }) {
         <li key={`${e.title}-${e.org}-${e.period}`}>
           <div className="flex flex-wrap items-baseline justify-between gap-x-3">
             <p className="font-semibold">{e.title}</p>
-            <p className="text-black/50">{e.period}</p>
+            <p className="text-black/60">{e.period}</p>
           </div>
           <p className="text-black/60">{e.org}</p>
           {e.points.length > 0 && (

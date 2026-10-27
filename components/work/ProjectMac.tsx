@@ -54,7 +54,7 @@ function Widget({ className = "", children }: { className?: string; children: Re
   );
 }
 
-const LABEL = "text-[11px] font-semibold uppercase tracking-[0.08em] text-black/50";
+const LABEL = "text-[11px] font-semibold uppercase tracking-[0.08em] text-black/60";
 
 function Stat({ label, value, className = "" }: { label: string; value: string; className?: string }) {
   return (
@@ -138,7 +138,7 @@ function SummaryCard({ project }: { project: Project }) {
             Ver sitio <span aria-hidden="true">↗</span>
           </a>
         )}
-        {project.note && <p className="text-[11px] leading-snug text-black/55">{project.note}</p>}
+        {project.note && <p className="text-[11px] leading-snug text-black/60">{project.note}</p>}
       </div>
     </Widget>
   );
@@ -217,11 +217,11 @@ function SafariWindow({
         }`}
       >
         <TrafficLights zoomed={z} onClose={onClose} onMinimize={onMinimize} onZoom={onZoom} />
-        <svg width="20" height="16" viewBox="0 0 20 16" fill="none" stroke="currentColor" strokeWidth="1.4" className={`text-black/50 ${z ? "" : "max-lg:hidden"}`} aria-hidden="true">
+        <svg width="20" height="16" viewBox="0 0 20 16" fill="none" stroke="currentColor" strokeWidth="1.4" className={`text-black/60 ${z ? "" : "max-lg:hidden"}`} aria-hidden="true">
           <rect x="1.5" y="1.5" width="17" height="13" rx="3" />
           <path d="M7 2v12" />
         </svg>
-        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={`text-black/45 ${z ? "" : "max-lg:hidden"}`} aria-hidden="true">
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={`text-black/60 ${z ? "" : "max-lg:hidden"}`} aria-hidden="true">
           <path d="M8 2 2 8l6 6" />
         </svg>
         <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={`text-black/25 ${z ? "" : "max-lg:hidden"}`} aria-hidden="true">
@@ -234,18 +234,18 @@ function SafariWindow({
               : "h-[4.2cqw] gap-[0.8cqw] rounded-[1.2cqw] px-[1.4cqw] text-[max(6.5px,2.3cqw)] lg:h-[30px] lg:max-w-[26rem] lg:gap-1.5 lg:rounded-[9px] lg:px-3 lg:text-[13px]"
           }`}
         >
-          <svg viewBox="0 0 9 11" fill="currentColor" className={`w-auto shrink-0 text-black/45 ${z ? "h-[11px]" : "h-[max(5px,1.8cqw)] lg:h-[11px]"}`} aria-hidden="true">
+          <svg viewBox="0 0 9 11" fill="currentColor" className={`w-auto shrink-0 text-black/60 ${z ? "h-[11px]" : "h-[max(5px,1.8cqw)] lg:h-[11px]"}`} aria-hidden="true">
             <path d="M4.5 0a2.7 2.7 0 0 0-2.7 2.7V4H1a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-.8V2.7A2.7 2.7 0 0 0 4.5 0Zm-1.5 2.7a1.5 1.5 0 0 1 3 0V4H3V2.7Z" />
           </svg>
           <span className="truncate">
             {host}
-            <span className="text-black/45">{screen.path}</span>
+            <span className="text-black/60">{screen.path}</span>
           </span>
         </div>
-        <svg width="16" height="18" viewBox="0 0 16 18" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className={`text-black/50 ${z ? "" : "max-lg:hidden"}`} aria-hidden="true">
+        <svg width="16" height="18" viewBox="0 0 16 18" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className={`text-black/60 ${z ? "" : "max-lg:hidden"}`} aria-hidden="true">
           <path d="M8 1v10M4.5 4.5 8 1l3.5 3.5M3 7.5H2.5a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1H13" />
         </svg>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className={`text-black/50 ${z ? "" : "max-lg:hidden"}`} aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className={`text-black/60 ${z ? "" : "max-lg:hidden"}`} aria-hidden="true">
           <path d="M8 2v12M2 8h12" />
         </svg>
       </div>
@@ -269,7 +269,7 @@ function SafariWindow({
             className={`flex min-w-[88px] flex-1 items-center justify-center gap-1.5 whitespace-nowrap border-r border-black/10 px-3 text-[12.5px] transition-colors ${
               i === active
                 ? "bg-[#f7f5f2] font-semibold text-[#1d1d1f]"
-                : "text-black/55 hover:bg-black/[0.04]"
+                : "text-black/60 hover:bg-black/[0.04]"
             }`}
           >
             <span className="h-[11px] w-[11px] rounded-[3px]" style={{ background: accent }} aria-hidden="true" />
@@ -444,7 +444,7 @@ function IPhone17({
 
 // Every dock icon (projects and minimized windows) has the same size at each breakpoint:
 // the sizes of the Apps page's dock, so both docks look like one family.
-const DOCK_ICON = "relative h-8 w-8 shrink-0 min-[400px]:h-9 min-[400px]:w-9 md:h-12 md:w-12";
+const DOCK_ICON = "relative h-10 w-10 shrink-0 min-[400px]:h-11 min-[400px]:w-11 md:h-12 md:w-12";
 
 /** A window sent to the dock: click it to bring it back. */
 type MinimizedWindow = { title: string; thumb?: string };

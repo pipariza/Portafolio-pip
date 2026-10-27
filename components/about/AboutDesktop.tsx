@@ -10,6 +10,7 @@ import {
   WINDOW_FX_REDUCED,
   useMacWindow,
 } from "@/components/mac/window";
+import { NAME } from "@/lib/config";
 import { DesktopShortcut, DockTile, MiniDock } from "@/components/mac/dock";
 import { wallpaperStyle } from "@/components/mac/wallpaper";
 
@@ -85,7 +86,7 @@ export default function AboutDesktop() {
                     onMinimize={minimize}
                     onZoom={() => {}}
                   />
-                  <p className="pointer-events-none absolute inset-x-0 text-center text-[13px] font-semibold text-black/55">
+                  <p className="pointer-events-none absolute inset-x-0 text-center text-[13px] font-semibold text-black/60">
                     Notas
                   </p>
                 </div>
@@ -94,16 +95,19 @@ export default function AboutDesktop() {
                   <p className="mb-6 text-[11px] font-semibold uppercase tracking-[0.08em] text-black/60">
                     About
                   </p>
-                  <h1 className="mb-12 text-3xl font-medium leading-tight tracking-tight md:text-5xl">
+                  <h1 className="mb-4 text-3xl font-medium leading-tight tracking-tight md:text-5xl">
                     Diseño y desarrollo web con foco en aplicativos con IA — la edición
                     de video, como diferencial.
                   </h1>
+                  <p className="mb-12 text-[15px] text-black/60">
+                    {NAME.alias} es el nombre con el que trabajo. Mi nombre completo es {NAME.full}.
+                  </p>
 
-                  <div className="grid max-w-lg grid-cols-3 gap-6">
+                  <div className="grid max-w-lg grid-cols-3 gap-3 min-[400px]:gap-6">
                     {STATS.map((stat) => (
                       <div key={stat.label}>
                         <p className="mb-2 text-3xl font-medium md:text-4xl">{stat.value}</p>
-                        <p className="text-xs uppercase tracking-[0.05em] text-black/60">
+                        <p className="break-words text-[10px] uppercase leading-snug tracking-[0.03em] text-black/60 min-[400px]:text-xs min-[400px]:tracking-[0.05em]">
                           {stat.label}
                         </p>
                       </div>

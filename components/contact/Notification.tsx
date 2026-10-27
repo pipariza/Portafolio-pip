@@ -30,7 +30,7 @@ export default function Notification({
             <MailAppIcon />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="flex items-baseline justify-between gap-2 text-[12.5px] text-black/50">
+            <div className="flex items-baseline justify-between gap-2 text-[12.5px] text-black/60">
               <b className="text-[13.5px] font-semibold text-[#1d1d1f]">
                 {toast.kind === "success" ? "Mail" : "No se pudo enviar"}
               </b>

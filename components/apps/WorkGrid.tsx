@@ -10,7 +10,7 @@ export default function WorkGrid({ works }: { works: WorkThumb[] }) {
           <Thumb image={w.image} color={w.color} alt={w.title} label="Imagen de prueba" />
           <figcaption className="mt-2">
             <p className="font-semibold">{w.title}</p>
-            <p className="mt-0.5 text-[11px] leading-snug text-black/55">{w.caption}</p>
+            <p className="mt-0.5 text-[11px] leading-snug text-black/60">{w.caption}</p>
           </figcaption>
         </figure>
       ))}

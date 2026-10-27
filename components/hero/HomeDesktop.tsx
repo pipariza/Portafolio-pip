@@ -105,7 +105,7 @@ const WIDGET =
 function NotesWidget({ className = "", onGo }: { className?: string; onGo: Go }) {
   return (
     <div className={`${WIDGET} ${className}`}>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-black/50">Notas</p>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-black/60">Notas</p>
       <p className="mt-2 text-[15px] font-semibold leading-snug">
         Diseño y desarrollo web con foco en aplicativos con IA
       </p>
@@ -113,7 +113,7 @@ function NotesWidget({ className = "", onGo }: { className?: string; onGo: Go })
         href="/contacto"
         onClick={(e) => onGo(e, "/contacto")}
         data-cursor-hover
-        className="group/avail mt-3 inline-flex items-center gap-2 rounded-md text-[12.5px] text-black/70 outline-none hover:text-black focus-visible:ring-2 focus-visible:ring-[#0a84ff]"
+        className="group/avail -my-3 mt-0 inline-flex items-center gap-2 rounded-md py-3 text-[12.5px] text-black/70 outline-none hover:text-black focus-visible:ring-2 focus-visible:ring-[#0a84ff]"
       >
         <i
           aria-hidden="true"
@@ -133,9 +133,9 @@ function ClockWidget({ className = "" }: { className?: string }) {
   const [time = "", date = ""] = stamp.split("|");
   return (
     <div className={`${WIDGET} text-center ${className}`}>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-black/50">Bogotá</p>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-black/60">Bogotá</p>
       <p className="mt-1 min-h-[1.1em] text-[34px] font-medium leading-[1.1] tabular-nums">{time}</p>
-      <p className="mt-1 min-h-[1.2em] text-[12px] text-black/50">{date}</p>
+      <p className="mt-1 min-h-[1.2em] text-[12px] text-black/60">{date}</p>
     </div>
   );
 }
@@ -156,7 +156,7 @@ function AreaItem({ area, size, onGo }: { area: Area; size: string; onGo: Go }) 
         className={`drop-shadow-[0_8px_10px_rgba(30,40,40,0.3)] transition-transform duration-200 ease-out group-hover/area:-translate-y-1 group-hover/area:scale-105 group-focus-visible/area:-translate-y-1 ${size}`}
       />
       <span className="text-[14px] font-semibold leading-tight">{area.title}</span>
-      <span className="text-[12px] text-black/50 max-md:hidden">{area.sub}</span>
+      <span className="text-[12px] text-black/60 max-md:hidden">{area.sub}</span>
     </Link>
   );
 }
@@ -164,7 +164,8 @@ function AreaItem({ area, size, onGo }: { area: Area; size: string; onGo: Go }) 
 /* ---------- dock ---------- */
 
 // The icon sizes of the Apps and Work docks.
-const DOCK_ICON = "relative h-8 w-8 shrink-0 min-[400px]:h-9 min-[400px]:w-9 md:h-12 md:w-12";
+// 40 px on the smallest phones, 44 from 400 px (the size of a finger), 48 on desktop.
+const DOCK_ICON = "relative h-10 w-10 shrink-0 min-[400px]:h-11 min-[400px]:w-11 md:h-12 md:w-12";
 
 function DockTooltip({ label }: { label: string }) {
   return (
@@ -346,6 +347,8 @@ export default function HomeDesktop({
       className="relative min-h-[100svh] w-full overflow-hidden text-[#1d1d1f] md:h-screen md:min-h-[720px] lg:min-h-[640px]"
       style={WALLPAPER}
     >
+      <h1 className="sr-only">Pip Ariza: diseño y desarrollo web con foco en aplicativos con IA</h1>
+
       {/* Tablet and desktop: widgets and the Finder window. */}
       <motion.div
         {...blockMotion}
@@ -373,9 +376,9 @@ export default function HomeDesktop({
               >
                 <div className="relative flex h-[52px] shrink-0 items-center border-b border-black/[0.12] bg-[#f3f1ee]/90 px-4">
                   <TrafficLights fixedSize canZoom={false} onClose={close} onMinimize={minimize} onZoom={() => {}} />
-                  <h1 className="pointer-events-none absolute inset-x-0 text-center text-[13px] font-semibold text-black/55">
+                  <p className="pointer-events-none absolute inset-x-0 text-center text-[13px] font-semibold text-black/60">
                     Pip Ariza
-                  </h1>
+                  </p>
                 </div>
 
                 <div className="flex min-h-0 flex-1">
@@ -383,7 +386,7 @@ export default function HomeDesktop({
                     aria-label="Favoritos"
                     className="w-[150px] shrink-0 border-r border-black/[0.09] bg-[#f3f1ee]/60 px-2.5 py-3 text-[13px]"
                   >
-                    <p className="px-2 pb-1.5 text-[11px] font-semibold text-black/45">Favoritos</p>
+                    <p className="px-2 pb-1.5 text-[11px] font-semibold text-black/60">Favoritos</p>
                     <ul className="space-y-0.5">
                       <li>
                         <span
@@ -417,7 +420,7 @@ export default function HomeDesktop({
                   </div>
                 </div>
 
-                <div className="flex h-7 shrink-0 items-center justify-center border-t border-black/[0.09] bg-[#f3f1ee]/80 text-[11.5px] text-black/45">
+                <div className="flex h-7 shrink-0 items-center justify-center border-t border-black/[0.09] bg-[#f3f1ee]/80 text-[11.5px] text-black/60">
                   3 elementos
                 </div>
               </motion.div>

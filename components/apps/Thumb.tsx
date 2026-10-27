@@ -31,7 +31,7 @@ export default function Thumb({
           className="object-cover"
         />
       ) : (
-        <span className="absolute inset-0 flex items-center justify-center px-2 text-center text-xs font-semibold tracking-wide text-black/35">
+        <span className="absolute inset-0 flex items-center justify-center px-2 text-center text-xs font-semibold tracking-wide text-black/60">
           {label}
         </span>
       )}

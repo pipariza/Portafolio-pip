@@ -123,11 +123,11 @@ export default function VideoSection() {
       className="relative w-full min-h-screen bg-paper text-ink overflow-hidden py-28 md:py-0"
     >
       <div className="md:absolute md:left-10 lg:left-16 md:top-1/2 md:-translate-y-1/2 px-6 md:px-0 text-center md:text-left mb-10 md:mb-0">
-        <h2 className="text-[13vw] leading-[0.95] md:text-[52px] md:leading-[1.05] font-extrabold uppercase">
+        <h1 className="text-[13vw] leading-[0.95] md:text-[52px] md:leading-[1.05] font-extrabold uppercase">
           Edición de
           <br />
           Video
-        </h2>
+        </h1>
       </div>
 
       <div

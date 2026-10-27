@@ -2,7 +2,7 @@
 
 import { useState, type PointerEvent, type ReactNode, type Ref } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { CONTACT } from "@/lib/config";
+import { CONTACT, NAME } from "@/lib/config";
 import {
   TrafficLights,
   WINDOW_FX,
@@ -41,7 +41,7 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-3 border-t border-black/[0.09] px-[22px] py-[9px]">
       <div className="min-w-0">
-        <p className="text-[11.5px] text-black/50">{label}</p>
+        <p className="text-[11.5px] text-black/60">{label}</p>
         <div className="truncate text-[14px] text-[#0066cc]">{children}</div>
       </div>
     </div>
@@ -105,7 +105,7 @@ export default function ContactsWindow({
         className="relative flex h-[52px] select-none items-center border-b border-black/[0.12] bg-[#f3f1ee]/90 px-4 lg:touch-none"
       >
         <TrafficLights fixedSize canZoom={false} onClose={onClose} onMinimize={onMinimize} onZoom={() => {}} />
-        <p className="pointer-events-none absolute inset-x-0 text-center text-[13px] font-semibold text-black/55">
+        <p className="pointer-events-none absolute inset-x-0 text-center text-[13px] font-semibold text-black/60">
           Contactos
         </p>
       </div>
@@ -117,8 +117,9 @@ export default function ContactsWindow({
         >
           PA
         </div>
-        <h2 className="text-[22px] font-bold tracking-tight">Pip Ariza</h2>
-        <p className="mt-[3px] text-[13px] text-black/55">Diseño &amp; Desarrollo web · Bogotá</p>
+        <h2 className="text-[22px] font-bold tracking-tight">{NAME.alias}</h2>
+        <p className="mt-[2px] text-[13px] font-medium text-black/75">{NAME.full}</p>
+        <p className="mt-[2px] text-[13px] text-black/60">Diseño &amp; Desarrollo web · Bogotá</p>
 
         <div className="mb-3 mt-4 flex justify-center gap-2 min-[400px]:gap-3.5">
           <Action href={`mailto:${CONTACT.email}`} label="Correo">
@@ -141,7 +142,7 @@ export default function ContactsWindow({
       <div className="text-left">
         <div className="flex items-center justify-between gap-3 border-t border-black/[0.09] px-[22px] py-[9px]">
           <div className="min-w-0">
-            <p className="text-[11.5px] text-black/50">Correo</p>
+            <p className="text-[11.5px] text-black/60">Correo</p>
             <a href={`mailto:${CONTACT.email}`} className={`block truncate text-[14px] text-[#0066cc] ${LINK}`}>
               {CONTACT.email}
             </a>
@@ -150,7 +151,7 @@ export default function ContactsWindow({
         </div>
         <div className="flex items-center justify-between gap-3 border-t border-black/[0.09] px-[22px] py-[9px]">
           <div className="min-w-0">
-            <p className="text-[11.5px] text-black/50">WhatsApp</p>
+            <p className="text-[11.5px] text-black/60">WhatsApp</p>
             <a
               href={CONTACT.whatsapp.href}
               target="_blank"
@@ -175,7 +176,7 @@ export default function ContactsWindow({
           </Row>
         )}
         <div className="border-t border-black/[0.09] px-[22px] py-[9px] pb-4">
-          <p className="text-[11.5px] text-black/50">Ciudad</p>
+          <p className="text-[11.5px] text-black/60">Ciudad</p>
           <p className="text-[14px] text-black/80">{CONTACT.city}</p>
         </div>
       </div>

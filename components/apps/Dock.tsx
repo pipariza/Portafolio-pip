@@ -62,8 +62,9 @@ export default function Dock() {
     </>
   );
 
+  // The before: layer is an invisible, bigger hit area (44 px on phones); nothing changes visually.
   const itemClasses =
-    "group relative flex shrink-0 items-end justify-center";
+    "group relative flex shrink-0 items-end justify-center before:absolute before:-inset-[6px] before:content-['']";
 
   return (
     <>

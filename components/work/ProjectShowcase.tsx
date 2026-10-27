@@ -386,7 +386,7 @@ function DeviceStage({
             <span className="h-[1cqw] w-[1cqw] rounded-full bg-black/20" />
             <span className="h-[1cqw] w-[1cqw] rounded-full bg-black/20" />
             <span className="h-[1cqw] w-[1cqw] rounded-full bg-black/20" />
-            <span className="ml-[2cqw] hidden h-[2.2cqw] max-w-[70%] items-center truncate whitespace-nowrap rounded-full bg-white px-[1.6cqw] text-[1.4cqw] leading-none text-black/50 @md:flex">
+            <span className="ml-[2cqw] hidden h-[2.2cqw] max-w-[70%] items-center truncate whitespace-nowrap rounded-full bg-white px-[1.6cqw] text-[1.4cqw] leading-none text-black/60 @md:flex">
               {host}{screen.path}
             </span>
           </div>

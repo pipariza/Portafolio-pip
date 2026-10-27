@@ -1,4 +1,4 @@
-import { CONTACT } from "@/lib/config";
+import { CONTACT, NAME } from "@/lib/config";
 
 /** A discarded piece shown in the Trash window. */
 export type TrashItem = {
@@ -255,13 +255,14 @@ export const dockItems: DockItem[] = [
     icon: "/dock/notas.avif",
     group: 1,
     window: {
-      title: "Información sobre: Felipe (Pip) Ariza",
+      title: `Información sobre: ${NAME.alias} (${NAME.full})`,
       tabs: [
         {
           label: "Sobre mí",
           meta: "01",
           lead: "Diseñador digital que construye ecosistemas web orientados a negocio.",
           paragraphs: [
+            `Soy ${NAME.full} y trabajo con el nombre de ${NAME.alias}.`,
             "Más de tres años combinando UX/UI, e-commerce, contenido audiovisual y pauta digital en Meta, para que cada elemento tenga una función dentro del recorrido del usuario.",
             "Hoy gestiono la tienda Shopify de Boho Chic SAS: creo productos de e-commerce con IA, automatizo procesos y mejoro la experiencia de compra.",
           ],

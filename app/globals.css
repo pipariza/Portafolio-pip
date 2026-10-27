@@ -33,60 +33,6 @@ body {
   color: var(--color-void);
 }
 
-/* ---------- Custom cursor ---------- */
-
-.cursor-ring {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 30px;
-  height: 30px;
-  border-radius: 9999px;
-  border: 1.5px solid #ffffff;
-  mix-blend-mode: difference;
-  pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
-  /* Hidden until the first mouse move so it never sits in the top-left corner. */
-  opacity: 0;
-  transition:
-    width 0.18s var(--ease-panel),
-    height 0.18s var(--ease-panel),
-    border-color 0.18s ease,
-    opacity 0.18s ease;
-  will-change: transform, width, height;
-}
-
-.cursor-ring[data-ready="true"] {
-  opacity: 1;
-}
-
-.cursor-ring[data-hover="true"] {
-  width: 14px;
-  height: 14px;
-  border-color: #8a8a86;
-}
-
-@media (hover: none) {
-  .cursor-ring {
-    display: none;
-  }
-}
-
-@media (hover: hover) and (pointer: fine) {
-  html {
-    cursor: none;
-  }
-  a,
-  button,
-  [role="button"],
-  input,
-  select,
-  textarea {
-    cursor: none;
-  }
-}
-
 /* ---------- Glass nav ---------- */
 
 .glass-pill {

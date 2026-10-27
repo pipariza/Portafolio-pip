@@ -1,6 +1,15 @@
 /** Canonical origin (apex redirects to www). */
 export const SITE_URL = "https://www.pipariza.digital";
 
+/**
+ * "Pip Ariza" is the name Pip works under and goes first everywhere; the full name appears
+ * where it matters (the CV, the contact card, About, search data).
+ */
+export const NAME = {
+  alias: "Pip Ariza",
+  full: "Duvan Felipe Colmenares Ariza",
+};
+
 export const FORMSPREE_ENDPOINT = "https://formspree.io/f/moeqjekg";
 
 export const CONTACT = {

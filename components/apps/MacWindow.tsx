@@ -187,7 +187,7 @@ export default function MacWindow({
                   <span className={i === tab ? "font-semibold" : "font-normal"}>
                     {t.label}
                   </span>
-                  {t.meta && <span className="text-black/45">{t.meta}</span>}
+                  {t.meta && <span className="text-black/60">{t.meta}</span>}
                 </button>
               ))}
             </aside>
@@ -258,7 +258,7 @@ export default function MacWindow({
                     ))}
                   </ul>
                 ) : (
-                  <p className="rounded-lg border border-dashed border-black/20 px-3 py-2 text-black/55">
+                  <p className="rounded-lg border border-dashed border-black/20 px-3 py-2 text-black/60">
                     {current.linksEmptyText ?? "Próximamente."}
                   </p>
                 )}

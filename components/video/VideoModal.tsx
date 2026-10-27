@@ -85,7 +85,7 @@ function ModalPlayer({
 
   if (!clip.vimeoId) {
     return (
-      <div className="absolute inset-0 flex items-center justify-center text-white/50 text-xs uppercase tracking-[0.08em]">
+      <div className="absolute inset-0 flex items-center justify-center text-white/70 text-xs uppercase tracking-[0.08em]">
         Video próximamente
       </div>
     );
@@ -233,7 +233,7 @@ export default function VideoModal({
               <p className="min-w-0 flex-1 truncate px-1 text-[15px] font-semibold text-white">
                 {clip.title}
               </p>
-              <span className="shrink-0 px-1 text-[12px] tabular-nums text-white/50" aria-hidden="true">
+              <span className="shrink-0 px-1 text-[12px] tabular-nums text-white/75" aria-hidden="true">
                 {index + 1} / {total}
               </span>
               <button

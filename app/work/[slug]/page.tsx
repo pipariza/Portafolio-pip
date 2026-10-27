@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { projects } from "@/lib/data";
+import { pageMetadata } from "@/lib/seo";
 import WorkDetail from "@/components/work/WorkDetail";
 
 export function generateStaticParams() {
@@ -13,7 +14,11 @@ export async function generateMetadata({
   const { slug } = await params;
   const project = projects.find((p) => p.slug === slug);
   return project
-    ? { title: `${project.name} — Pip Ariza`, description: project.summary }
+    ? pageMetadata({
+        title: `${project.name} — Pip Ariza`,
+        description: project.summary,
+        path: `/work/${project.slug}`,
+      })
     : { title: "Proyecto" };
 }
 
@@ -29,12 +34,15 @@ export default async function WorkDetailPage({
   const nextSlug = projects[(index + 1) % projects.length].slug;
 
   return (
-    <WorkDetail
-      project={project}
-      index={index}
-      total={projects.length}
-      prevSlug={prevSlug}
-      nextSlug={nextSlug}
-    />
+    <main id="contenido" tabIndex={-1} className="outline-none">
+      <h1 className="sr-only">{project.name}: proyecto de diseño y desarrollo web</h1>
+      <WorkDetail
+        project={project}
+        index={index}
+        total={projects.length}
+        prevSlug={prevSlug}
+        nextSlug={nextSlug}
+      />
+    </main>
   );
 }

@@ -54,7 +54,7 @@ export default function TrashView({
           ← Volver a la papelera
         </button>
         <ItemThumb item={item} large />
-        <p className="mt-4 break-all text-[11px] text-black/50">{item.file}</p>
+        <p className="mt-4 break-all text-[11px] text-black/60">{item.file}</p>
         <p className="mt-3 max-w-xl">
           <span className="font-semibold">Qué era: </span>
           {item.what}
@@ -70,7 +70,7 @@ export default function TrashView({
   return (
     <div>
       <div className="mb-4 flex items-center justify-between gap-3">
-        <p className="text-black/50">{items.length} elementos</p>
+        <p className="text-black/60">{items.length} elementos</p>
         <button
           type="button"
           data-cursor-hover

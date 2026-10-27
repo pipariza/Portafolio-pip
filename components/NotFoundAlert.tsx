@@ -52,7 +52,7 @@ export default function NotFoundAlert() {
             </h1>
             <p id="notfound-text" className="mt-1.5 text-[13px] leading-snug text-black/65">
               La dirección no existe o se movió. Revisa que esté bien escrita o vuelve al inicio.
-              <span className="mt-1.5 block text-black/45">(Código de error 404.)</span>
+              <span className="mt-1.5 block text-black/60">(Código de error 404.)</span>
             </p>
           </div>
         </div>

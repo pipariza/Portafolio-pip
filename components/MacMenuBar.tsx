@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { openSpotlight } from "@/lib/spotlight";
 import { zoomOutThen } from "@/lib/zoom";
+import { parentPath, previousPath, recordVisit } from "@/lib/history";
 
 export type MacMenuLink = { href: string; label: string; active: boolean };
 
@@ -69,17 +70,17 @@ function StatusIcons({ hover }: { hover: string }) {
         aria-label="Buscar (⌘K)"
         title="Buscar (⌘K)"
         data-cursor-hover
-        className={`-m-1.5 rounded-md p-1.5 transition-colors outline-none ${hover}`}
+        className={`-m-1.5 rounded-md p-1.5 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#0a84ff] ${hover}`}
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
           <circle cx="6.8" cy="6.8" r="4.3" />
           <path d="m10 10 3.6 3.6" />
         </svg>
       </button>
-      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor" aria-hidden="true">
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor" aria-hidden="true" className="max-lg:hidden">
         <path d="M8 2.2c2 0 3.8.8 5.1 2.1l1.1-1.2A8.9 8.9 0 0 0 8 .6a8.9 8.9 0 0 0-6.2 2.5l1.1 1.2A7.2 7.2 0 0 1 8 2.2Zm0 3.4c1.1 0 2.1.4 2.9 1.2l1.1-1.2A6 6 0 0 0 8 4a6 6 0 0 0-4 1.6l1.1 1.2c.8-.8 1.8-1.2 2.9-1.2Zm0 3.3c.5 0 1 .2 1.4.6L8 11.1 6.6 9.5c.4-.4.9-.6 1.4-.6Z" />
       </svg>
-      <svg width="26" height="12" viewBox="0 0 26 12" fill="none" aria-hidden="true">
+      <svg width="26" height="12" viewBox="0 0 26 12" fill="none" aria-hidden="true" className="max-lg:hidden">
         <rect x=".5" y=".5" width="22" height="11" rx="3.2" stroke="currentColor" opacity=".45" />
         <rect x="2" y="2" width="16" height="8" rx="1.8" fill="currentColor" />
         <path d="M24 4v4c.8-.3 1.4-1.1 1.4-2S24.8 4.3 24 4Z" fill="currentColor" opacity=".5" />
@@ -105,6 +106,25 @@ export default function MacMenuBar({
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const isHome = pathname === "/";
+
+  useEffect(() => {
+    recordVisit(pathname);
+  }, [pathname]);
+
+  // The back arrow, on every page but the home: back to the page you came from in this visit
+  // (through the zoom out when that is the home) or, if there is none, to the page above this one.
+  const goBack = () => {
+    const previous = previousPath();
+    if (previous) {
+      if (previous === "/") zoomOutThen(pathname, () => router.back());
+      else router.back();
+      return;
+    }
+    const parent = parentPath(pathname);
+    if (parent === "/") zoomOutThen(pathname, () => router.push("/"));
+    else router.push(parent);
+  };
 
   // Going home from a page: the page shrinks toward the icon it came from first (lib/zoom.ts).
   // A click with a modifier key (new tab) is left alone.
@@ -127,7 +147,9 @@ export default function MacMenuBar({
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  const item = `rounded-md px-2.5 py-[3px] transition-colors focus-visible:outline-none ${skin.hover}`;
+  // A clear ring on keyboard focus (a tint alone is hard to see on a translucent bar).
+  const ring = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0a84ff]";
+  const item = `rounded-md px-2.5 py-[3px] transition-colors ${ring} ${skin.hover}`;
 
   return (
     <header className="fixed inset-x-0 top-0 z-[70]">
@@ -135,11 +157,25 @@ export default function MacMenuBar({
         className={`flex h-[34px] items-center pl-3 pr-2 text-[13px] backdrop-blur-2xl backdrop-saturate-150 transition-colors duration-300 md:px-4 ${skin.bar}`}
       >
         <nav aria-label="Principal" className="flex min-w-0 items-center gap-2.5 md:gap-3">
+          {!isHome && (
+            <button
+              type="button"
+              onClick={goBack}
+              aria-label="Volver a la página anterior"
+              title="Atrás"
+              className={`-ml-2 flex h-[34px] min-w-9 items-center justify-center gap-1 rounded-md px-2 font-medium transition-colors ${ring} ${skin.hover}`}
+            >
+              <svg width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M6.5 1.5 2 6.5l4.5 5" />
+              </svg>
+              <span className="max-lg:hidden">Atrás</span>
+            </button>
+          )}
           <AppleLogo />
           <Link
             href="/"
             onClick={(e) => goHome(e, "/")}
-            className={`-mx-1.5 rounded-md px-1.5 py-[3px] font-bold transition-colors ${skin.hover}`}
+            className={`-mx-1.5 rounded-md px-1.5 py-[3px] font-bold transition-colors ${ring} ${skin.hover}`}
           >
             Pip Ariza
           </Link>
@@ -159,15 +195,30 @@ export default function MacMenuBar({
           </ul>
         </nav>
 
-        <div className="ml-auto flex items-center gap-4 text-[12.5px]">
+        <div className="ml-auto flex items-center gap-3 text-[12.5px] md:gap-4">
+          {/* The permanent call to hire: always in the bar, on every page. */}
+          <Link
+            href="/contacto"
+            aria-current={pathname === "/contacto" ? "page" : undefined}
+            aria-label="Disponible para trabajo: contáctame"
+            className={`flex items-center gap-1.5 rounded-full bg-[#30a14e]/15 px-2.5 py-[3px] font-semibold text-[#1c6a31] transition-colors hover:bg-[#30a14e]/25 ${ring}`}
+          >
+            <i
+              aria-hidden="true"
+              className="block h-[7px] w-[7px] rounded-full bg-[#30a14e] shadow-[0_0_0_3px_rgba(48,161,78,0.2)]"
+            />
+            <span>
+              Disponible<span className="max-lg:hidden"> para trabajo</span>
+            </span>
+          </Link>
           <StatusIcons hover={skin.hover} />
-          <span className="tabular-nums">{clock}</span>
+          <span className="tabular-nums max-[479px]:hidden">{clock}</span>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={open}
-            className="-mr-1 flex h-[34px] w-11 flex-col items-center justify-center gap-[5px] md:hidden"
+            className={`-mr-1 flex h-[34px] w-11 flex-col items-center justify-center gap-[5px] rounded-md md:hidden ${ring}`}
           >
             <span
               className="block h-[1.5px] w-5 bg-current transition-transform"
@@ -210,7 +261,7 @@ export default function MacMenuBar({
                   setOpen(false);
                   openSpotlight();
                 }}
-                className="flex h-11 w-full items-center rounded-lg px-3 text-[15px] font-medium"
+                className={`flex h-11 w-full items-center rounded-lg px-3 text-[15px] font-medium ${ring}`}
               >
                 Buscar
               </button>
@@ -224,7 +275,7 @@ export default function MacMenuBar({
                     goHome(e, link.href);
                   }}
                   aria-current={link.active ? "page" : undefined}
-                  className={`flex h-11 items-center rounded-lg px-3 text-[15px] ${
+                  className={`flex h-11 items-center rounded-lg px-3 text-[15px] ${ring} ${
                     link.active ? `${skin.menuActive} font-semibold` : "font-medium"
                   }`}
                 >

@@ -36,16 +36,16 @@ type Item = {
 };
 
 const PAGE_ITEMS: Item[] = [
-  { id: "inicio", title: "Inicio", kind: "Página", href: "/", keywords: "home principal escritorio finder", Glyph: HomeGlyph },
+  { id: "inicio", title: "Inicio", kind: "Página", href: "/", keywords: "home principal escritorio finder pip ariza", Glyph: HomeGlyph },
   { id: "work", title: "Work", kind: "Página", href: "/work", keywords: "diseño web proyectos sitios shopify wordpress marcas trabajo", Glyph: BrowserGlyph },
   { id: "apps", title: "Apps", kind: "Página", href: "/apps", keywords: "aplicativos web productos ia inteligencia artificial", Glyph: GridGlyph },
   { id: "video", title: "Video", kind: "Página", href: "/video", keywords: "edición de video reels motion clips vertical", Glyph: FilmGlyph },
-  { id: "about", title: "About", kind: "Página", href: "/about", keywords: "sobre mí quién soy experiencia años", Glyph: UserGlyph },
+  { id: "about", title: "About", kind: "Página", href: "/about", keywords: "sobre mí quién soy experiencia años duvan felipe colmenares ariza pip", Glyph: UserGlyph },
   { id: "contacto", title: "Contact", kind: "Página", href: "/contacto", keywords: "contacto escribir mensaje correo formulario", Glyph: MailGlyph },
 ];
 
 const OTHER_ITEMS: Item[] = [
-  { id: "cv", title: "Currículum (CV)", kind: "Documento", href: "/apps#cv", keywords: "cv hoja de vida curriculum currículo notas experiencia", Glyph: FileGlyph },
+  { id: "cv", title: "Currículum (CV)", kind: "Documento", href: "/apps#cv", keywords: "cv hoja de vida curriculum currículo notas experiencia duvan felipe colmenares ariza", Glyph: FileGlyph },
   { id: "correo", title: "Escribir un correo", kind: "Contacto", href: `mailto:${CONTACT.email}`, external: true, keywords: `email mail correo ${CONTACT.email}`, Glyph: MailGlyph },
   { id: "whatsapp", title: "WhatsApp", kind: "Contacto", href: CONTACT.whatsapp.href, external: true, keywords: `whatsapp wa celular chat ${CONTACT.whatsapp.label}`, Glyph: ChatGlyph },
   { id: "instagram", title: "Instagram", kind: "Contacto", href: CONTACT.instagram.href, external: true, keywords: "instagram ig redes", Glyph: InstagramGlyph },
@@ -210,7 +210,7 @@ export default function Spotlight({ projects }: { projects: { slug: string; name
             className="w-full max-w-[620px] overflow-hidden rounded-[20px] bg-[#f6f4f0]/80 text-[#1d1d1f] shadow-[0_0_0_0.5px_rgba(0,0,0,0.2),0_40px_90px_-20px_rgba(20,25,25,0.55)] backdrop-blur-[40px] backdrop-saturate-[1.6]"
           >
             <div className="flex items-center gap-3 px-5 py-4">
-              <SearchGlyph className="h-6 w-6 shrink-0 text-black/45" />
+              <SearchGlyph className="h-6 w-6 shrink-0 text-black/60" />
               <input
                 ref={inputRef}
                 value={query}
@@ -228,9 +228,9 @@ export default function Spotlight({ projects }: { projects: { slug: string; name
                 placeholder="Buscar o ir a…"
                 autoComplete="off"
                 spellCheck={false}
-                className="min-w-0 flex-1 bg-transparent text-[20px] outline-none placeholder:text-black/35"
+                className="min-w-0 flex-1 bg-transparent text-[20px] outline-none placeholder:text-black/60"
               />
-              <kbd className="hidden shrink-0 rounded-md bg-black/[0.07] px-1.5 py-0.5 font-sans text-[11px] text-black/50 sm:block">
+              <kbd className="hidden shrink-0 rounded-md bg-black/[0.07] px-1.5 py-0.5 font-sans text-[11px] text-black/60 sm:block">
                 esc
               </kbd>
             </div>
@@ -264,14 +264,14 @@ export default function Spotlight({ projects }: { projects: { slug: string; name
                       <item.Glyph className="h-[18px] w-[18px]" />
                     </span>
                     <span className="min-w-0 flex-1 truncate text-[15px] font-medium">{item.title}</span>
-                    <span className={`shrink-0 text-[12.5px] ${i === index ? "text-white/80" : "text-black/45"}`}>
+                    <span className={`shrink-0 text-[12.5px] ${i === index ? "text-white/80" : "text-black/60"}`}>
                       {item.kind}
                     </span>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="border-t border-black/[0.09] px-5 py-6 text-[14px] text-black/50">
+              <p className="border-t border-black/[0.09] px-5 py-6 text-[14px] text-black/60">
                 Sin resultados para «{query}».
               </p>
             )}
@@ -279,7 +279,7 @@ export default function Spotlight({ projects }: { projects: { slug: string; name
             <p className="sr-only" aria-live="polite">
               {results.length} resultados
             </p>
-            <div className="hidden items-center justify-end gap-4 border-t border-black/[0.09] px-5 py-2 text-[12px] text-black/45 sm:flex">
+            <div className="hidden items-center justify-end gap-4 border-t border-black/[0.09] px-5 py-2 text-[12px] text-black/60 sm:flex">
               <span>↑↓ moverte</span>
               <span>↵ abrir</span>
               <span>esc cerrar</span>

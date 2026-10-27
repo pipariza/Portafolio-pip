@@ -20,9 +20,9 @@ const REASONS = ["Oferta laboral", "Propuesta freelance", "Colaboración", "Otro
 
 const ROW =
   "flex min-h-[44px] items-center gap-2.5 border-b border-black/[0.09] px-4 text-[14px] sm:px-[18px]";
-const LABEL = "w-[52px] shrink-0 text-right text-black/50 sm:w-[62px]";
+const LABEL = "w-[52px] shrink-0 text-right text-black/60 sm:w-[62px]";
 const INPUT =
-  "min-w-0 rounded-md bg-transparent px-1.5 py-1.5 text-[#1d1d1f] outline-none placeholder:text-black/40 focus-visible:ring-2 focus-visible:ring-[#0a84ff]/70";
+  "min-w-0 rounded-md bg-transparent px-1.5 py-1.5 text-[#1d1d1f] outline-none placeholder:text-black/60 focus-visible:ring-2 focus-visible:ring-[#0a84ff]/70";
 
 /**
  * "Nuevo mensaje": the contact form drawn as a Mail compose window. It sends to
@@ -117,7 +117,7 @@ export default function MailWindow({
           className="relative flex h-[52px] shrink-0 select-none items-center gap-3 border-b border-black/[0.12] bg-[#f3f1ee]/90 px-4 lg:touch-none"
         >
           <TrafficLights fixedSize zoomed={zoomed} onClose={onClose} onMinimize={onMinimize} onZoom={onZoom} />
-          <p className="pointer-events-none absolute inset-x-0 text-center text-[13px] font-semibold text-black/55 max-sm:hidden">
+          <p className="pointer-events-none absolute inset-x-0 text-center text-[13px] font-semibold text-black/60 max-sm:hidden">
             Nuevo mensaje
           </p>
           <button
@@ -135,7 +135,7 @@ export default function MailWindow({
         <div className={ROW}>
           <span className={LABEL}>Para:</span>
           <span className="rounded-md bg-[#0a84ff]/15 px-2.5 py-[3px] font-medium text-[#0066cc]">Pip Ariza</span>
-          <span className="min-w-0 truncate text-black/55">{CONTACT.email}</span>
+          <span className="min-w-0 truncate text-black/60">{CONTACT.email}</span>
         </div>
 
         <div className={ROW}>
@@ -153,7 +153,7 @@ export default function MailWindow({
             onChange={(e) => onDraft({ name: e.target.value })}
             className={`${INPUT} w-[34%]`}
           />
-          <span aria-hidden="true" className="text-black/35">&lt;</span>
+          <span aria-hidden="true" className="text-black/60">&lt;</span>
           <input
             id="contact-email"
             name="email"
@@ -166,7 +166,7 @@ export default function MailWindow({
             onChange={(e) => onDraft({ email: e.target.value })}
             className={`${INPUT} flex-1`}
           />
-          <span aria-hidden="true" className="text-black/35">&gt;</span>
+          <span aria-hidden="true" className="text-black/60">&gt;</span>
         </div>
 
         <div className={ROW}>
@@ -182,7 +182,7 @@ export default function MailWindow({
               onChange={(e) => onDraft({ reason: e.target.value })}
               data-cursor-hover
               className={`appearance-none rounded-[7px] bg-black/[0.06] py-1 pl-3 pr-8 text-[13.5px] outline-none focus-visible:ring-2 focus-visible:ring-[#0a84ff]/70 [&>option]:bg-white [&>option]:text-[#1d1d1f] ${
-                draft.reason ? "text-[#1d1d1f]" : "text-black/55"
+                draft.reason ? "text-[#1d1d1f]" : "text-black/60"
               }`}
             >
               <option value="" disabled>
@@ -203,7 +203,7 @@ export default function MailWindow({
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-black/55"
+              className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-black/60"
               aria-hidden="true"
             >
               <path d="m1.5 4.5 3-3 3 3M1.5 7.5l3 3 3-3" />
@@ -221,13 +221,13 @@ export default function MailWindow({
           value={draft.message}
           onChange={(e) => onDraft({ message: e.target.value })}
           onKeyDown={handleKeyDown}
-          className="min-h-[200px] w-full flex-1 resize-none bg-transparent px-5 pb-2 pt-[18px] text-[15px] leading-[1.6] text-[#1d1d1f] outline-none placeholder:text-black/40 lg:min-h-0"
+          className="min-h-[200px] w-full flex-1 resize-none bg-transparent px-5 pb-2 pt-[18px] text-[15px] leading-[1.6] text-[#1d1d1f] outline-none placeholder:text-black/60 lg:min-h-0"
         />
-        <p aria-hidden="true" className="px-5 pb-4 text-[13px] text-black/40 max-sm:hidden">
+        <p aria-hidden="true" className="px-5 pb-4 text-[13px] text-black/60 max-sm:hidden">
           Enviado desde pipariza.digital
         </p>
 
-        <div className="flex shrink-0 items-center justify-between gap-3 border-t border-black/[0.09] bg-black/[0.03] px-[18px] py-3 text-[12.5px] text-black/55">
+        <div className="flex shrink-0 items-center justify-between gap-3 border-t border-black/[0.09] bg-black/[0.03] px-[18px] py-3 text-[12.5px] text-black/60">
           <span className="flex items-center">
             <i
               aria-hidden="true"
