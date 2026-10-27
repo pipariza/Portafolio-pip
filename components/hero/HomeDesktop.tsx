@@ -43,7 +43,7 @@ type Glyph = ComponentType<{ className?: string }>;
 
 // The Notes app icon, the one About's closed window leaves on its desktop.
 function NotesAppIcon({ className }: { className?: string }) {
-  return <Image src="/dock/notas.avif" alt="" width={112} height={112} className={`object-contain ${className ?? ""}`} />;
+  return <Image src="/dock/notas.avif" alt="" width={112} height={112} priority className={`object-contain ${className ?? ""}`} />;
 }
 
 // The pages, in the order of the menu bar (the labels are the menu bar's). `Glyph` is the
