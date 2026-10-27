@@ -10,6 +10,7 @@ import {
   WINDOW_FX_REDUCED,
   useMacWindow,
 } from "@/components/mac/window";
+import { useLocale } from "@/components/LocaleProvider";
 import { NAME } from "@/lib/config";
 import { DesktopShortcut, DockTile, MiniDock } from "@/components/mac/dock";
 import { wallpaperStyle } from "@/components/mac/wallpaper";
@@ -24,14 +25,15 @@ import { wallpaperStyle } from "@/components/mac/wallpaper";
  */
 
 const STATS = [
-  { value: "3+", label: "Años de experiencia" },
-  { value: "20+", label: "Proyectos entregados" },
-  { value: "IA", label: "Foco en aplicativos" },
+  { value: "3+", es: "Años de experiencia", en: "Years of experience" },
+  { value: "20+", es: "Proyectos entregados", en: "Projects delivered" },
+  { value: "IA", es: "Foco en aplicativos", en: "Focus on apps" },
 ];
 
 const WALLPAPER_STYLE = wallpaperStyle(["#f3efe6", "#dcd6e6", "#9aa3c4"]);
 
 export default function AboutDesktop() {
+  const { lang, tr, href } = useLocale();
   const reduce = useReducedMotion();
   const deskRef = useRef<HTMLDivElement>(null);
   const shortcutRef = useRef<HTMLButtonElement>(null);
@@ -87,7 +89,7 @@ export default function AboutDesktop() {
                     onZoom={() => {}}
                   />
                   <p className="pointer-events-none absolute inset-x-0 text-center text-[13px] font-semibold text-black/60">
-                    Notas
+                    {tr("Notas", "Notes")}
                   </p>
                 </div>
 
@@ -96,30 +98,35 @@ export default function AboutDesktop() {
                     About
                   </p>
                   <h1 className="mb-4 text-3xl font-medium leading-tight tracking-tight md:text-5xl">
-                    Diseño y desarrollo web con foco en aplicativos con IA — la edición
-                    de video, como diferencial.
+                    {tr(
+                      "Diseño y desarrollo web con foco en aplicativos con IA — la edición de video, como diferencial.",
+                      "Web design and development focused on AI-powered apps — video editing as a differentiator.",
+                    )}
                   </h1>
                   <p className="mb-12 text-[15px] text-black/60">
-                    {NAME.alias} es el nombre con el que trabajo. Mi nombre completo es {NAME.full}.
+                    {tr(
+                      `${NAME.alias} es el nombre con el que trabajo. Mi nombre completo es ${NAME.full}.`,
+                      `${NAME.alias} is the name I work under. My full name is ${NAME.full}.`,
+                    )}
                   </p>
 
                   <div className="grid max-w-lg grid-cols-3 gap-3 min-[400px]:gap-6">
                     {STATS.map((stat) => (
-                      <div key={stat.label}>
+                      <div key={stat.es}>
                         <p className="mb-2 text-3xl font-medium md:text-4xl">{stat.value}</p>
                         <p className="break-words text-[10px] uppercase leading-snug tracking-[0.03em] text-black/60 min-[400px]:text-xs min-[400px]:tracking-[0.05em]">
-                          {stat.label}
+                          {stat[lang]}
                         </p>
                       </div>
                     ))}
                   </div>
 
                   <Link
-                    href="/apps#cv"
+                    href={href("/apps#cv")}
                     data-cursor-hover
                     className="mt-12 inline-flex h-11 items-center justify-center gap-2 rounded-[10px] bg-[#1d1d1f] px-6 text-[14px] font-semibold text-white outline-none transition-opacity hover:opacity-85 focus-visible:ring-2 focus-visible:ring-[#0a84ff] focus-visible:ring-offset-2 md:h-10"
                   >
-                    Saber más <span aria-hidden="true">→</span>
+                    {tr("Saber más", "Learn more")} <span aria-hidden="true">→</span>
                   </Link>
                 </div>
               </motion.div>
@@ -127,7 +134,7 @@ export default function AboutDesktop() {
           </AnimatePresence>
           <AnimatePresence initial={false}>
             {win === "closed" && (
-              <DesktopShortcut key="shortcut" label="Notas" aria="Abrir Notas: About" onOpen={open} buttonRef={shortcutRef}>
+              <DesktopShortcut key="shortcut" label={tr("Notas", "Notes")} aria={tr("Abrir Notas: About", "Open Notes: About")} onOpen={open} buttonRef={shortcutRef}>
                 <Image
                   src="/dock/notas.avif"
                   alt=""
@@ -142,7 +149,7 @@ export default function AboutDesktop() {
       </div>
 
       <MiniDock tone="light" show={win === "minimized"}>
-        <DockTile tone="light" title="Notas: About" onRestore={open} buttonRef={tileRef}>
+        <DockTile tone="light" title={tr("Notas: About", "Notes: About")} onRestore={open} buttonRef={tileRef}>
           <span className="absolute inset-x-[12%] top-[36%] h-[8%] rounded-full bg-black/25" />
           <span className="absolute inset-x-[12%] top-[52%] h-[8%] rounded-full bg-black/15" />
           <span className="absolute left-[12%] top-[68%] h-[8%] w-[45%] rounded-full bg-black/15" />

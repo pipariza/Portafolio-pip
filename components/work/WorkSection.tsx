@@ -1,11 +1,14 @@
 "use client";
 
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
+import { useLocale } from "@/components/LocaleProvider";
 import { ThemeSection } from "@/lib/section-theme";
-import { projects } from "@/lib/data";
+import { getProjects } from "@/lib/i18n/projects";
 import ProjectCaseStudy from "./ProjectCaseStudy";
 
 export default function WorkSection() {
+  const { lang, href } = useLocale();
+  const projects = useMemo(() => getProjects(lang), [lang]);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
 
   const scrollToIndex = (index: number) => {
@@ -28,7 +31,7 @@ export default function WorkSection() {
               project={project}
               index={i}
               total={projects.length}
-              backHref="/"
+              backHref={href("/")}
               onPrev={() => scrollToIndex(i - 1)}
               onNext={() => scrollToIndex(i + 1)}
               onGoTo={scrollToIndex}

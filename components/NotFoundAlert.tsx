@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
+import { useLocale } from "@/components/LocaleProvider";
 import { EASE } from "@/components/mac/window";
 import { SOFT_GRAY, wallpaperStyle } from "@/components/mac/wallpaper";
 import { openSpotlight } from "@/lib/spotlight";
@@ -26,7 +27,9 @@ function FolderQuestionIcon({ className }: { className?: string }) {
 }
 
 export default function NotFoundAlert() {
-  const pathname = usePathname();
+  const { tr, href } = useLocale();
+  // The address as the visitor typed it (the Spanish pages live in /es inside, without it outside).
+  const pathname = usePathname().replace(/^\/es(?=\/|$)/, "") || "/";
   const reduce = useReducedMotion();
   const shown = pathname.length > 48 ? `${pathname.slice(0, 47)}…` : pathname;
 
@@ -48,11 +51,14 @@ export default function NotFoundAlert() {
           <FolderQuestionIcon className="h-16 w-16 shrink-0 drop-shadow-[0_6px_8px_rgba(30,60,100,0.3)]" />
           <div className="min-w-0">
             <h1 id="notfound-title" className="break-words text-[15px] font-bold leading-snug">
-              No se encontró la página «{shown}».
+              {tr(`No se encontró la página «${shown}».`, `The page “${shown}” was not found.`)}
             </h1>
             <p id="notfound-text" className="mt-1.5 text-[13px] leading-snug text-black/65">
-              La dirección no existe o se movió. Revisa que esté bien escrita o vuelve al inicio.
-              <span className="mt-1.5 block text-black/60">(Código de error 404.)</span>
+              {tr(
+                "La dirección no existe o se movió. Revisa que esté bien escrita o vuelve al inicio.",
+                "The address doesn't exist or was moved. Check that it is spelled correctly or go back home.",
+              )}
+              <span className="mt-1.5 block text-black/60">{tr("(Código de error 404.)", "(Error code 404.)")}</span>
             </p>
           </div>
         </div>
@@ -64,15 +70,15 @@ export default function NotFoundAlert() {
             data-cursor-hover
             className="inline-flex h-8 items-center justify-center rounded-[7px] border border-black/15 bg-white px-4 text-[13px] font-medium shadow-[0_1px_1px_rgba(0,0,0,0.08)] outline-none transition-colors hover:bg-[#f5f5f3] focus-visible:ring-2 focus-visible:ring-[#0a84ff] max-sm:h-11"
           >
-            Buscar…
+            {tr("Buscar…", "Search…")}
           </button>
           <Link
-            href="/"
+            href={href("/")}
             autoFocus
             data-cursor-hover
             className="inline-flex h-8 items-center justify-center rounded-[7px] bg-[#0a64d8] px-4 text-[13px] font-semibold text-white shadow-[0_1px_1px_rgba(0,0,0,0.15)] outline-none transition-[filter] hover:brightness-110 focus-visible:ring-2 focus-visible:ring-[#0a84ff] focus-visible:ring-offset-2 max-sm:h-11"
           >
-            Ir al inicio
+            {tr("Ir al inicio", "Go home")}
           </Link>
         </div>
       </motion.div>

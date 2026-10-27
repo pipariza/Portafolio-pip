@@ -1,13 +1,17 @@
+"use client";
+
+import { useLocale } from "@/components/LocaleProvider";
 import type { WorkThumb } from "@/lib/dock";
 import Thumb from "./Thumb";
 
 /** Captioned thumbnails of featured pieces. */
 export default function WorkGrid({ works }: { works: WorkThumb[] }) {
+  const { tr } = useLocale();
   return (
     <div className="grid grid-cols-2 gap-x-4 gap-y-5 @md:grid-cols-3">
       {works.map((w) => (
         <figure key={w.title}>
-          <Thumb image={w.image} color={w.color} alt={w.title} label="Imagen de prueba" />
+          <Thumb image={w.image} color={w.color} alt={w.title} label={tr("Imagen de prueba", "Test image")} />
           <figcaption className="mt-2">
             <p className="font-semibold">{w.title}</p>
             <p className="mt-0.5 text-[11px] leading-snug text-black/60">{w.caption}</p>

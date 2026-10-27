@@ -4,11 +4,15 @@ import { useEffect, useState, useSyncExternalStore, type MouseEvent } from "reac
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { openSpotlight } from "@/lib/spotlight";
+import { useLocale } from "@/components/LocaleProvider";
+import { openSpotlight, useSpotlightShortcut } from "@/lib/spotlight";
+import { localizeHref, parsePathname } from "@/lib/i18n/routes";
+import type { Locale } from "@/lib/i18n/config";
 import { zoomOutThen } from "@/lib/zoom";
 import { parentPath, previousPath, recordVisit } from "@/lib/history";
 
-export type MacMenuLink = { href: string; label: string; active: boolean };
+/** `path` is the internal path ("/contacto"), `href` its address in the current language. */
+export type MacMenuLink = { path: string; href: string; label: string; active: boolean };
 
 // Light pages get a light, frosted bar; dark pages get macOS's dark one.
 const SKIN = {
@@ -30,23 +34,27 @@ const SKIN = {
   },
 } as const;
 
-// The clock is the visitor's own: their date, their time, their language and
-// 12/24-hour format, ticking in real time ("dom 25 oct 8:32 a. m.").
+// The clock is the visitor's own date and time, ticking in real time, written in the
+// language they picked for the site ("dom 25 oct 8:32 a. m." / "Sun Oct 25 8:32 AM").
 function subscribeClock(onChange: () => void) {
   const id = window.setInterval(onChange, 1000);
   return () => window.clearInterval(id);
 }
-function clockSnapshot() {
-  return new Date()
-    .toLocaleString(undefined, {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      hour: "numeric",
-      minute: "2-digit",
-    })
-    .replace(/,/g, "");
+function clockSnapshotFor(locale: string) {
+  return () =>
+    new Date()
+      .toLocaleString(locale, {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        hour: "numeric",
+        minute: "2-digit",
+      })
+      .replace(/,/g, "");
 }
+// Two stable snapshot functions (one per language) so useSyncExternalStore does not
+// resubscribe on every render.
+const clockSnapshots = { es: clockSnapshotFor("es-CO"), en: clockSnapshotFor("en-US") };
 
 function AppleLogo() {
   return (
@@ -62,13 +70,15 @@ function AppleLogo() {
 // A few status icons, like a real menu bar but without the crowd. Only the magnifier does
 // something: it opens Spotlight (the search window, also on ⌘K).
 function StatusIcons({ hover }: { hover: string }) {
+  const { tr } = useLocale();
+  const shortcut = useSpotlightShortcut();
   return (
     <span className="flex items-center gap-4 max-md:hidden">
       <button
         type="button"
         onClick={openSpotlight}
-        aria-label="Buscar (⌘K)"
-        title="Buscar (⌘K)"
+        aria-label={`${tr("Buscar", "Search")} (${shortcut})`}
+        title={`${tr("Buscar", "Search")} (${shortcut})`}
         data-cursor-hover
         className={`-m-1.5 rounded-md p-1.5 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#0a84ff] ${hover}`}
       >
@@ -90,10 +100,50 @@ function StatusIcons({ hover }: { hover: string }) {
 }
 
 /**
- * The site's menu on the Work pages, drawn as a macOS menu bar: the Apple logo,
- * the name in bold like the front app, the pages as menus, and a few status
- * icons with the visitor's real clock. On phones the menus fold into one
- * button that opens a dropdown under the bar.
+ * A language switch: the current language and a link to the same page in the other one
+ * (the address changes, the page stays). Spanish has no prefix in its address, English has /en.
+ */
+function LanguageSwitch({ hover, ring, onNavigate }: { hover: string; ring: string; onNavigate?: () => void }) {
+  const { lang, tr } = useLocale();
+  const router = useRouter();
+  const { path } = parsePathname(usePathname());
+  const codes: Locale[] = ["es", "en"];
+  return (
+    <span role="group" aria-label={tr("Idioma", "Language")} className="flex items-center rounded-md bg-black/[0.05] p-0.5 text-[11.5px] font-semibold">
+      {codes.map((code) =>
+        code === lang ? (
+          <span key={code} aria-current="true" className="rounded px-1.5 py-[2px] uppercase bg-white/80 shadow-[0_0_0_0.5px_rgba(0,0,0,0.12)]">
+            {code}
+          </span>
+        ) : (
+          <a
+            key={code}
+            href={localizeHref(path, code)}
+            hrefLang={code}
+            lang={code}
+            aria-label={code === "en" ? "Switch to English" : "Cambiar a español"}
+            onClick={(e) => {
+              // The address of the same page in the other language, keeping the #hash (e.g. the CV).
+              if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+              e.preventDefault();
+              onNavigate?.();
+              router.push(`${localizeHref(path, code)}${window.location.hash}`);
+            }}
+            className={`rounded px-1.5 py-[2px] uppercase text-current/70 transition-colors ${ring} ${hover}`}
+          >
+            {code}
+          </a>
+        ),
+      )}
+    </span>
+  );
+}
+
+/**
+ * The site's menu, drawn as a macOS menu bar: the Apple logo, the name in bold like the front app,
+ * the pages as menus, the permanent "available for work" call, a language switch and a few status
+ * icons with the visitor's real clock. On phones the menus fold into one button that opens a
+ * dropdown under the bar.
  */
 export default function MacMenuBar({
   links,
@@ -103,8 +153,10 @@ export default function MacMenuBar({
   theme: "light" | "dark";
 }) {
   const skin = SKIN[theme];
+  const { lang, tr, href } = useLocale();
   const router = useRouter();
-  const pathname = usePathname();
+  // The internal path ("/work"), without the language of the address.
+  const { path: pathname } = parsePathname(usePathname());
   const [open, setOpen] = useState(false);
   const isHome = pathname === "/";
 
@@ -122,21 +174,21 @@ export default function MacMenuBar({
       return;
     }
     const parent = parentPath(pathname);
-    if (parent === "/") zoomOutThen(pathname, () => router.push("/"));
-    else router.push(parent);
+    if (parent === "/") zoomOutThen(pathname, () => router.push(href("/")));
+    else router.push(href(parent));
   };
 
   // Going home from a page: the page shrinks toward the icon it came from first (lib/zoom.ts).
   // A click with a modifier key (new tab) is left alone.
-  const goHome = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (href !== "/" || pathname === "/") return;
+  const goHome = (e: MouseEvent<HTMLAnchorElement>, path: string) => {
+    if (path !== "/" || pathname === "/") return;
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
-    zoomOutThen(pathname, () => router.push("/"));
+    zoomOutThen(pathname, () => router.push(href("/")));
   };
   // The snapshot is a string that only changes with the minute, so the bar
   // re-renders once a minute even though the clock is checked every second.
-  const clock = useSyncExternalStore(subscribeClock, clockSnapshot, () => "");
+  const clock = useSyncExternalStore(subscribeClock, clockSnapshots[lang], () => "");
 
   useEffect(() => {
     if (!open) return;
@@ -156,24 +208,24 @@ export default function MacMenuBar({
       <div
         className={`flex h-[34px] items-center pl-3 pr-2 text-[13px] backdrop-blur-2xl backdrop-saturate-150 transition-colors duration-300 md:px-4 ${skin.bar}`}
       >
-        <nav aria-label="Principal" className="flex min-w-0 items-center gap-2.5 md:gap-3">
+        <nav aria-label={tr("Principal", "Main")} className="flex min-w-0 items-center gap-2.5 md:gap-3">
           {!isHome && (
             <button
               type="button"
               onClick={goBack}
-              aria-label="Volver a la página anterior"
-              title="Atrás"
+              aria-label={tr("Volver a la página anterior", "Go back to the previous page")}
+              title={tr("Atrás", "Back")}
               className={`-ml-2 flex h-[34px] min-w-9 items-center justify-center gap-1 rounded-md px-2 font-medium transition-colors ${ring} ${skin.hover}`}
             >
               <svg width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M6.5 1.5 2 6.5l4.5 5" />
               </svg>
-              <span className="max-lg:hidden">Atrás</span>
+              <span className="max-lg:hidden">{tr("Atrás", "Back")}</span>
             </button>
           )}
           <AppleLogo />
           <Link
-            href="/"
+            href={href("/")}
             onClick={(e) => goHome(e, "/")}
             className={`-mx-1.5 rounded-md px-1.5 py-[3px] font-bold transition-colors ${ring} ${skin.hover}`}
           >
@@ -181,10 +233,10 @@ export default function MacMenuBar({
           </Link>
           <ul className="hidden items-center md:flex">
             {links.map((link) => (
-              <li key={link.href}>
+              <li key={link.path}>
                 <Link
                   href={link.href}
-                  onClick={(e) => goHome(e, link.href)}
+                  onClick={(e) => goHome(e, link.path)}
                   aria-current={link.active ? "page" : undefined}
                   className={`${item} ${link.active ? `${skin.active} font-semibold` : ""}`}
                 >
@@ -198,9 +250,9 @@ export default function MacMenuBar({
         <div className="ml-auto flex items-center gap-3 text-[12.5px] md:gap-4">
           {/* The permanent call to hire: always in the bar, on every page. */}
           <Link
-            href="/contacto"
+            href={href("/contacto")}
             aria-current={pathname === "/contacto" ? "page" : undefined}
-            aria-label="Disponible para trabajo: contáctame"
+            aria-label={tr("Disponible para trabajo: contáctame", "Available for work: contact me")}
             className={`flex items-center gap-1.5 rounded-full bg-[#30a14e]/15 px-2.5 py-[3px] font-semibold text-[#1c6a31] transition-colors hover:bg-[#30a14e]/25 ${ring}`}
           >
             <i
@@ -208,15 +260,19 @@ export default function MacMenuBar({
               className="block h-[7px] w-[7px] rounded-full bg-[#30a14e] shadow-[0_0_0_3px_rgba(48,161,78,0.2)]"
             />
             <span>
-              Disponible<span className="max-lg:hidden"> para trabajo</span>
+              {tr("Disponible", "Available")}
+              <span className="max-lg:hidden">{tr(" para trabajo", " for work")}</span>
             </span>
           </Link>
+          <span className="max-[419px]:hidden">
+            <LanguageSwitch hover={skin.hover} ring={ring} />
+          </span>
           <StatusIcons hover={skin.hover} />
-          <span className="tabular-nums max-[479px]:hidden">{clock}</span>
+          <span className="tabular-nums max-lg:hidden">{clock}</span>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            aria-label={open ? "Cerrar menú" : "Abrir menú"}
+            aria-label={open ? tr("Cerrar menú", "Close menu") : tr("Abrir menú", "Open menu")}
             aria-expanded={open}
             className={`-mr-1 flex h-[34px] w-11 flex-col items-center justify-center gap-[5px] rounded-md md:hidden ${ring}`}
           >
@@ -263,16 +319,16 @@ export default function MacMenuBar({
                 }}
                 className={`flex h-11 w-full items-center rounded-lg px-3 text-[15px] font-medium ${ring}`}
               >
-                Buscar
+                {tr("Buscar", "Search")}
               </button>
             </li>
             {links.map((link) => (
-              <li key={link.href}>
+              <li key={link.path}>
                 <Link
                   href={link.href}
                   onClick={(e) => {
                     setOpen(false);
-                    goHome(e, link.href);
+                    goHome(e, link.path);
                   }}
                   aria-current={link.active ? "page" : undefined}
                   className={`flex h-11 items-center rounded-lg px-3 text-[15px] ${ring} ${
@@ -283,6 +339,10 @@ export default function MacMenuBar({
                 </Link>
               </li>
             ))}
+            <li className="flex h-11 items-center justify-between px-3 text-[15px] font-medium">
+              <span>{tr("Idioma", "Language")}</span>
+              <LanguageSwitch hover={skin.hover} ring={ring} onNavigate={() => setOpen(false)} />
+            </li>
           </motion.ul>
         )}
       </AnimatePresence>

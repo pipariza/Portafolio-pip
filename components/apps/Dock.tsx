@@ -1,9 +1,10 @@
 "use client";
 
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence } from "framer-motion";
-import { dockItems, type DockItem } from "@/lib/dock";
+import { useLocale } from "@/components/LocaleProvider";
+import { getDockItems, type DockItem } from "@/lib/dock";
 import { useSectionTheme } from "@/lib/section-theme";
 import MacWindow, { type ExitMode } from "./MacWindow";
 
@@ -21,6 +22,8 @@ function Tooltip({ label }: { label: string }) {
 
 export default function Dock() {
   const { theme } = useSectionTheme();
+  const { lang } = useLocale();
+  const dockItems = useMemo(() => getDockItems(lang), [lang]);
   const [openIds, setOpenIds] = useState<string[]>([]);
   const [exitMode, setExitMode] = useState<ExitMode>("close");
   const layerRef = useRef<HTMLDivElement>(null);
@@ -34,7 +37,7 @@ export default function Dock() {
       350,
     );
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [dockItems]);
 
   const bringToFront = (id: string) =>
     setOpenIds((ids) =>

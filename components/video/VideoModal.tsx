@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { useLocale } from "@/components/LocaleProvider";
 import type { VideoClip } from "@/lib/data";
 
 const VIMEO_ORIGIN = "https://player.vimeo.com";
@@ -22,6 +23,7 @@ function ModalPlayer({
   wantsSound: boolean;
   onSoundOn: () => void;
 }) {
+  const { tr } = useLocale();
   const ref = useRef<HTMLIFrameElement>(null);
   const [ready, setReady] = useState(false);
   const [playing, setPlaying] = useState(false);
@@ -86,7 +88,7 @@ function ModalPlayer({
   if (!clip.vimeoId) {
     return (
       <div className="absolute inset-0 flex items-center justify-center text-white/70 text-xs uppercase tracking-[0.08em]">
-        Video próximamente
+        {tr("Video próximamente", "Video coming soon")}
       </div>
     );
   }
@@ -134,7 +136,7 @@ function ModalPlayer({
             <path d="M2 6v4h3l4 3V3L5 6H2Z" fill="currentColor" />
             <path d="M11.5 5.5a3.5 3.5 0 0 1 0 5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
           </svg>
-          Activar sonido
+          {tr("Activar sonido", "Turn sound on")}
         </button>
       )}
     </>
@@ -166,7 +168,8 @@ export default function VideoModal({
   onPrev: () => void;
   onNext: () => void;
 }) {
-  // Lives as long as the page, so one tap on "Activar sonido" covers every clip.
+  const { tr } = useLocale();
+  // Lives as long as the page, so one tap on "Turn sound on" covers every clip.
   const [soundOn, setSoundOn] = useState(false);
 
   useEffect(() => {
@@ -190,7 +193,7 @@ export default function VideoModal({
         <motion.div
           role="dialog"
           aria-modal="true"
-          aria-label="Edición de video"
+          aria-label={tr("Edición de video", "Video editing")}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -220,7 +223,7 @@ export default function VideoModal({
               <button
                 type="button"
                 onClick={onClose}
-                aria-label="Cerrar"
+                aria-label={tr("Cerrar", "Close")}
                 data-cursor-hover
                 className={TOOL_BUTTON}
               >
@@ -239,7 +242,7 @@ export default function VideoModal({
               <button
                 type="button"
                 onClick={onPrev}
-                aria-label="Video anterior"
+                aria-label={tr("Video anterior", "Previous video")}
                 data-cursor-hover
                 className={TOOL_BUTTON}
               >
@@ -250,7 +253,7 @@ export default function VideoModal({
               <button
                 type="button"
                 onClick={onNext}
-                aria-label="Siguiente video"
+                aria-label={tr("Siguiente video", "Next video")}
                 data-cursor-hover
                 className={TOOL_BUTTON}
               >

@@ -8,6 +8,7 @@ import {
   useMotionValue,
   type Variants,
 } from "framer-motion";
+import { useLocale } from "@/components/LocaleProvider";
 import type { DockWindow } from "@/lib/dock";
 import TrashView from "./TrashView";
 import BeforeAfter from "./BeforeAfter";
@@ -59,6 +60,7 @@ function TrafficButton({
 }
 
 function CopyButton({ text }: { text: string }) {
+  const { tr } = useLocale();
   const [copied, setCopied] = useState(false);
 
   const copy = async () => {
@@ -78,7 +80,7 @@ function CopyButton({ text }: { text: string }) {
       onClick={copy}
       className="rounded-full border border-black/15 px-3 py-1 text-[11px] font-medium transition-colors hover:bg-black/5"
     >
-      {copied ? "Copiado ✓" : "Copiar"}
+      {copied ? tr("Copiado ✓", "Copied ✓") : tr("Copiar", "Copy")}
     </button>
   );
 }
@@ -102,6 +104,7 @@ export default function MacWindow({
   onMinimize: () => void;
   onFocus: () => void;
 }) {
+  const { tr } = useLocale();
   const [tab, setTab] = useState(0);
   const [zoomed, setZoomed] = useState(false);
   const controls = useDragControls();
@@ -150,12 +153,12 @@ export default function MacWindow({
           className="flex h-12 shrink-0 touch-none select-none items-center gap-4 border-b border-black/10 bg-[#eeebe9] px-4"
         >
           <div className="group/dots flex items-center gap-2">
-            <TrafficButton label="Cerrar" color="#e2675c" onClick={onClose}>
+            <TrafficButton label={tr("Cerrar", "Close")} color="#e2675c" onClick={onClose}>
               <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden="true">
                 <path d="M1.5 1.5l5 5M6.5 1.5l-5 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
               </svg>
             </TrafficButton>
-            <TrafficButton label="Minimizar" color="#e9bf5f" onClick={onMinimize}>
+            <TrafficButton label={tr("Minimizar", "Minimize")} color="#e9bf5f" onClick={onMinimize}>
               <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden="true">
                 <path d="M1.5 4h5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
               </svg>
@@ -259,7 +262,7 @@ export default function MacWindow({
                   </ul>
                 ) : (
                   <p className="rounded-lg border border-dashed border-black/20 px-3 py-2 text-black/60">
-                    {current.linksEmptyText ?? "Próximamente."}
+                    {current.linksEmptyText ?? tr("Próximamente.", "Coming soon.")}
                   </p>
                 )}
               </div>

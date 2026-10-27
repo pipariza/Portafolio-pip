@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocale } from "@/components/LocaleProvider";
+
 import { useState } from "react";
 
 type Mode = "preview" | "outline";
@@ -18,6 +20,7 @@ function Anchor({ x, y }: { x: number; y: number }) {
  * Swap the shapes for a real logo when one is available.
  */
 export default function VectorToggle() {
+  const { tr } = useLocale();
   const [mode, setMode] = useState<Mode>("preview");
   const outline = mode === "outline";
 
@@ -25,7 +28,7 @@ export default function VectorToggle() {
     <div>
       <div
         role="group"
-        aria-label="Vista"
+        aria-label={tr("Vista", "View")}
         className="mb-3 inline-flex rounded-full border border-black/15 p-0.5 text-[11px] font-medium"
       >
         {(["preview", "outline"] as const).map((m) => (
@@ -39,7 +42,7 @@ export default function VectorToggle() {
               mode === m ? "bg-[#1d1d1f] text-white" : "text-black/60 hover:text-black"
             }`}
           >
-            {m === "preview" ? "Vista previa" : "Trazado"}
+            {m === "preview" ? tr("Vista previa", "Preview") : tr("Trazado", "Outline")}
           </button>
         ))}
       </div>
@@ -52,7 +55,7 @@ export default function VectorToggle() {
           backgroundSize: "20px 20px",
         }}
       >
-        <svg viewBox="0 0 240 150" className="h-full w-full" role="img" aria-label="Logotipo de prueba">
+        <svg viewBox="0 0 240 150" className="h-full w-full" role="img" aria-label={tr("Logotipo de prueba", "Test logo")}>
           {/* Circle */}
           <circle
             cx="80"

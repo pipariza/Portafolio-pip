@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent, type KeyboardEvent, type PointerEvent, type Ref } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { useLocale } from "@/components/LocaleProvider";
 import { CONTACT, FORMSPREE_ENDPOINT } from "@/lib/config";
 import {
   EASE,
@@ -16,7 +17,13 @@ import { PlaneGlyph } from "./icons";
 export type Draft = { name: string; email: string; reason: string; message: string };
 export const EMPTY_DRAFT: Draft = { name: "", email: "", reason: "", message: "" };
 
-const REASONS = ["Oferta laboral", "Propuesta freelance", "Colaboración", "Otro"];
+// The value (what reaches Pip's inbox, always in Spanish) and the label of each reason.
+const REASONS = [
+  { value: "Oferta laboral", es: "Oferta laboral", en: "Job offer" },
+  { value: "Propuesta freelance", es: "Propuesta freelance", en: "Freelance proposal" },
+  { value: "Colaboración", es: "Colaboración", en: "Collaboration" },
+  { value: "Otro", es: "Otro", en: "Other" },
+];
 
 const ROW =
   "flex min-h-[44px] items-center gap-2.5 border-b border-black/[0.09] px-4 text-[14px] sm:px-[18px]";
@@ -55,6 +62,7 @@ export default function MailWindow({
   onTitlePointerDown?: (event: PointerEvent<HTMLElement>) => void;
 }) {
   const reduce = useReducedMotion();
+  const { lang, tr } = useLocale();
   const [sending, setSending] = useState(false);
 
   function startDrag(event: PointerEvent<HTMLElement>) {
@@ -111,6 +119,8 @@ export default function MailWindow({
       <form onSubmit={handleSubmit} className="contents">
         {/* Honeypot: invisible to people, bots fill it and Formspree drops the submission. */}
         <input type="text" name="_gotcha" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
+        {/* The language of the visitor, so the reply can be in it. */}
+        <input type="hidden" name="idioma" value={lang === "en" ? "English" : "Español"} />
 
         <div
           onPointerDown={startDrag}
@@ -118,7 +128,7 @@ export default function MailWindow({
         >
           <TrafficLights fixedSize zoomed={zoomed} onClose={onClose} onMinimize={onMinimize} onZoom={onZoom} />
           <p className="pointer-events-none absolute inset-x-0 text-center text-[13px] font-semibold text-black/60 max-sm:hidden">
-            Nuevo mensaje
+            {tr("Nuevo mensaje", "New message")}
           </p>
           <button
             type="submit"
@@ -127,20 +137,20 @@ export default function MailWindow({
             className="relative z-10 ml-auto flex h-[30px] items-center gap-[7px] rounded-full bg-[#0071e3] pl-3 pr-3.5 text-[13px] font-semibold text-white shadow-[0_6px_14px_-6px_rgba(10,132,255,0.8),inset_0_0_0_0.5px_rgba(255,255,255,0.25)] outline-none transition-[filter] hover:brightness-110 focus-visible:ring-2 focus-visible:ring-[#0a84ff]/60 focus-visible:ring-offset-2 disabled:cursor-default disabled:opacity-60"
           >
             <PlaneGlyph />
-            {sending ? "Enviando…" : "Enviar"}
+            {sending ? tr("Enviando…", "Sending…") : tr("Enviar", "Send")}
             <kbd className="border-l border-white/35 pl-[7px] font-sans text-[11px] font-normal text-white/80 max-sm:hidden">⌘ ↵</kbd>
           </button>
         </div>
 
         <div className={ROW}>
-          <span className={LABEL}>Para:</span>
+          <span className={LABEL}>{tr("Para:", "To:")}</span>
           <span className="rounded-md bg-[#0a84ff]/15 px-2.5 py-[3px] font-medium text-[#0066cc]">Pip Ariza</span>
           <span className="min-w-0 truncate text-black/60">{CONTACT.email}</span>
         </div>
 
         <div className={ROW}>
           <label htmlFor="contact-name" className={LABEL}>
-            De:
+            {tr("De:", "From:")}
           </label>
           <input
             id="contact-name"
@@ -148,7 +158,7 @@ export default function MailWindow({
             type="text"
             required
             autoComplete="name"
-            placeholder="Tu nombre"
+            placeholder={tr("Tu nombre", "Your name")}
             value={draft.name}
             onChange={(e) => onDraft({ name: e.target.value })}
             className={`${INPUT} w-[34%]`}
@@ -160,8 +170,8 @@ export default function MailWindow({
             type="email"
             required
             autoComplete="email"
-            aria-label="Correo"
-            placeholder="tu@correo.com"
+            aria-label={tr("Correo", "Email")}
+            placeholder={tr("tu@correo.com", "you@email.com")}
             value={draft.email}
             onChange={(e) => onDraft({ email: e.target.value })}
             className={`${INPUT} flex-1`}
@@ -171,7 +181,7 @@ export default function MailWindow({
 
         <div className={ROW}>
           <label htmlFor="contact-reason" className={LABEL}>
-            Asunto:
+            {tr("Asunto:", "Subject:")}
           </label>
           <div className="relative">
             <select
@@ -186,11 +196,11 @@ export default function MailWindow({
               }`}
             >
               <option value="" disabled>
-                Elige un motivo
+                {tr("Elige un motivo", "Choose a reason")}
               </option>
               {REASONS.map((reason) => (
-                <option key={reason} value={reason}>
-                  {reason}
+                <option key={reason.value} value={reason.value}>
+                  {reason[lang]}
                 </option>
               ))}
             </select>
@@ -212,19 +222,19 @@ export default function MailWindow({
         </div>
 
         <label htmlFor="contact-message" className="sr-only">
-          Mensaje (opcional)
+          {tr("Mensaje (opcional)", "Message (optional)")}
         </label>
         <textarea
           id="contact-message"
           name="message"
-          placeholder="Cuéntame en qué estás pensando — trabajo, colaboración o simple curiosidad."
+          placeholder={tr("Cuéntame en qué estás pensando — trabajo, colaboración o simple curiosidad.", "Tell me what you have in mind — work, collaboration or just curiosity.")}
           value={draft.message}
           onChange={(e) => onDraft({ message: e.target.value })}
           onKeyDown={handleKeyDown}
           className="min-h-[200px] w-full flex-1 resize-none bg-transparent px-5 pb-2 pt-[18px] text-[15px] leading-[1.6] text-[#1d1d1f] outline-none placeholder:text-black/60 lg:min-h-0"
         />
         <p aria-hidden="true" className="px-5 pb-4 text-[13px] text-black/60 max-sm:hidden">
-          Enviado desde pipariza.digital
+          {tr("Enviado desde pipariza.digital", "Sent from pipariza.digital")}
         </p>
 
         <div className="flex shrink-0 items-center justify-between gap-3 border-t border-black/[0.09] bg-black/[0.03] px-[18px] py-3 text-[12.5px] text-black/60">
@@ -233,9 +243,9 @@ export default function MailWindow({
               aria-hidden="true"
               className="mr-2 inline-block h-[7px] w-[7px] rounded-full bg-[#30d158] shadow-[0_0_0_3px_rgba(48,209,88,0.2)]"
             />
-            Te respondo en menos de 48 horas
+            {tr("Te respondo en menos de 48 horas", "I will reply within 48 hours")}
           </span>
-          <span className="max-sm:hidden">Mensaje opcional</span>
+          <span className="max-sm:hidden">{tr("Mensaje opcional", "Optional message")}</span>
         </div>
       </form>
     </motion.div>

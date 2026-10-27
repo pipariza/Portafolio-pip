@@ -2,6 +2,7 @@
 
 import { useState, type PointerEvent, type ReactNode, type Ref } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { useLocale } from "@/components/LocaleProvider";
 import { CONTACT, NAME } from "@/lib/config";
 import {
   TrafficLights,
@@ -12,6 +13,7 @@ import {
 import { ChatGlyph, EnvelopeGlyph, InstagramGlyph, LinkedInGlyph } from "./icons";
 
 function CopyButton({ text, label }: { text: string; label: string }) {
+  const { tr } = useLocale();
   const [copied, setCopied] = useState(false);
 
   const copy = async () => {
@@ -28,11 +30,11 @@ function CopyButton({ text, label }: { text: string; label: string }) {
     <button
       type="button"
       onClick={copy}
-      aria-label={`Copiar ${label}`}
+      aria-label={tr(`Copiar ${label}`, `Copy ${label}`)}
       data-cursor-hover
       className="shrink-0 rounded-full border border-black/20 px-2.5 py-0.5 text-[11px] font-medium text-black/65 outline-none transition-colors hover:bg-black/[0.06] focus-visible:ring-2 focus-visible:ring-[#0a84ff]/70"
     >
-      {copied ? "Copiado ✓" : "Copiar"}
+      {copied ? tr("Copiado ✓", "Copied ✓") : tr("Copiar", "Copy")}
     </button>
   );
 }
@@ -81,6 +83,7 @@ export default function ContactsWindow({
   /** Drag the window by its title bar (only given where windows can be dragged). */
   onTitlePointerDown?: (event: PointerEvent<HTMLElement>) => void;
 }) {
+  const { tr } = useLocale();
   const reduce = useReducedMotion();
 
   function startDrag(event: PointerEvent<HTMLElement>) {
@@ -106,7 +109,7 @@ export default function ContactsWindow({
       >
         <TrafficLights fixedSize canZoom={false} onClose={onClose} onMinimize={onMinimize} onZoom={() => {}} />
         <p className="pointer-events-none absolute inset-x-0 text-center text-[13px] font-semibold text-black/60">
-          Contactos
+          {tr("Contactos", "Contacts")}
         </p>
       </div>
 
@@ -119,10 +122,10 @@ export default function ContactsWindow({
         </div>
         <h2 className="text-[22px] font-bold tracking-tight">{NAME.alias}</h2>
         <p className="mt-[2px] text-[13px] font-medium text-black/75">{NAME.full}</p>
-        <p className="mt-[2px] text-[13px] text-black/60">Diseño &amp; Desarrollo web · Bogotá</p>
+        <p className="mt-[2px] text-[13px] text-black/60">{tr("Diseño & Desarrollo web · Bogotá", "Web Design & Development · Bogotá")}</p>
 
         <div className="mb-3 mt-4 flex justify-center gap-2 min-[400px]:gap-3.5">
-          <Action href={`mailto:${CONTACT.email}`} label="Correo">
+          <Action href={`mailto:${CONTACT.email}`} label={tr("Correo", "Email")}>
             <EnvelopeGlyph />
           </Action>
           <Action href={CONTACT.whatsapp.href} label="WhatsApp" external>
@@ -142,12 +145,12 @@ export default function ContactsWindow({
       <div className="text-left">
         <div className="flex items-center justify-between gap-3 border-t border-black/[0.09] px-[22px] py-[9px]">
           <div className="min-w-0">
-            <p className="text-[11.5px] text-black/60">Correo</p>
+            <p className="text-[11.5px] text-black/60">{tr("Correo", "Email")}</p>
             <a href={`mailto:${CONTACT.email}`} className={`block truncate text-[14px] text-[#0066cc] ${LINK}`}>
               {CONTACT.email}
             </a>
           </div>
-          <CopyButton text={CONTACT.email} label="el correo" />
+          <CopyButton text={CONTACT.email} label={tr("el correo", "the email")} />
         </div>
         <div className="flex items-center justify-between gap-3 border-t border-black/[0.09] px-[22px] py-[9px]">
           <div className="min-w-0">
@@ -161,7 +164,7 @@ export default function ContactsWindow({
               {CONTACT.whatsapp.label}
             </a>
           </div>
-          <CopyButton text={CONTACT.whatsapp.label} label="el número de WhatsApp" />
+          <CopyButton text={CONTACT.whatsapp.label} label={tr("el número de WhatsApp", "the WhatsApp number")} />
         </div>
         <Row label="Instagram">
           <a href={CONTACT.instagram.href} target="_blank" rel="noopener noreferrer" className={LINK}>
@@ -176,7 +179,7 @@ export default function ContactsWindow({
           </Row>
         )}
         <div className="border-t border-black/[0.09] px-[22px] py-[9px] pb-4">
-          <p className="text-[11.5px] text-black/60">Ciudad</p>
+          <p className="text-[11.5px] text-black/60">{tr("Ciudad", "City")}</p>
           <p className="text-[14px] text-black/80">{CONTACT.city}</p>
         </div>
       </div>

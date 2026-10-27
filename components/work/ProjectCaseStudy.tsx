@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { useLocale } from "@/components/LocaleProvider";
 import type { Project } from "@/lib/data";
 import ProjectMac from "./ProjectMac";
 import ProjectShowcase from "./ProjectShowcase";
@@ -24,6 +25,7 @@ export default function ProjectCaseStudy({
   backHref: string;
   priority?: boolean;
 }) {
+  const { tr } = useLocale();
   if (project.layout === "mac" && project.screens?.length && onGoTo) {
     return (
       <ProjectMac
@@ -91,11 +93,11 @@ export default function ProjectCaseStudy({
       <div className="relative flex-1 bg-paper text-ink h-full flex flex-col justify-end px-6 md:px-16 pb-24 pt-32">
         <div className="grid grid-cols-3 gap-4 max-w-md">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.08em] text-ink/50 mb-1">Rol</p>
+            <p className="text-[11px] uppercase tracking-[0.08em] text-ink/50 mb-1">{tr("Rol", "Role")}</p>
             <p className="text-sm font-medium">{project.role}</p>
           </div>
           <div>
-            <p className="text-[11px] uppercase tracking-[0.08em] text-ink/50 mb-1">Año</p>
+            <p className="text-[11px] uppercase tracking-[0.08em] text-ink/50 mb-1">{tr("Año", "Year")}</p>
             <p className="text-sm font-medium">{project.year}</p>
           </div>
           <div>
@@ -125,7 +127,7 @@ export default function ProjectCaseStudy({
         data-cursor-hover
         className="absolute bottom-8 left-6 md:left-16 text-xs md:text-sm font-medium uppercase tracking-[0.05em] text-bone z-10"
       >
-        ← Volver
+        ← {tr("Volver", "Back")}
       </Link>
 
       <span className="absolute bottom-8 right-6 md:right-16 text-xs md:text-sm font-medium tracking-[0.05em] text-ink z-10">
@@ -135,7 +137,7 @@ export default function ProjectCaseStudy({
       <button
         type="button"
         onClick={onPrev}
-        aria-label="Proyecto anterior"
+        aria-label={tr("Proyecto anterior", "Previous project")}
         className="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-full border border-bone/40 text-bone hover:border-bone transition-colors"
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -146,7 +148,7 @@ export default function ProjectCaseStudy({
       <button
         type="button"
         onClick={onNext}
-        aria-label="Siguiente proyecto"
+        aria-label={tr("Siguiente proyecto", "Next project")}
         className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-full border border-ink/30 text-ink hover:border-ink/70 transition-colors"
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">

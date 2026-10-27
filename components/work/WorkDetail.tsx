@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useLocale } from "@/components/LocaleProvider";
 import { ThemeSection } from "@/lib/section-theme";
-import { projects, type Project } from "@/lib/data";
+import { projectData, type Project } from "@/lib/data";
 import ProjectCaseStudy from "./ProjectCaseStudy";
 
 export default function WorkDetail({
@@ -19,6 +20,7 @@ export default function WorkDetail({
   nextSlug: string;
 }) {
   const router = useRouter();
+  const { href } = useLocale();
 
   return (
     <ThemeSection theme="light" className="w-full">
@@ -26,11 +28,11 @@ export default function WorkDetail({
         project={project}
         index={index}
         total={total}
-        backHref="/work"
+        backHref={href("/work")}
         priority
-        onPrev={() => router.push(`/work/${prevSlug}`)}
-        onNext={() => router.push(`/work/${nextSlug}`)}
-        onGoTo={(i) => router.push(`/work/${projects[i].slug}`)}
+        onPrev={() => router.push(href(`/work/${prevSlug}`))}
+        onNext={() => router.push(href(`/work/${nextSlug}`))}
+        onGoTo={(i) => router.push(href(`/work/${projectData[i].slug}`))}
       />
     </ThemeSection>
   );

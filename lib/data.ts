@@ -73,22 +73,24 @@ export type Project = {
   dock?: { bg: string; fg: string; label: string; logo?: string };
 };
 
-export const projects: Project[] = [
+/**
+ * The data of each project that does not depend on the language. Its role, summary and credit
+ * line are texts in both languages: see lib/i18n/projects.ts (`getProjects(lang)`).
+ */
+export type ProjectData = Omit<Project, "role" | "summary" | "note">;
+
+export const projectData: ProjectData[] = [
   {
     slug: "visual-living",
     dock: { bg: "#161616", fg: "#ffffff", label: "VL", logo: "/work/visual-living/logo.png" },
     name: "Visual Living",
-    role: "Diseño & Desarrollo web",
     year: "2025",
     stack: "Shopify Development",
     category: "diseno-web",
-    summary:
-      "Sitio de una casa de diseño audiovisual en Bogotá. El video abre la página, una sola frase grande ordena todo lo demás y la navegación flota abajo, igual de ligera en el celular y en el escritorio.",
     color: "#e3e0d8",
     url: "https://www.visualliving.co/",
     layout: "mac",
     wallpaper: ["#f7f2e8", "#dbe0dc", "#8aa5a2"],
-    note: "El contenido audiovisual es propiedad de cada marca.",
     screens: [
       {
         id: "inicio",
@@ -195,16 +197,12 @@ export const projects: Project[] = [
     layout: "mac",
     wallpaper: ["#e6f3ec", "#c3cde0", "#6b739a"],
     name: "El Departamento",
-    role: "Diseño & Desarrollo web",
     year: "2025",
     stack: "WordPress.org Development",
     category: "diseno-web",
-    summary:
-      "Sitio de El Departamento (DPTO), casa creativa para marcas, plataformas y talento del entretenimiento. Un video a pantalla completa abre la página, los proyectos destacados se mueven por sí solos y todo se recorre con calma, con mucho aire entre secciones.",
     color: "#e2e1de",
     url: "https://eldepartamento.tv/",
     tourPace: 1.9,
-    note: "El contenido audiovisual es propiedad de cada marca.",
     screens: [
       {
         id: "inicio",
@@ -292,16 +290,12 @@ export const projects: Project[] = [
     layout: "mac",
     wallpaper: ["#fcefe4", "#eadacd", "#c4a088"],
     name: "El Costurero de Meme",
-    role: "Diseño & Desarrollo web",
     year: "2025",
     stack: "Shopify Development",
     category: "diseno-web",
-    summary:
-      "Tienda en línea de muñecos de tela y crochet hechos a mano en Colombia. Una portada cálida, colecciones por mundos (bebés, granja, selva), fichas de producto claras y la historia del taller como parte de la compra.",
     color: "#e8e3d8",
     url: "https://www.elcosturerodememe.com.co/",
     tourPace: 1.5,
-    note: "El contenido audiovisual es propiedad de cada marca.",
     screens: [
       {
         id: "inicio",
@@ -356,16 +350,12 @@ export const projects: Project[] = [
     layout: "mac",
     wallpaper: ["#f9efe3", "#ebdac7", "#b79b7e"],
     name: "Mar de Palma",
-    role: "Diseño & Desarrollo web",
     year: "2025",
     stack: "Shopify Development",
     category: "diseno-web",
-    summary:
-      "Tienda en línea de cosmética natural de Cartagena de Indias: jabones, cremas y velas con fragancias propias. Una portada que alterna producto y mar, fichas claras y videos que explican, con calma, de qué está hecho cada producto.",
     color: "#e9e2d6",
     url: "https://mardepalma.com/",
     tourPace: 1.6,
-    note: "El contenido audiovisual es propiedad de cada marca.",
     screens: [
       {
         id: "inicio",
@@ -480,16 +470,12 @@ export const projects: Project[] = [
     layout: "mac",
     wallpaper: ["#fde8eb", "#e9c9c8", "#b98a8c"],
     name: "Feria EVA",
-    role: "Diseño & Desarrollo web",
     year: "2024",
     stack: "Shopify",
     category: "diseno-web",
-    summary:
-      "Sitio de Feria EVA, un shopping festival con 8 años y 22 ediciones en Colombia. La portada de la edición del año, el recorrido por las ediciones anteriores, el pabellón EVA Home y la convocatoria para marcas, todo en un rosa suave y editorial.",
     color: "#eadfe0",
     url: "https://www.feriaeva.com/",
     tourPace: 1.5,
-    note: "El contenido audiovisual es propiedad de cada marca.",
     screens: [
       {
         id: "inicio",
@@ -544,14 +530,14 @@ export type AppProject = {
   image?: string;
 };
 
-export const apps: AppProject[] = [
+/** The apps' own data; their role and description are in lib/i18n/projects.ts (`getApps(lang)`). */
+export type AppData = Omit<AppProject, "role" | "description">;
+
+export const appData: AppData[] = [
   {
     slug: "app-uno",
     name: "App Uno",
     label: "APP UNO",
-    description:
-      "Aplicativo con IA para automatizar reportes internos a partir de datos crudos.",
-    role: "Producto & Desarrollo",
     year: "2025",
     stack: "Next.js, OpenAI API, Postgres",
     rotation: -6,
@@ -561,8 +547,6 @@ export const apps: AppProject[] = [
     slug: "app-dos",
     name: "App Dos",
     label: "APP DOS",
-    description: "Asistente conversacional para soporte de primer nivel.",
-    role: "Desarrollo Full-stack",
     year: "2025",
     stack: "Next.js, Vercel AI SDK",
     rotation: 4,
@@ -572,8 +556,6 @@ export const apps: AppProject[] = [
     slug: "app-tres",
     name: "App Tres",
     label: "APP TRES",
-    description: "Generador de propuestas comerciales asistido por IA.",
-    role: "Producto & Diseño",
     year: "2024",
     stack: "React, Node, Claude API",
     rotation: -3,
@@ -583,8 +565,6 @@ export const apps: AppProject[] = [
     slug: "app-cuatro",
     name: "App Cuatro",
     label: "APP CUATRO",
-    description: "Dashboard de analítica con resúmenes generados por IA.",
-    role: "Desarrollo Front-end",
     year: "2024",
     stack: "Next.js, Tailwind, Recharts",
     rotation: 5,
@@ -594,8 +574,6 @@ export const apps: AppProject[] = [
     slug: "app-cinco",
     name: "App Cinco",
     label: "APP CINCO",
-    description: "Herramienta de clasificación automática de contenido.",
-    role: "Producto & Desarrollo",
     year: "2024",
     stack: "Python, FastAPI, Next.js",
     rotation: -5,

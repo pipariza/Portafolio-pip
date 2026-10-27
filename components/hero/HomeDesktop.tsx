@@ -4,6 +4,8 @@ import { useEffect, useRef, useState, useSyncExternalStore, type ComponentType, 
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useLocale } from "@/components/LocaleProvider";
+import type { Locale } from "@/lib/i18n/config";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   EASE,
@@ -61,12 +63,12 @@ const PAGES: { href: string; label: string; Glyph: Glyph }[] = [
 ];
 
 // The dock: an app icon each. The Notes icon opens the CV note of the Apps desktop (/apps#cv).
-const DOCK_ITEMS: { href: string; label: string; aria: string; App: Glyph }[] = [
-  { href: "/work", label: "Work", aria: "Work", App: WebAppIcon },
-  { href: "/apps", label: "Apps", aria: "Apps", App: AppsAppIcon },
-  { href: "/video", label: "Video", aria: "Video", App: VideoAppIcon },
-  { href: "/apps#cv", label: "CV", aria: "Currículum (CV)", App: NotesAppIcon },
-  { href: "/contacto", label: "Contact", aria: "Contact", App: MailAppIcon },
+const DOCK_ITEMS: { href: string; label: string; aria: { es: string; en: string }; App: Glyph }[] = [
+  { href: "/work", label: "Work", aria: { es: "Work", en: "Work" }, App: WebAppIcon },
+  { href: "/apps", label: "Apps", aria: { es: "Apps", en: "Apps" }, App: AppsAppIcon },
+  { href: "/video", label: "Video", aria: { es: "Video", en: "Video" }, App: VideoAppIcon },
+  { href: "/apps#cv", label: "CV", aria: { es: "Currículum (CV)", en: "Resume (CV)" }, App: NotesAppIcon },
+  { href: "/contacto", label: "Contact", aria: { es: "Contact", en: "Contact" }, App: MailAppIcon },
 ];
 
 /* ---------- clock (Bogotá) ---------- */
@@ -77,15 +79,16 @@ function subscribeClock(onChange: () => void) {
 }
 
 // One string so the snapshot is stable between ticks of the same minute.
-function clockStamp() {
+function clockStamp(lang: Locale) {
   const now = new Date();
-  const time = new Intl.DateTimeFormat("es-CO", {
+  const locale = lang === "en" ? "en-US" : "es-CO";
+  const time = new Intl.DateTimeFormat(locale, {
     timeZone: "America/Bogota",
     hour: "numeric",
     minute: "2-digit",
-    hour12: false,
+    hour12: lang === "en",
   }).format(now);
-  const date = new Intl.DateTimeFormat("es-CO", {
+  const date = new Intl.DateTimeFormat(locale, {
     timeZone: "America/Bogota",
     weekday: "long",
     day: "numeric",
@@ -103,14 +106,18 @@ const WIDGET =
   "rounded-[18px] border border-[rgba(20,19,16,0.08)] bg-[rgba(20,19,16,0.05)] p-4 backdrop-blur-[18px]";
 
 function NotesWidget({ className = "", onGo }: { className?: string; onGo: Go }) {
+  const { tr, href } = useLocale();
   return (
     <div className={`${WIDGET} ${className}`}>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-black/60">Notas</p>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-black/60">{tr("Notas", "Notes")}</p>
       <p className="mt-2 text-[15px] font-semibold leading-snug">
-        Diseño y desarrollo web con foco en aplicativos con IA
+        {tr(
+          "Diseño y desarrollo web con foco en aplicativos con IA",
+          "Web design and development focused on AI-powered apps",
+        )}
       </p>
       <Link
-        href="/contacto"
+        href={href("/contacto")}
         onClick={(e) => onGo(e, "/contacto")}
         data-cursor-hover
         className="group/avail -my-3 mt-0 inline-flex items-center gap-2 rounded-md py-3 text-[12.5px] text-black/70 outline-none hover:text-black focus-visible:ring-2 focus-visible:ring-[#0a84ff]"
@@ -119,7 +126,7 @@ function NotesWidget({ className = "", onGo }: { className?: string; onGo: Go })
           aria-hidden="true"
           className="block h-[7px] w-[7px] rounded-full bg-[#30a14e] shadow-[0_0_0_3px_rgba(48,161,78,0.2)]"
         />
-        Disponible para trabajo
+        {tr("Disponible para trabajo", "Available for work")}
         <span aria-hidden="true" className="transition-transform group-hover/avail:translate-x-0.5">
           →
         </span>
@@ -129,7 +136,8 @@ function NotesWidget({ className = "", onGo }: { className?: string; onGo: Go })
 }
 
 function ClockWidget({ className = "" }: { className?: string }) {
-  const stamp = useSyncExternalStore(subscribeClock, clockStamp, () => "");
+  const { lang } = useLocale();
+  const stamp = useSyncExternalStore(subscribeClock, () => clockStamp(lang), () => "");
   const [time = "", date = ""] = stamp.split("|");
   return (
     <div className={`${WIDGET} text-center ${className}`}>
@@ -145,9 +153,10 @@ function ClockWidget({ className = "" }: { className?: string }) {
 type Area = { href: string; title: string; sub: string; Icon: Glyph };
 
 function AreaItem({ area, size, onGo }: { area: Area; size: string; onGo: Go }) {
+  const { href } = useLocale();
   return (
     <Link
-      href={area.href}
+      href={href(area.href)}
       onClick={(e) => onGo(e, area.href)}
       data-cursor-hover
       className="group/area flex flex-col items-center gap-2 rounded-xl px-1 py-3 text-center outline-none focus-visible:ring-2 focus-visible:ring-[#0a84ff]"
@@ -194,10 +203,11 @@ function HomeDock({
   navRef: Ref<HTMLElement>;
   restoreRef: Ref<HTMLButtonElement>;
 }) {
+  const { lang, tr, href: localHref } = useLocale();
   return (
     <motion.nav
       ref={navRef}
-      aria-label="Páginas"
+      aria-label={tr("Páginas", "Pages")}
       data-theme="light"
       initial={arriving ? { opacity: 0 } : false}
       animate={{ opacity: leaving ? 0 : 1 }}
@@ -208,12 +218,12 @@ function HomeDock({
       <button
         type="button"
         onClick={onOpenFinder}
-        aria-label="Finder: inicio"
+        aria-label={tr("Finder: inicio", "Finder: home")}
         aria-current="page"
         data-cursor-hover
         className={`group/dock outline-none max-md:hidden ${DOCK_ICON}`}
       >
-        <DockTooltip label="Inicio" />
+        <DockTooltip label={tr("Inicio", "Home")} />
         <FinderIcon className="h-full w-full drop-shadow-[0_3px_5px_rgba(0,0,0,0.25)] transition-transform duration-200 group-hover/dock:-translate-y-1.5 group-hover/dock:scale-110 group-focus-visible/dock:-translate-y-1.5" />
         <span
           aria-hidden="true"
@@ -225,9 +235,9 @@ function HomeDock({
       {DOCK_ITEMS.map(({ href, label, aria, App }) => (
         <Link
           key={href}
-          href={href}
+          href={localHref(href)}
           onClick={(e) => onGo(e, href)}
-          aria-label={aria}
+          aria-label={aria[lang]}
           data-cursor-hover
           className={`group/dock outline-none ${DOCK_ICON}`}
         >
@@ -252,7 +262,7 @@ function HomeDock({
               ref={restoreRef}
               type="button"
               onClick={onOpenFinder}
-              aria-label="Restaurar Finder"
+              aria-label={tr("Restaurar Finder", "Restore Finder")}
               title="Pip Ariza"
               data-cursor-hover
               className={`group/min outline-none ${DOCK_ICON}`}
@@ -288,6 +298,7 @@ export default function HomeDesktop({
 }) {
   const reduce = useReducedMotion();
   const router = useRouter();
+  const { tr, href: localHref } = useLocale();
   const deskRef = useRef<HTMLDivElement>(null);
   const [leaving, setLeaving] = useState(false);
   // Coming back from a page (menu, Spotlight, the back button): the desktop zooms in softly.
@@ -324,7 +335,7 @@ export default function HomeDesktop({
     const r = e.currentTarget.getBoundingClientRect();
     setZoomOrigin({ x: r.left + r.width / 2, y: r.top + r.height / 2 }, href);
     setLeaving(true);
-    window.setTimeout(() => router.push(href), reduce ? 0 : 180);
+    window.setTimeout(() => router.push(localHref(href)), reduce ? 0 : 180);
   };
 
   // Fades out when you leave, grows in a little (or just fades) when you come back.
@@ -336,9 +347,9 @@ export default function HomeDesktop({
   };
 
   const areas: Area[] = [
-    { href: "/work", title: "Diseño Web", sub: `${projectCount} proyectos`, Icon: WebAppIcon },
-    { href: "/apps", title: "Aplicativos Web", sub: "Productos con IA", Icon: AppsAppIcon },
-    { href: "/video", title: "Edición de Video", sub: `${clipCount} clips`, Icon: VideoAppIcon },
+    { href: "/work", title: tr("Diseño Web", "Web Design"), sub: tr(`${projectCount} proyectos`, `${projectCount} projects`), Icon: WebAppIcon },
+    { href: "/apps", title: tr("Aplicativos Web", "Web Apps"), sub: tr("Productos con IA", "AI-powered products"), Icon: AppsAppIcon },
+    { href: "/video", title: tr("Edición de Video", "Video Editing"), sub: tr(`${clipCount} clips`, `${clipCount} clips`), Icon: VideoAppIcon },
   ];
 
   return (
@@ -347,7 +358,12 @@ export default function HomeDesktop({
       className="relative min-h-[100svh] w-full overflow-hidden text-[#1d1d1f] md:h-screen md:min-h-[720px] lg:min-h-[640px]"
       style={WALLPAPER}
     >
-      <h1 className="sr-only">Pip Ariza: diseño y desarrollo web con foco en aplicativos con IA</h1>
+      <h1 className="sr-only">
+        {tr(
+          "Pip Ariza: diseño y desarrollo web con foco en aplicativos con IA",
+          "Pip Ariza: web design and development focused on AI-powered apps",
+        )}
+      </h1>
 
       {/* Tablet and desktop: widgets and the Finder window. */}
       <motion.div
@@ -383,10 +399,10 @@ export default function HomeDesktop({
 
                 <div className="flex min-h-0 flex-1">
                   <nav
-                    aria-label="Favoritos"
+                    aria-label={tr("Favoritos", "Favorites")}
                     className="w-[150px] shrink-0 border-r border-black/[0.09] bg-[#f3f1ee]/60 px-2.5 py-3 text-[13px]"
                   >
-                    <p className="px-2 pb-1.5 text-[11px] font-semibold text-black/60">Favoritos</p>
+                    <p className="px-2 pb-1.5 text-[11px] font-semibold text-black/60">{tr("Favoritos", "Favorites")}</p>
                     <ul className="space-y-0.5">
                       <li>
                         <span
@@ -394,13 +410,13 @@ export default function HomeDesktop({
                           className="flex items-center gap-2 rounded-md bg-black/[0.08] px-2 py-1.5 font-semibold"
                         >
                           <HomeGlyph className="h-4 w-4 text-[#0a64d8]" />
-                          Inicio
+                          {tr("Inicio", "Home")}
                         </span>
                       </li>
                       {PAGES.map(({ href, label, Glyph: PageGlyph }) => (
                         <li key={href}>
                           <Link
-                            href={href}
+                            href={localHref(href)}
                             onClick={(e) => go(e, href)}
                             data-cursor-hover
                             className="flex items-center gap-2 rounded-md px-2 py-1.5 text-black/80 outline-none transition-colors hover:bg-black/[0.06] focus-visible:ring-2 focus-visible:ring-[#0a84ff]"
@@ -421,14 +437,14 @@ export default function HomeDesktop({
                 </div>
 
                 <div className="flex h-7 shrink-0 items-center justify-center border-t border-black/[0.09] bg-[#f3f1ee]/80 text-[11.5px] text-black/60">
-                  3 elementos
+                  {tr("3 elementos", "3 items")}
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
           <AnimatePresence initial={false}>
             {win === "closed" && (
-              <DesktopShortcut key="shortcut" label="Finder" aria="Abrir el Finder: inicio" onOpen={open} buttonRef={shortcutRef}>
+              <DesktopShortcut key="shortcut" label="Finder" aria={tr("Abrir el Finder: inicio", "Open Finder: home")} onOpen={open} buttonRef={shortcutRef}>
                 <FinderIcon className="h-full w-full drop-shadow-[0_8px_14px_rgba(30,40,40,0.35)]" />
               </DesktopShortcut>
             )}

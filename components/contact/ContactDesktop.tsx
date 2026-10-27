@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { AnimatePresence, animate, motion, useDragControls, useMotionValue } from "framer-motion";
+import { useLocale } from "@/components/LocaleProvider";
 import { useMacWindow } from "@/components/mac/window";
 import { DesktopShortcut, DockTile, MiniDock } from "@/components/mac/dock";
 import { SOFT_GRAY, wallpaperStyle } from "@/components/mac/wallpaper";
@@ -33,6 +34,7 @@ function subscribeDrag(onChange: () => void) {
 const canDragNow = () => window.matchMedia(DRAG_QUERY).matches;
 
 export default function ContactDesktop() {
+  const { tr } = useLocale();
   const deskRef = useRef<HTMLDivElement>(null);
   const mailShortcutRef = useRef<HTMLButtonElement>(null);
   const mailTileRef = useRef<HTMLButtonElement>(null);
@@ -166,7 +168,7 @@ export default function ContactDesktop() {
           </motion.div>
           <AnimatePresence initial={false}>
             {mail.win === "closed" && (
-              <DesktopShortcut key="mail-shortcut" label="Mail" aria="Abrir Mail: nuevo mensaje" onOpen={mail.open} buttonRef={mailShortcutRef}>
+              <DesktopShortcut key="mail-shortcut" label="Mail" aria={tr("Abrir Mail: nuevo mensaje", "Open Mail: new message")} onOpen={mail.open} buttonRef={mailShortcutRef}>
                 <MailAppIcon />
               </DesktopShortcut>
             )}
@@ -204,7 +206,7 @@ export default function ContactDesktop() {
           </motion.div>
           <AnimatePresence initial={false}>
             {card.win === "closed" && (
-              <DesktopShortcut key="card-shortcut" label="Contactos" aria="Abrir Contactos" onOpen={card.open} buttonRef={cardShortcutRef}>
+              <DesktopShortcut key="card-shortcut" label={tr("Contactos", "Contacts")} aria={tr("Abrir Contactos", "Open Contacts")} onOpen={card.open} buttonRef={cardShortcutRef}>
                 <ContactsAppIcon />
               </DesktopShortcut>
             )}
@@ -221,7 +223,7 @@ export default function ContactDesktop() {
 
       <MiniDock tone="light" show={mail.win === "minimized" || card.win === "minimized"}>
         {mail.win === "minimized" && (
-          <DockTile tone="light" title="Nuevo mensaje" onRestore={mail.open} buttonRef={mailTileRef}>
+          <DockTile tone="light" title={tr("Nuevo mensaje", "New message")} onRestore={mail.open} buttonRef={mailTileRef}>
             <span className="absolute inset-x-[12%] top-[38%] h-[7%] rounded-full bg-black/25" />
             <span className="absolute inset-x-[12%] top-[52%] h-[7%] rounded-full bg-black/15" />
             <span className="absolute left-[12%] top-[66%] h-[7%] w-[45%] rounded-full bg-black/15" />
@@ -229,7 +231,7 @@ export default function ContactDesktop() {
           </DockTile>
         )}
         {card.win === "minimized" && (
-          <DockTile tone="light" title="Contactos" onRestore={card.open} buttonRef={cardTileRef}>
+          <DockTile tone="light" title={tr("Contactos", "Contacts")} onRestore={card.open} buttonRef={cardTileRef}>
             <span className="absolute left-1/2 top-[32%] h-[34%] w-[34%] -translate-x-1/2 rounded-full bg-gradient-to-br from-[#7aa2ff] to-[#7a4e96]" />
             <span className="absolute inset-x-[16%] top-[72%] h-[7%] rounded-full bg-black/25" />
             <span className="absolute inset-x-[26%] top-[84%] h-[7%] rounded-full bg-black/15" />

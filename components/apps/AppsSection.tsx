@@ -1,6 +1,7 @@
 import { getImageProps } from "next/image";
 import { ThemeSection } from "@/lib/section-theme";
-import { apps } from "@/lib/data";
+import { getApps } from "@/lib/i18n/projects";
+import type { Locale } from "@/lib/i18n/config";
 import { DesktopAppIcon, GridAppIcon } from "./AppIcon";
 import Dock from "./Dock";
 
@@ -16,7 +17,8 @@ const POSITIONS = [
 // upright) and a landscape one otherwise. Keep both files in /public/apps.
 const WALLPAPER = { alt: "", fill: true, priority: true, sizes: "100vw" } as const;
 
-export default function AppsSection() {
+export default function AppsSection({ lang }: { lang: Locale }) {
+  const apps = getApps(lang);
   const {
     props: { srcSet: landscapeSet, ...wallpaperProps },
   } = getImageProps({ ...WALLPAPER, src: "/apps/wallpaper.jpg" });

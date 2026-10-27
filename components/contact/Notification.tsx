@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { useLocale } from "@/components/LocaleProvider";
 import { CONTACT } from "@/lib/config";
 import { EASE } from "@/components/mac/window";
 import { MailAppIcon } from "./icons";
@@ -15,6 +16,7 @@ export default function Notification({
   toast: Toast | null;
   onClose: () => void;
 }) {
+  const { tr } = useLocale();
   return (
     <AnimatePresence>
       {toast && (
@@ -32,21 +34,21 @@ export default function Notification({
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline justify-between gap-2 text-[12.5px] text-black/60">
               <b className="text-[13.5px] font-semibold text-[#1d1d1f]">
-                {toast.kind === "success" ? "Mail" : "No se pudo enviar"}
+                {toast.kind === "success" ? tr("Mail", "Mail") : tr("No se pudo enviar", "Could not send")}
               </b>
-              <span>ahora</span>
+              <span>{tr("ahora", "now")}</span>
             </div>
             {toast.kind === "success" ? (
               <p className="mt-0.5 text-[13px] leading-[1.4] text-black/75">
-                Mensaje enviado. Gracias, te respondo en menos de 48 horas.
+                {tr("Mensaje enviado. Gracias, te respondo en menos de 48 horas.", "Message sent. Thank you, I will reply within 48 hours.")}
               </p>
             ) : (
               <p className="mt-0.5 text-[13px] leading-[1.4] text-black/75">
-                Algo falló. Escríbeme directo a{" "}
+                {tr("Algo falló. Escríbeme directo a", "Something went wrong. Write to me directly at")}{" "}
                 <a href={`mailto:${CONTACT.email}`} className="text-[#0066cc] underline">
                   {CONTACT.email}
                 </a>{" "}
-                o por{" "}
+                {tr("o por", "or via")}{" "}
                 <a
                   href={CONTACT.whatsapp.href}
                   target="_blank"
@@ -62,7 +64,7 @@ export default function Notification({
           <button
             type="button"
             onClick={onClose}
-            aria-label="Cerrar notificación"
+            aria-label={tr("Cerrar notificación", "Close notification")}
             data-cursor-hover
             className="absolute -left-2 -top-2 grid h-[22px] w-[22px] place-items-center rounded-full bg-[#f3f1ee] text-black/60 opacity-0 shadow-[0_0_0_0.5px_rgba(0,0,0,0.2)] outline-none transition-opacity focus-visible:opacity-100 group-hover/toast:opacity-100 max-sm:opacity-100"
           >

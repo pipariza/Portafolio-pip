@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Variants } from "framer-motion";
+import { useLocale } from "@/components/LocaleProvider";
 
 /*
  * What every macOS-style window on the site shares (Work's Safari, Contact's
@@ -177,6 +178,7 @@ export function TrafficLights({
   onMinimize: () => void;
   onZoom: () => void;
 }) {
+  const { tr } = useLocale();
   const fixed = fixedSize ?? zoomed;
   const hit = fixed ? "w-5" : "w-[max(18px,4.8cqw)] lg:w-5";
   const dot = fixed ? "h-3 w-3" : "h-[max(7px,2.4cqw)] w-[max(7px,2.4cqw)] lg:h-3 lg:w-3";
@@ -185,19 +187,19 @@ export function TrafficLights({
     fixed ? "" : "max-lg:hidden"
   }`;
   return (
-    <div role="group" aria-label="Controles de la ventana" className="group/lights -ml-1 flex h-full items-center">
-      <Light label="Cerrar ventana" onClick={onClose} color="#ff5f57" hit={hit} dot={dot}>
+    <div role="group" aria-label={tr("Controles de la ventana", "Window controls")} className="group/lights -ml-1 flex h-full items-center">
+      <Light label={tr("Cerrar ventana", "Close window")} onClick={onClose} color="#ff5f57" hit={hit} dot={dot}>
         <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" className={`${glyph} text-[#4d0000]/70`} aria-hidden="true">
           <path d="m2 2 6 6M8 2 2 8" />
         </svg>
       </Light>
-      <Light label="Minimizar ventana" onClick={onMinimize} color="#febc2e" hit={hit} dot={dot}>
+      <Light label={tr("Minimizar ventana", "Minimize window")} onClick={onMinimize} color="#febc2e" hit={hit} dot={dot}>
         <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" className={`${glyph} text-[#5a3b00]/70`} aria-hidden="true">
           <path d="M1.5 5h7" />
         </svg>
       </Light>
       <Light
-        label={zoomed ? "Salir de pantalla completa" : "Pantalla completa"}
+        label={zoomed ? tr("Salir de pantalla completa", "Exit full screen") : tr("Pantalla completa", "Full screen")}
         onClick={onZoom}
         color="#28c840"
         hit={hit}

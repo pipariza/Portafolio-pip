@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { useLocale } from "@/components/LocaleProvider";
 import type { AppProject } from "@/lib/data";
 
 export function DesktopAppIcon({
@@ -14,6 +15,7 @@ export function DesktopAppIcon({
   style?: React.CSSProperties;
 }) {
   const router = useRouter();
+  const { href } = useLocale();
 
   return (
     <motion.div
@@ -21,7 +23,7 @@ export function DesktopAppIcon({
       dragMomentum={false}
       dragElastic={0.15}
       whileTap={{ cursor: "grabbing" }}
-      onTap={() => router.push(`/apps/${app.slug}`)}
+      onTap={() => router.push(href(`/apps/${app.slug}`))}
       className="absolute flex flex-col items-center gap-2 select-none touch-none"
       style={{ rotate: app.rotation, ...style }}
       data-cursor-hover
@@ -44,9 +46,10 @@ export function DesktopAppIcon({
 }
 
 export function GridAppIcon({ app }: { app: AppProject }) {
+  const { href } = useLocale();
   return (
     <Link
-      href={`/apps/${app.slug}`}
+      href={href(`/apps/${app.slug}`)}
       className="flex flex-col items-center gap-2"
       data-cursor-hover
     >

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useLocale } from "@/components/LocaleProvider";
 import type { TrashItem } from "@/lib/dock";
 import Thumb from "./Thumb";
 
@@ -30,6 +31,7 @@ export default function TrashView({
   items: TrashItem[];
   emptyReply: string;
 }) {
+  const { tr } = useLocale();
   const [selected, setSelected] = useState<number | null>(null);
   const [shake, setShake] = useState(0);
   const [replyVisible, setReplyVisible] = useState(false);
@@ -56,11 +58,11 @@ export default function TrashView({
         <ItemThumb item={item} large />
         <p className="mt-4 break-all text-[11px] text-black/60">{item.file}</p>
         <p className="mt-3 max-w-xl">
-          <span className="font-semibold">Qué era: </span>
+          <span className="font-semibold">{tr("Qué era: ", "What it was: ")}</span>
           {item.what}
         </p>
         <p className="mt-2 max-w-xl">
-          <span className="font-semibold">Qué aprendí: </span>
+          <span className="font-semibold">{tr("Qué aprendí: ", "What I learned: ")}</span>
           {item.learned}
         </p>
       </div>
@@ -70,7 +72,7 @@ export default function TrashView({
   return (
     <div>
       <div className="mb-4 flex items-center justify-between gap-3">
-        <p className="text-black/60">{items.length} elementos</p>
+        <p className="text-black/60">{tr(`${items.length} elementos`, `${items.length} items`)}</p>
         <button
           type="button"
           data-cursor-hover
@@ -80,7 +82,7 @@ export default function TrashView({
           }}
           className="rounded-full border border-black/15 px-3 py-1 text-[11px] font-medium transition-colors hover:bg-black/5"
         >
-          Vaciar papelera
+          {tr("Vaciar papelera", "Empty trash")}
         </button>
       </div>
 
@@ -105,7 +107,7 @@ export default function TrashView({
             key={it.file}
             type="button"
             data-cursor-hover
-            aria-label={`Abrir ${it.file}`}
+            aria-label={tr(`Abrir ${it.file}`, `Open ${it.file}`)}
             onClick={() => setSelected(i)}
             className="group flex flex-col items-center gap-2 text-center"
           >

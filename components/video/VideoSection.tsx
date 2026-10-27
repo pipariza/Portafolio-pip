@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { preconnect } from "react-dom";
 import { AnimatePresence } from "framer-motion";
 import { ThemeSection } from "@/lib/section-theme";
+import { useLocale } from "@/components/LocaleProvider";
 import { videoClips } from "@/lib/data";
 import VideoClipCard from "./VideoClipCard";
 import VideoModal from "./VideoModal";
@@ -26,6 +27,7 @@ function subscribeCompact(onChange: () => void) {
 const noopSubscribe = () => () => {};
 
 export default function VideoSection() {
+  const { tr } = useLocale();
   // Players mount only after hydration, once we know the screen size; otherwise
   // the server HTML would start all five downloads on a phone.
   const hydrated = useSyncExternalStore(noopSubscribe, () => true, () => false);
@@ -124,9 +126,9 @@ export default function VideoSection() {
     >
       <div className="md:absolute md:left-10 lg:left-16 md:top-1/2 md:-translate-y-1/2 px-6 md:px-0 text-center md:text-left mb-10 md:mb-0">
         <h1 className="text-[13vw] leading-[0.95] md:text-[52px] md:leading-[1.05] font-extrabold uppercase">
-          Edición de
+          {tr("Edición de", "Video")}
           <br />
-          Video
+          {tr("Video", "Editing")}
         </h1>
       </div>
 

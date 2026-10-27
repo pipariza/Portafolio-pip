@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocale } from "@/components/LocaleProvider";
+
 import { useRef, useState, type KeyboardEvent } from "react";
 import Image from "next/image";
 
@@ -49,6 +51,7 @@ export default function BeforeAfter({
   beforeColor: string;
   afterColor: string;
 }) {
+  const { tr } = useLocale();
   const [pos, setPos] = useState(50);
   const boxRef = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
@@ -86,9 +89,9 @@ export default function BeforeAfter({
         dragging.current = false;
       }}
     >
-      <Layer image={before} color={beforeColor} label="Antes" side="left" />
+      <Layer image={before} color={beforeColor} label={tr("Antes", "Before")} side="left" />
       <div className="absolute inset-0" style={{ clipPath: `inset(0 0 0 ${pos}%)` }}>
-        <Layer image={after} color={afterColor} label="Después" side="right" />
+        <Layer image={after} color={afterColor} label={tr("Después", "After")} side="right" />
       </div>
 
       <div
@@ -98,7 +101,7 @@ export default function BeforeAfter({
       <button
         type="button"
         role="slider"
-        aria-label="Comparar antes y después"
+        aria-label={tr("Comparar antes y después", "Compare before and after")}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={Math.round(pos)}

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useLocale } from "@/components/LocaleProvider";
 import type { VideoClip } from "@/lib/data";
 
 const VIMEO_ORIGIN = "https://player.vimeo.com";
@@ -66,6 +67,7 @@ export default function VideoClipCard({
   live: boolean;
   onOpen: () => void;
 }) {
+  const { tr } = useLocale();
   const flungTilt = tilt === 0 ? -45 : tilt * 3;
 
   return (
@@ -81,7 +83,7 @@ export default function VideoClipCard({
       <button
         type="button"
         onClick={onOpen}
-        aria-label={`Ver ${clip.title}`}
+        aria-label={tr(`Ver ${clip.title}`, `Watch ${clip.title}`)}
         className="group absolute inset-0 overflow-hidden shadow-xl"
         style={{ background: clip.color }}
       >

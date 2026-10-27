@@ -11,7 +11,8 @@ import {
 } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { projects, type Project, type ProjectScreen } from "@/lib/data";
+import { useLocale } from "@/components/LocaleProvider";
+import { projectData as projects, type Project, type ProjectScreen } from "@/lib/data";
 import {
   EASE,
   TrafficLights,
@@ -79,19 +80,20 @@ function InfoCard({
   onPrev: () => void;
   onNext: () => void;
 }) {
+  const { tr } = useLocale();
   const counter = `${String(index + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}`;
   return (
     <Widget className="flex flex-col justify-center p-4 lg:p-4 xl:p-5">
       <div className="flex items-center justify-between gap-3">
         <p className={`${LABEL} min-w-0 truncate`}>
-          <span className="max-sm:hidden">Proyecto </span>
+          <span className="max-sm:hidden">{tr("Proyecto ", "Project ")}</span>
           {counter}
         </p>
         <div className="flex shrink-0 gap-1">
           {(
             [
-              ["Proyecto anterior", onPrev, "M8 1 3 6l5 5"],
-              ["Siguiente proyecto", onNext, "m4 1 5 5-5 5"],
+              [tr("Proyecto anterior", "Previous project"), onPrev, "M8 1 3 6l5 5"],
+              [tr("Siguiente proyecto", "Next project"), onNext, "m4 1 5 5-5 5"],
             ] as const
           ).map(([label, fn, d]) => (
             <button
@@ -113,8 +115,8 @@ function InfoCard({
         {project.name}
       </h2>
       <div className="grid grid-cols-3 gap-3 border-t border-black/10 pt-2.5 max-[400px]:grid-cols-2">
-        <Stat label="Rol" value={project.role} />
-        <Stat label="Año" value={project.year} />
+        <Stat label={tr("Rol", "Role")} value={project.role} />
+        <Stat label={tr("Año", "Year")} value={project.year} />
         <Stat label="Stack" value={project.stack} className="max-[400px]:col-span-2" />
       </div>
     </Widget>
@@ -123,6 +125,7 @@ function InfoCard({
 
 /** Summary, "Ver sitio" and the ownership note. */
 function SummaryCard({ project }: { project: Project }) {
+  const { tr } = useLocale();
   return (
     <Widget className="flex flex-col justify-center gap-3 p-4 lg:gap-2.5 lg:p-4 xl:gap-3 xl:p-5">
       <p className="text-[13px] leading-relaxed text-black/70 lg:leading-[1.5]">{project.summary}</p>
@@ -135,7 +138,7 @@ function SummaryCard({ project }: { project: Project }) {
             data-cursor-hover
             className="flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-[10px] bg-[#1d1d1f] px-5 text-[13.5px] font-semibold text-white transition-opacity hover:opacity-85"
           >
-            Ver sitio <span aria-hidden="true">↗</span>
+            {tr("Ver sitio", "Visit site")} <span aria-hidden="true">↗</span>
           </a>
         )}
         {project.note && <p className="text-[11px] leading-snug text-black/60">{project.note}</p>}
@@ -183,6 +186,7 @@ function SafariWindow({
   onMinimize: () => void;
   onZoom: () => void;
 }) {
+  const { tr } = useLocale();
   const reduce = useReducedMotion();
   const screen = screens[active];
   const fade = reduce
@@ -253,7 +257,7 @@ function SafariWindow({
       {/* Too small to tap below lg: the pill tabs under the windows take over (unless the window is full screen). */}
       <div
         role="tablist"
-        aria-label="Pantallas del proyecto"
+        aria-label={tr("Pantallas del proyecto", "Project screens")}
         className={`flex h-[36px] shrink-0 overflow-x-auto border-b border-black/[0.16] bg-[#e6e3df] [scrollbar-width:none] ${
           z ? "" : "max-lg:hidden"
         }`}
@@ -283,7 +287,7 @@ function SafariWindow({
           <motion.div key={screen.id} {...fade} className="absolute inset-0">
             <ScrollShot
               shot={screen.desktop}
-              alt={`${name}: ${screen.label}, en escritorio`}
+              alt={tr(`${name}: ${screen.label}, en escritorio`, `${name}: ${screen.label}, on desktop`)}
               viewportRatio={DESKTOP_RATIO}
               pageWidth={DESKTOP_PAGE_WIDTH}
               pace={pace}
@@ -309,13 +313,14 @@ function SafariShortcut({
   onOpen: () => void;
   buttonRef: Ref<HTMLButtonElement>;
 }) {
+  const { tr } = useLocale();
   const id = useId();
   return (
     <motion.button
       ref={buttonRef}
       type="button"
       onClick={onOpen}
-      aria-label={`Abrir Safari: ${host}`}
+      aria-label={tr(`Abrir Safari: ${host}`, `Open Safari: ${host}`)}
       data-cursor-hover
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1, transition: { duration: 0.3, ease: EASE } }}
@@ -376,6 +381,7 @@ function IPhone17({
   inView: boolean;
   className?: string;
 }) {
+  const { tr } = useLocale();
   const reduce = useReducedMotion();
   const screen = screens[active];
   const fade = reduce
@@ -421,7 +427,7 @@ function IPhone17({
                 <motion.div key={screen.id} {...fade} className="absolute inset-0">
                   <ScrollShot
                     shot={screen.mobile}
-                    alt={`${name}: ${screen.label}, en celular`}
+                    alt={tr(`${name}: ${screen.label}, en celular`, `${name}: ${screen.label}, on mobile`)}
                     viewportRatio={PHONE_RATIO}
                     pageWidth={MOBILE_PAGE_WIDTH}
                     pace={pace}
@@ -474,10 +480,11 @@ function Dock({
   restoreRef: Ref<HTMLButtonElement>;
   className?: string;
 }) {
+  const { tr } = useLocale();
   return (
     <nav
       ref={navRef}
-      aria-label="Proyectos"
+      aria-label={tr("Proyectos", "Projects")}
       data-theme="light"
       className={`glass-pill flex items-end gap-1.5 rounded-full border px-3.5 pb-1.5 pt-1.5 md:gap-2 md:px-5 md:pb-2 max-lg:fixed max-lg:bottom-[max(0.75rem,env(safe-area-inset-bottom))] max-lg:left-1/2 max-lg:z-[60] max-lg:w-max max-lg:max-w-[calc(100vw-12px)] max-lg:-translate-x-1/2 max-lg:transition-[opacity,translate,visibility] max-lg:duration-300 ${
         show ? "" : "max-lg:invisible max-lg:translate-y-6 max-lg:opacity-0"
@@ -537,7 +544,7 @@ function Dock({
               ref={restoreRef}
               type="button"
               onClick={onRestore}
-              aria-label={`Restaurar ${minimized.title}`}
+              aria-label={tr(`Restaurar ${minimized.title}`, `Restore ${minimized.title}`)}
               title={minimized.title}
               data-cursor-hover
               className={`group/min outline-none ${DOCK_ICON}`}
@@ -571,10 +578,11 @@ function PillTabs({
   active: number;
   onSelect: (i: number) => void;
 }) {
+  const { tr } = useLocale();
   return (
     <div
       role="tablist"
-      aria-label="Pantallas del proyecto"
+      aria-label={tr("Pantallas del proyecto", "Project screens")}
       className="mx-auto flex w-fit max-w-full gap-2 overflow-x-auto py-1 [scrollbar-width:none] lg:hidden"
     >
       {screens.map((s, i) => (
