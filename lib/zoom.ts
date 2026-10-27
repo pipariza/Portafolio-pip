@@ -19,8 +19,8 @@ let lastPath: string | null = null;
 let exiting = false;
 const origins: Record<string, ZoomOrigin> = {};
 
-// "/work/el-departamento" belongs to the "/work" icon.
-const section = (path: string) => `/${path.split("/")[1] ?? ""}`;
+// "/work/el-departamento" belongs to the "/work" icon, and "/apps#cv" to "/apps".
+const section = (path: string) => `/${path.split(/[?#]/)[0].split("/")[1] ?? ""}`;
 
 export const setZoomOrigin = (origin: ZoomOrigin, href: string) => {
   pending = origin;

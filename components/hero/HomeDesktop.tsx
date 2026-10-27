@@ -51,14 +51,22 @@ function NotesAppIcon({ className }: { className?: string }) {
   return <Image src="/dock/notas.avif" alt="" width={112} height={112} priority className={`object-contain ${className ?? ""}`} />;
 }
 
-// The pages, in the order of the menu bar (the labels are the menu bar's). `Glyph` is the
-// line icon of the Finder's sidebar, `App` the app icon of the dock.
-const PAGES: { href: string; label: string; Glyph: Glyph; App: Glyph }[] = [
-  { href: "/work", label: "Work", Glyph: BrowserGlyph, App: WebAppIcon },
-  { href: "/apps", label: "Apps", Glyph: GridGlyph, App: AppsAppIcon },
-  { href: "/video", label: "Video", Glyph: FilmGlyph, App: VideoAppIcon },
-  { href: "/about", label: "About", Glyph: UserGlyph, App: NotesAppIcon },
-  { href: "/contacto", label: "Contact", Glyph: MailGlyph, App: MailAppIcon },
+// The pages of the Finder's sidebar, in the order of the menu bar (the labels are the menu bar's).
+const PAGES: { href: string; label: string; Glyph: Glyph }[] = [
+  { href: "/work", label: "Work", Glyph: BrowserGlyph },
+  { href: "/apps", label: "Apps", Glyph: GridGlyph },
+  { href: "/video", label: "Video", Glyph: FilmGlyph },
+  { href: "/about", label: "About", Glyph: UserGlyph },
+  { href: "/contacto", label: "Contact", Glyph: MailGlyph },
+];
+
+// The dock: an app icon each. The Notes icon opens the CV note of the Apps desktop (/apps#cv).
+const DOCK_ITEMS: { href: string; label: string; aria: string; App: Glyph }[] = [
+  { href: "/work", label: "Work", aria: "Work", App: WebAppIcon },
+  { href: "/apps", label: "Apps", aria: "Apps", App: AppsAppIcon },
+  { href: "/video", label: "Video", aria: "Video", App: VideoAppIcon },
+  { href: "/apps#cv", label: "CV", aria: "Currículum (CV)", App: NotesAppIcon },
+  { href: "/contacto", label: "Contact", aria: "Contact", App: MailAppIcon },
 ];
 
 /* ---------- clock (Bogotá) ---------- */
@@ -213,12 +221,12 @@ function HomeDock({
       </button>
       <span aria-hidden="true" className="mx-0.5 mb-1 h-7 w-px self-center bg-black/20 max-md:hidden md:mx-1 md:h-10" />
 
-      {PAGES.map(({ href, label, App }) => (
+      {DOCK_ITEMS.map(({ href, label, aria, App }) => (
         <Link
           key={href}
           href={href}
           onClick={(e) => onGo(e, href)}
-          aria-label={label}
+          aria-label={aria}
           data-cursor-hover
           className={`group/dock outline-none ${DOCK_ICON}`}
         >
