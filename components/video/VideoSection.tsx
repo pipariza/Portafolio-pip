@@ -155,6 +155,8 @@ export default function VideoSection() {
 
       <VideoModal
         clip={activeClip}
+        index={activeIndex ?? 0}
+        total={videoClips.length}
         onClose={() => setActiveIndex(null)}
         onPrev={() => setActiveIndex((i) => (i === null ? null : wrap(i - 1)))}
         onNext={() => setActiveIndex((i) => (i === null ? null : wrap(i + 1)))}

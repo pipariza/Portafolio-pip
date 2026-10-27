@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import type { VideoClip } from "@/lib/data";
 
 const VIMEO_ORIGIN = "https://player.vimeo.com";
@@ -141,13 +141,27 @@ function ModalPlayer({
   );
 }
 
+/** Round gray button of a Quick Look toolbar. */
+const TOOL_BUTTON =
+  "flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white/85 outline-none transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-[#0a84ff]";
+
+/**
+ * The viewer drawn like macOS's Quick Look window: a dark glass window with a
+ * toolbar (close, the clip's name, previous / next) over a dimmed page, and the
+ * video inside it with rounded corners. The page's title sits above the window.
+ */
 export default function VideoModal({
   clip,
+  index,
+  total,
   onClose,
   onPrev,
   onNext,
 }: {
   clip: VideoClip | null;
+  /** Position of the clip in the list (0-based) and the list's length. */
+  index: number;
+  total: number;
   onClose: () => void;
   onPrev: () => void;
   onNext: () => void;
@@ -174,65 +188,86 @@ export default function VideoModal({
     <AnimatePresence>
       {clip && (
         <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Edición de video"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
-          className="fixed inset-0 z-[100] bg-black"
+          // --reserve: the height the title, the toolbar and the margins take; the video gets the rest.
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-3 bg-black/70 px-3 backdrop-blur-xl [--reserve:9rem] [@media(max-height:520px)]:[--reserve:6rem]"
           onClick={onClose}
         >
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Cerrar"
-            data-cursor-hover
-            className="absolute top-5 right-5 md:top-8 md:right-8 z-10 flex h-11 w-11 items-center justify-center text-white hover:opacity-70 transition-opacity"
-          >
-            <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
-              <path d="M5 5l16 16M21 5L5 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </button>
-
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onPrev();
-            }}
-            aria-label="Video anterior"
-            data-cursor-hover
-            className="absolute left-3 md:left-8 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 md:h-12 md:w-12 items-center justify-center rounded-full border border-white/30 text-white hover:border-white/70 transition-colors"
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M13 8H3m0 0l4-4m-4 4l4 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onNext();
-            }}
-            aria-label="Siguiente video"
-            data-cursor-hover
-            className="absolute right-3 md:right-8 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 md:h-12 md:w-12 items-center justify-center rounded-full border border-white/30 text-white hover:border-white/70 transition-colors"
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M3 8h10m0 0l-4-4m4 4l-4 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
+          <h2 className="text-[15px] font-extrabold uppercase leading-none tracking-[0.04em] text-white md:text-[20px] [@media(max-height:520px)]:hidden">
+            Edición de video
+          </h2>
 
           <motion.div
             key={clip.id}
-            initial={{ opacity: 0, scale: 0.96 }}
+            initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.96 }}
+            exit={{ opacity: 0, scale: 0.94 }}
             transition={{ duration: 0.3, ease: [0.16, 0.84, 0.44, 1] }}
-            className="absolute inset-0 flex items-center justify-center px-16 py-16 md:px-28"
+            // --vw: width of the video (the biggest 9:16 box that fits under the title); the window is that plus its margins,
+            // never narrower than a toolbar needs, so a long clip name is cut with an ellipsis instead of widening it.
+            style={
+              {
+                "--vw": "min(calc((100dvh - var(--reserve)) * 9 / 16), calc(100vw - 3.5rem))",
+                width: "max(calc(var(--vw) + 1.5rem), min(300px, calc(100vw - 1.5rem)))",
+              } as CSSProperties
+            }
+            className="flex flex-col overflow-hidden rounded-[14px] bg-[rgba(38,38,41,0.9)] shadow-[0_0_0_0.5px_rgba(255,255,255,0.18),0_40px_90px_-20px_rgba(0,0,0,0.8)] backdrop-blur-[40px] backdrop-saturate-[1.6]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative h-full max-h-[88vh] aspect-[9/16] bg-black">
+            <div className="flex h-[52px] shrink-0 items-center gap-1 pl-1 pr-1">
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Cerrar"
+                data-cursor-hover
+                className={TOOL_BUTTON}
+              >
+                <span className="grid h-7 w-7 place-items-center rounded-full bg-white/15">
+                  <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                    <path d="m2 2 8 8M10 2 2 10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                  </svg>
+                </span>
+              </button>
+              <p className="min-w-0 flex-1 truncate px-1 text-[15px] font-semibold text-white">
+                {clip.title}
+              </p>
+              <span className="shrink-0 px-1 text-[12px] tabular-nums text-white/50" aria-hidden="true">
+                {index + 1} / {total}
+              </span>
+              <button
+                type="button"
+                onClick={onPrev}
+                aria-label="Video anterior"
+                data-cursor-hover
+                className={TOOL_BUTTON}
+              >
+                <svg width="9" height="14" viewBox="0 0 9 14" fill="none" aria-hidden="true">
+                  <path d="M7.5 1.5 2 7l5.5 5.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={onNext}
+                aria-label="Siguiente video"
+                data-cursor-hover
+                className={TOOL_BUTTON}
+              >
+                <svg width="9" height="14" viewBox="0 0 9 14" fill="none" aria-hidden="true">
+                  <path d="M1.5 1.5 7 7l-5.5 5.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </div>
+
+            <div
+              className="relative mx-3 mb-3 shrink-0 self-center overflow-hidden rounded-[10px] bg-black"
+              style={{ width: "var(--vw)", aspectRatio: "9 / 16" }}
+            >
               <ModalPlayer
                 clip={clip}
                 wantsSound={soundOn}
