@@ -6,6 +6,7 @@ import CustomCursor from "@/components/CustomCursor";
 import Nav from "@/components/Nav";
 import Spotlight from "@/components/Spotlight";
 import { SITE_URL } from "@/lib/config";
+import { projects } from "@/lib/data";
 
 const archivo = Archivo({
   variable: "--font-archivo",
@@ -43,7 +44,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SectionThemeProvider>
           <CustomCursor />
           <Nav />
-          <Spotlight />
+          <Spotlight projects={projects.map(({ slug, name }) => ({ slug, name }))} />
           {children}
         </SectionThemeProvider>
       </body>

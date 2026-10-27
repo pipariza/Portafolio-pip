@@ -26,7 +26,7 @@ import {
 type Item = {
   id: string;
   title: string;
-  kind: "Página" | "Documento" | "Contacto";
+  kind: "Página" | "Proyecto" | "Documento" | "Contacto";
   href: string;
   /** Opens in a new tab (or the mail app) instead of navigating. */
   external?: boolean;
@@ -34,13 +34,16 @@ type Item = {
   Glyph: ComponentType<{ className?: string }>;
 };
 
-const ITEMS: Item[] = [
+const PAGE_ITEMS: Item[] = [
   { id: "inicio", title: "Inicio", kind: "Página", href: "/", keywords: "home principal escritorio finder", Glyph: HomeGlyph },
   { id: "work", title: "Work", kind: "Página", href: "/work", keywords: "diseño web proyectos sitios shopify wordpress marcas trabajo", Glyph: BrowserGlyph },
   { id: "apps", title: "Apps", kind: "Página", href: "/apps", keywords: "aplicativos web productos ia inteligencia artificial", Glyph: GridGlyph },
   { id: "video", title: "Video", kind: "Página", href: "/video", keywords: "edición de video reels motion clips vertical", Glyph: FilmGlyph },
   { id: "about", title: "About", kind: "Página", href: "/about", keywords: "sobre mí quién soy experiencia años", Glyph: UserGlyph },
   { id: "contacto", title: "Contact", kind: "Página", href: "/contacto", keywords: "contacto escribir mensaje correo formulario", Glyph: MailGlyph },
+];
+
+const OTHER_ITEMS: Item[] = [
   { id: "cv", title: "Currículum (CV)", kind: "Documento", href: "/apps#cv", keywords: "cv hoja de vida curriculum currículo notas experiencia", Glyph: FileGlyph },
   { id: "correo", title: "Escribir un correo", kind: "Contacto", href: `mailto:${CONTACT.email}`, external: true, keywords: `email mail correo ${CONTACT.email}`, Glyph: MailGlyph },
   { id: "whatsapp", title: "WhatsApp", kind: "Contacto", href: CONTACT.whatsapp.href, external: true, keywords: `whatsapp wa celular chat ${CONTACT.whatsapp.label}`, Glyph: ChatGlyph },
@@ -51,12 +54,12 @@ const ITEMS: Item[] = [
 ];
 
 // Accents and capitals do not matter when searching.
-const plain = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const plain = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-function search(query: string): Item[] {
+function search(items: Item[], query: string): Item[] {
   const words = plain(query).split(/\s+/).filter(Boolean);
-  if (words.length === 0) return ITEMS;
-  return ITEMS.filter((item) => {
+  if (words.length === 0) return items;
+  return items.filter((item) => {
     const hay = plain(`${item.title} ${item.keywords}`);
     return words.every((w) => hay.includes(w));
   }).sort((a, b) => {
@@ -66,7 +69,8 @@ function search(query: string): Item[] {
   });
 }
 
-export default function Spotlight() {
+/** `projects`: name and slug of each Work project (passed from the layout so the site's data stays out of the bundle). */
+export default function Spotlight({ projects }: { projects: { slug: string; name: string }[] }) {
   const router = useRouter();
   const pathname = usePathname();
   const reduce = useReducedMotion();
@@ -81,7 +85,22 @@ export default function Spotlight() {
   // The ⌘K listener lives for the whole page, so it reads the state through a ref.
   const isOpen = useRef(false);
 
-  const results = useMemo(() => search(query), [query]);
+  const items = useMemo<Item[]>(
+    () => [
+      ...PAGE_ITEMS,
+      ...projects.map(({ slug, name }) => ({
+        id: `p-${slug}`,
+        title: name,
+        kind: "Proyecto" as const,
+        href: `/work/${slug}`,
+        keywords: "proyecto marca sitio web diseño tienda",
+        Glyph: BrowserGlyph,
+      })),
+      ...OTHER_ITEMS,
+    ],
+    [projects],
+  );
+  const results = useMemo(() => search(items, query), [items, query]);
 
   const show = useCallback(() => {
     returnFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;

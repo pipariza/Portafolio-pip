@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useSyncExternalStore, type ComponentType, type Ref } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
@@ -12,17 +13,18 @@ import {
 } from "@/components/mac/window";
 import { DesktopShortcut } from "@/components/mac/dock";
 import { wallpaperStyle } from "@/components/mac/wallpaper";
+import { MailAppIcon } from "@/components/contact/icons";
 import {
+  AppsAppIcon,
   BrowserGlyph,
-  CodeIcon,
   FilmGlyph,
   FinderIcon,
   GridGlyph,
   HomeGlyph,
-  LayersIcon,
   MailGlyph,
-  PlayRectIcon,
   UserGlyph,
+  VideoAppIcon,
+  WebAppIcon,
 } from "./icons";
 
 /*
@@ -39,13 +41,19 @@ const WALLPAPER = wallpaperStyle(["#f3f0ea", "#d9dad7", "#97a2a7"]);
 
 type Glyph = ComponentType<{ className?: string }>;
 
-// The pages, in the order of the menu bar (the labels are the menu bar's).
-const PAGES: { href: string; label: string; Glyph: Glyph }[] = [
-  { href: "/work", label: "Work", Glyph: BrowserGlyph },
-  { href: "/apps", label: "Apps", Glyph: GridGlyph },
-  { href: "/video", label: "Video", Glyph: FilmGlyph },
-  { href: "/about", label: "About", Glyph: UserGlyph },
-  { href: "/contacto", label: "Contact", Glyph: MailGlyph },
+// The Notes app icon, the one About's closed window leaves on its desktop.
+function NotesAppIcon({ className }: { className?: string }) {
+  return <Image src="/dock/notas.avif" alt="" width={112} height={112} className={`object-contain ${className ?? ""}`} />;
+}
+
+// The pages, in the order of the menu bar (the labels are the menu bar's). `Glyph` is the
+// line icon of the Finder's sidebar, `App` the app icon of the dock.
+const PAGES: { href: string; label: string; Glyph: Glyph; App: Glyph }[] = [
+  { href: "/work", label: "Work", Glyph: BrowserGlyph, App: WebAppIcon },
+  { href: "/apps", label: "Apps", Glyph: GridGlyph, App: AppsAppIcon },
+  { href: "/video", label: "Video", Glyph: FilmGlyph, App: VideoAppIcon },
+  { href: "/about", label: "About", Glyph: UserGlyph, App: NotesAppIcon },
+  { href: "/contacto", label: "Contact", Glyph: MailGlyph, App: MailAppIcon },
 ];
 
 /* ---------- clock (Bogotá) ---------- */
@@ -129,11 +137,9 @@ function AreaItem({ area, size }: { area: Area; size: string }) {
       data-cursor-hover
       className="group/area flex flex-col items-center gap-2 rounded-xl px-1 py-3 text-center outline-none focus-visible:ring-2 focus-visible:ring-[#0a84ff]"
     >
-      <span
-        className={`grid place-items-center rounded-[22%] border border-black/10 bg-white shadow-[0_6px_14px_-6px_rgba(30,40,40,0.35)] transition-transform duration-200 ease-out group-hover/area:-translate-y-1 group-hover/area:scale-105 group-focus-visible/area:-translate-y-1 ${size}`}
-      >
-        <area.Icon className="h-[52%] w-[52%] text-[#1d1d1f]" />
-      </span>
+      <area.Icon
+        className={`drop-shadow-[0_8px_10px_rgba(30,40,40,0.3)] transition-transform duration-200 ease-out group-hover/area:-translate-y-1 group-hover/area:scale-105 group-focus-visible/area:-translate-y-1 ${size}`}
+      />
       <span className="text-[14px] font-semibold leading-tight">{area.title}</span>
       <span className="text-[12px] text-black/50 max-md:hidden">{area.sub}</span>
     </Link>
@@ -190,7 +196,7 @@ function HomeDock({
       </button>
       <span aria-hidden="true" className="mx-0.5 mb-1 h-7 w-px self-center bg-black/20 max-md:hidden md:mx-1 md:h-10" />
 
-      {PAGES.map(({ href, label, Glyph: PageGlyph }) => (
+      {PAGES.map(({ href, label, App }) => (
         <Link
           key={href}
           href={href}
@@ -199,8 +205,8 @@ function HomeDock({
           className={`group/dock outline-none ${DOCK_ICON}`}
         >
           <DockTooltip label={label} />
-          <span className="absolute inset-0 grid place-items-center rounded-[22%] border border-black/10 bg-white text-[#1d1d1f] shadow-[0_3px_8px_-2px_rgba(0,0,0,0.35)] transition-transform duration-200 ease-out group-hover/dock:-translate-y-1.5 group-hover/dock:scale-110 group-focus-visible/dock:-translate-y-1.5 group-focus-visible/dock:ring-2 group-focus-visible/dock:ring-[#0a84ff]">
-            <PageGlyph className="h-[58%] w-[58%]" />
+          <span className="absolute inset-0 block rounded-[22%] transition-transform duration-200 ease-out group-hover/dock:-translate-y-1.5 group-hover/dock:scale-110 group-focus-visible/dock:-translate-y-1.5 group-focus-visible/dock:ring-2 group-focus-visible/dock:ring-[#0a84ff]">
+            <App className="h-full w-full drop-shadow-[0_3px_5px_rgba(0,0,0,0.3)]" />
           </span>
         </Link>
       ))}
@@ -279,9 +285,9 @@ export default function HomeDesktop({
   }, [win]);
 
   const areas: Area[] = [
-    { href: "/work", title: "Diseño Web", sub: `${projectCount} proyectos`, Icon: CodeIcon },
-    { href: "/apps", title: "Aplicativos Web", sub: "Productos con IA", Icon: LayersIcon },
-    { href: "/video", title: "Edición de Video", sub: `${clipCount} clips`, Icon: PlayRectIcon },
+    { href: "/work", title: "Diseño Web", sub: `${projectCount} proyectos`, Icon: WebAppIcon },
+    { href: "/apps", title: "Aplicativos Web", sub: "Productos con IA", Icon: AppsAppIcon },
+    { href: "/video", title: "Edición de Video", sub: `${clipCount} clips`, Icon: VideoAppIcon },
   ];
 
   return (
@@ -299,7 +305,7 @@ export default function HomeDesktop({
         </div>
 
         {/* The slot keeps its size when the window is closed or minimized, so nothing shifts. */}
-        <div className="relative shrink-0 md:h-[400px] md:w-[min(728px,100%)] lg:h-[440px] lg:w-[min(780px,calc(100vw-440px))] 2xl:h-[520px] 2xl:w-[900px]">
+        <div className="relative shrink-0 md:h-[440px] md:w-[min(728px,100%)] lg:h-[max(400px,min(540px,calc(100vh-290px)))] lg:w-[min(860px,calc(100vw-480px))] 2xl:h-[max(400px,min(640px,calc(100vh-290px)))] 2xl:w-[min(1040px,calc(100vw-480px))]">
           <AnimatePresence initial={false} custom={fx}>
             {win === "open" && (
               <motion.div
@@ -352,7 +358,7 @@ export default function HomeDesktop({
 
                   <div className="grid min-w-0 flex-1 grid-cols-3 content-center gap-1 px-3">
                     {areas.map((area) => (
-                      <AreaItem key={area.href} area={area} size="h-20 w-20 lg:h-24 lg:w-24 2xl:h-28 2xl:w-28" />
+                      <AreaItem key={area.href} area={area} size="h-20 w-20 lg:h-24 lg:w-24 2xl:h-32 2xl:w-32" />
                     ))}
                   </div>
                 </div>

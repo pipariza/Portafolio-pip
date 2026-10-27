@@ -2,82 +2,52 @@ type IconProps = {
   className?: string;
 };
 
-export function CodeIcon({ className }: IconProps) {
+/*
+ * App icons for the three areas of work, in the style of macOS icons: a rounded square
+ * with a soft vertical gradient and a white drawing. They fill their box (give them a size).
+ * The gradient is CSS, not an SVG <defs>: a gradient inside an element that is display:none
+ * (the desktop layout on a phone) does not resolve, and these icons are drawn twice.
+ */
+
+const APP_TILE = "block rounded-[22%] bg-gradient-to-b shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.35)]";
+
+export function WebAppIcon({ className = "" }: IconProps) {
   return (
-    <svg
-      viewBox="0 0 200 200"
-      fill="none"
-      className={className}
-      aria-hidden="true"
-    >
-      <path
-        d="M70 55L30 100l40 45M130 55l40 45-40 45M110 45L90 155"
-        stroke="currentColor"
-        strokeWidth="6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <span className={`${APP_TILE} from-[#5fd0ff] to-[#1473f0] ${className}`}>
+      <svg viewBox="0 0 64 64" className="h-full w-full" aria-hidden="true">
+        <circle cx="32" cy="32" r="20" fill="none" stroke="#fff" strokeWidth="2.6" />
+        <path d="M32 9.5v4M32 50.5v4M9.5 32h4M50.5 32h4" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" />
+        <path d="M44 20 36.5 36.5 27.5 27.5Z" fill="#ff5148" />
+        <path d="M20 44 27.5 27.5 36.5 36.5Z" fill="#fff" />
+      </svg>
+    </span>
   );
 }
 
-export function LayersIcon({ className }: IconProps) {
+export function AppsAppIcon({ className = "" }: IconProps) {
   return (
-    <svg
-      viewBox="0 0 200 200"
-      fill="none"
-      className={className}
-      aria-hidden="true"
-    >
-      <path
-        d="M100 30L30 65l70 35 70-35-70-35Z"
-        stroke="currentColor"
-        strokeWidth="6"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M30 100l70 35 70-35"
-        stroke="currentColor"
-        strokeWidth="6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M30 135l70 35 70-35"
-        stroke="currentColor"
-        strokeWidth="6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <span className={`${APP_TILE} from-[#52e6b4] to-[#0e9a6c] ${className}`}>
+      <svg viewBox="0 0 64 64" className="h-full w-full" aria-hidden="true">
+        <g fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M32 14 13 23.5 32 33l19-9.5L32 14Z" fill="rgba(255,255,255,0.22)" />
+          <path d="M13 32.5 32 42l19-9.5" />
+          <path d="M13 41.5 32 51l19-9.5" />
+        </g>
+      </svg>
+    </span>
   );
 }
 
-export function PlayRectIcon({ className }: IconProps) {
+export function VideoAppIcon({ className = "" }: IconProps) {
   return (
-    <svg
-      viewBox="0 0 200 200"
-      fill="none"
-      className={className}
-      aria-hidden="true"
-    >
-      <rect
-        x="30"
-        y="45"
-        width="140"
-        height="110"
-        rx="16"
-        stroke="currentColor"
-        strokeWidth="6"
-      />
-      <path
-        d="M88 80l40 20-40 20V80Z"
-        fill="currentColor"
-        stroke="currentColor"
-        strokeWidth="6"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <span className={`${APP_TILE} from-[#4a4a52] to-[#141416] ${className}`}>
+      <svg viewBox="0 0 64 64" className="h-full w-full" aria-hidden="true">
+        <path d="M26 15.5 45.5 27 26 38.5v-23Z" fill="#fff" stroke="#fff" strokeWidth="3" strokeLinejoin="round" />
+        <rect x="12" y="46" width="14" height="5" rx="2.5" fill="#ff5a8a" />
+        <rect x="28" y="46" width="19" height="5" rx="2.5" fill="#ffb340" />
+        <rect x="49" y="46" width="4" height="5" rx="2" fill="#5ac8fa" />
+      </svg>
+    </span>
   );
 }
 
