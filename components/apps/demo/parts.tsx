@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 /*
- * Small pieces shared by the three demo scenes (TareasMock, CronogramasMock, AsistenteMock):
+ * Small pieces shared by the demo scenes (TareasMock, CronogramasMock):
  * a window like the ones of the rest of the site, labels, chips and the blue ring that points
  * at what the current step is about. Everything drawn here is decorative (the steps' texts
  * carry the meaning), so the scenes are aria-hidden and never interactive.

@@ -541,7 +541,7 @@ export type AppProject = {
 };
 
 /** The apps that have a step-by-step demo; their steps live in lib/i18n/app-demos.ts. */
-export type DemoId = "tareas" | "cronogramas" | "asistente";
+export type DemoId = "tareas" | "cronogramas";
 
 /** The apps' own data; their role and description are in lib/i18n/projects.ts (`getApps(lang)`). */
 export type AppData = Omit<AppProject, "role" | "description" | "kicker" | "objective">;
@@ -570,17 +570,6 @@ export const appData: AppData[] = [
     demo: "cronogramas",
     hours: 20,
     tools: ["Claude Code", "Next.js", "React", "TypeScript", "Tailwind CSS", "Supabase (Postgres, Storage, RLS)", "dnd-kit", "JSZip", "pdf-lib", "tus-js-client", "Vercel"],
-  },
-  {
-    slug: "asistente-ia",
-    name: "Asistente IA",
-    label: "ASISTENTE IA",
-    year: "2026",
-    stack: "Gemini API, Next.js, Supabase",
-    rotation: -3,
-    color: "#2e2d2b",
-    demo: "asistente",
-    tools: ["Gemini API", "Claude Code", "Next.js", "Supabase", "Vercel"],
   },
   {
     slug: "app-cuatro",

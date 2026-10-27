@@ -86,18 +86,6 @@ const APP_TEXTS: Record<string, { role: Bi; description: Bi; kicker?: Bi; object
       en: "Plans each brand's social media posts on an Instagram-like grid. The client reviews, edits captions, leaves notes and approves from a link, without creating an account.",
     },
   },
-  "asistente-ia": {
-    kicker: VISUAL_KICKER,
-    objective: {
-      es: "Dar respuestas rápidas sobre el trabajo en curso: que cualquier persona del equipo consulte sus tareas y los cronogramas con una sola pregunta, sin recorrer pantallas.",
-      en: "Give quick answers about the work in progress: anyone on the team can check their tasks and the schedules with a single question, without going through screens.",
-    },
-    role: { es: "Producto & Desarrollo con IA", en: "Product & AI Development" },
-    description: {
-      es: "Un chat con IA dentro de la plataforma que responde, en lenguaje natural, sobre las tareas y los cronogramas que cada persona tiene permitido ver.",
-      en: "An AI chat inside the platform that answers, in plain language, about the tasks and schedules each person is allowed to see.",
-    },
-  },
   "app-cuatro": {
     role: { es: "Desarrollo Front-end", en: "Front-end Development" },
     description: {

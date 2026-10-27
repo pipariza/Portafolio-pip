@@ -70,36 +70,6 @@ export const DEMO_STEPS: Record<DemoId, DemoStep[]> = {
       },
     },
   ],
-  asistente: [
-    {
-      title: { es: "Pregunta como hablas", en: "Ask the way you talk" },
-      text: {
-        es: "Se escribe en lenguaje natural, sin filtros ni menús.",
-        en: "Questions are written in plain language, with no filters or menus.",
-      },
-    },
-    {
-      title: { es: "Responde con tus datos", en: "Answers with your data" },
-      text: {
-        es: "Lee las tareas que esa persona puede ver: un colaborador solo recibe las suyas; el admin, las de todo el equipo.",
-        en: "It reads the tasks that person can see: a collaborator only gets their own; the admin gets the whole team's.",
-      },
-    },
-    {
-      title: { es: "También conoce los cronogramas", en: "It knows the schedules too" },
-      text: {
-        es: "Sabe qué posts faltan por aprobar, qué notas dejó el cliente y qué cronogramas vencen pronto.",
-        en: "It knows which posts are still unapproved, what notes the client left and which schedules expire soon.",
-      },
-    },
-    {
-      title: { es: "Solo consulta", en: "Read-only" },
-      text: {
-        es: "No crea ni cambia nada, y si no tiene el dato lo dice en vez de inventarlo. Si un modelo tarda en responder, pasa al siguiente.",
-        en: "It never creates or changes anything, and if it does not have the data it says so instead of making it up. If a model is slow to answer, it moves on to the next one.",
-      },
-    },
-  ],
 };
 
 /** The note under every demo: the screens are drawn, the real platform holds clients' data. */

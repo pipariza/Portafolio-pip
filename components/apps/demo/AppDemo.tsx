@@ -5,11 +5,10 @@ import { useReducedMotion } from "framer-motion";
 import { useLocale } from "@/components/LocaleProvider";
 import type { DemoId } from "@/lib/data";
 import { DEMO_DISCLAIMER, DEMO_STEPS, DEMO_UI } from "@/lib/i18n/app-demos";
-import AsistenteMock from "./AsistenteMock";
 import CronogramasMock from "./CronogramasMock";
 import TareasMock from "./TareasMock";
 
-const MOCKS = { tareas: TareasMock, cronogramas: CronogramasMock, asistente: AsistenteMock };
+const MOCKS = { tareas: TareasMock, cronogramas: CronogramasMock };
 
 /**
  * "How it works" of an app: a list of steps and, next to it, the screen that step is about
