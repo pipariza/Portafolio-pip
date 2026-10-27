@@ -45,7 +45,7 @@ export const VISUAL_FRAMES: Record<string, DemoFrame[]> = {
     { kind: "still", src: "/apps/visual/tareas-5-f6.jpg", hold: 3 },
   ],
   "cronogramas-1": [
-    { kind: "still", src: "/apps/visual/cronogramas-1-f1.jpg", hold: 1.5 },
+    { kind: "tour", src: "/apps/visual/cronogramas-1-content.jpg", h: 1263, bottom: { src: "/apps/visual/cronogramas-1-pin-bottom.jpg", h: 54 } },
     { kind: "still", src: "/apps/visual/cronogramas-1-f2.jpg", hold: 1.2 },
     { kind: "still", src: "/apps/visual/cronogramas-1-f3.jpg", hold: 1.2 },
     { kind: "still", src: "/apps/visual/cronogramas-1-f4.jpg", hold: 1.4 },
