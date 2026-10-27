@@ -1,19 +1,22 @@
 import type { DemoId } from "@/lib/data";
+import { VISUAL_FRAMES, type DemoFrame } from "@/lib/visual-frames";
 import type { Bi } from "./config";
 
 /*
  * The steps of the "how it works" demo on each app's page (components/apps/demo), with their
- * texts in both languages next to each other. Each step shows a screenshot of the REAL
- * platform (public/apps/visual/<image>.jpg), taken from a throwaway copy of Visual that runs on
- * made-up data (invented brand, people and dates); a blue ring marks what the step is about.
- * The platform's interface is in Spanish, so the screenshots are the same in both languages.
+ * texts in both languages next to each other. Each step plays a short sequence of screens of the
+ * REAL platform (lib/visual-frames.ts, files in public/apps/visual): either frames of an action
+ * (typing, tapping, dragging) or a full page that scrolls slowly. They were captured from a
+ * throwaway copy of Visual running on made-up data (invented brand, people and dates); a blue ring
+ * marks what each step is about. The platform's interface is in Spanish, so the screens are the
+ * same in both languages.
  */
-export type DemoStep = { title: Bi; text: Bi; image: string };
+export type DemoStep = { title: Bi; text: Bi; frames: DemoFrame[] };
 
 export const DEMO_STEPS: Record<DemoId, DemoStep[]> = {
   tareas: [
     {
-      image: "tareas-1-asigna",
+      frames: VISUAL_FRAMES["tareas-1"],
       title: { es: "El admin asigna", en: "The admin assigns" },
       text: {
         es: "Crea la tarea con título, responsable, semana, fecha límite y prioridad, y si quiere la repite en las semanas siguientes.",
@@ -21,7 +24,7 @@ export const DEMO_STEPS: Record<DemoId, DemoStep[]> = {
       },
     },
     {
-      image: "tareas-2-suyo",
+      frames: VISUAL_FRAMES["tareas-2"],
       title: { es: "Cada quien ve lo suyo", en: "Everyone sees their own" },
       text: {
         es: "El colaborador entra con un código de 8 dígitos que le llega al correo. Ve solo sus tareas, ordenadas por urgencia y con su estado, y no puede ver las de sus compañeros.",
@@ -29,7 +32,7 @@ export const DEMO_STEPS: Record<DemoId, DemoStep[]> = {
       },
     },
     {
-      image: "tareas-3-avanza",
+      frames: VISUAL_FRAMES["tareas-3"],
       title: { es: "Avanza con estados y notas", en: "Moves on with statuses and notes" },
       text: {
         es: "Con un toque inicia o completa la tarea y puede dejar una nota para el admin. El estado «atrasada» lo calcula el sistema solo, según la fecha.",
@@ -37,7 +40,7 @@ export const DEMO_STEPS: Record<DemoId, DemoStep[]> = {
       },
     },
     {
-      image: "tareas-4-seguimiento",
+      frames: VISUAL_FRAMES["tareas-4"],
       title: { es: "El admin hace seguimiento", en: "The admin follows up" },
       text: {
         es: "Ve de un vistazo qué está atrasado, qué vence hoy y qué notas faltan por revisar, filtra por colaborador y genera reportes. Cada día el sistema envía un correo cuando una tarea está por vencer o ya venció.",
@@ -45,7 +48,7 @@ export const DEMO_STEPS: Record<DemoId, DemoStep[]> = {
       },
     },
     {
-      image: "tareas-5-asistente",
+      frames: VISUAL_FRAMES["tareas-5"],
       title: { es: "Un asistente de IA", en: "An AI assistant" },
       text: {
         es: "Responde en lenguaje natural sobre las tareas y los cronogramas que esa persona puede ver. Solo consulta: no cambia nada, y si no tiene el dato lo dice en vez de inventarlo.",
@@ -55,7 +58,7 @@ export const DEMO_STEPS: Record<DemoId, DemoStep[]> = {
   ],
   cronogramas: [
     {
-      image: "cronogramas-1-grilla",
+      frames: VISUAL_FRAMES["cronogramas-1"],
       title: { es: "Se arma la grilla", en: "The grid takes shape" },
       text: {
         es: "Cada marca tiene su cronograma: una grilla de posts como la de Instagram. Se reordena arrastrando (con pulsación larga en el celular) y se ve cómo quedará el perfil.",
@@ -63,7 +66,7 @@ export const DEMO_STEPS: Record<DemoId, DemoStep[]> = {
       },
     },
     {
-      image: "cronogramas-2-detalle",
+      frames: VISUAL_FRAMES["cronogramas-2"],
       title: { es: "Cada post, al detalle", en: "Every post in detail" },
       text: {
         es: "Archivos (imagen, carrusel o video de hasta 500 MB, con subida reanudable), caption y fecha. Las notas pueden ir en una imagen puntual del carrusel.",
@@ -71,7 +74,7 @@ export const DEMO_STEPS: Record<DemoId, DemoStep[]> = {
       },
     },
     {
-      image: "cronogramas-3-cliente",
+      frames: VISUAL_FRAMES["cronogramas-3"],
       title: { es: "El cliente revisa por un link", en: "The client reviews from a link" },
       text: {
         es: "Sin crear cuenta: abre el link, puede corregir el caption, deja notas y aprueba. El equipo ve los cambios en pocos segundos.",
@@ -79,7 +82,7 @@ export const DEMO_STEPS: Record<DemoId, DemoStep[]> = {
       },
     },
     {
-      image: "cronogramas-4-entrega",
+      frames: VISUAL_FRAMES["cronogramas-4"],
       title: { es: "Aprobación y entrega", en: "Approval and delivery" },
       text: {
         es: "Se aprueba post por post o todos a la vez, y el equipo ve cuántos faltan. Luego se descarga en ZIP o en PDF, y el cronograma se borra solo a los 30 días.",
