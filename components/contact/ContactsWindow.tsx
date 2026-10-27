@@ -141,7 +141,7 @@ export default function ContactsWindow({
       <div className="text-left">
         <div className="flex items-center justify-between gap-3 border-t border-black/[0.09] px-[22px] py-[9px]">
           <div className="min-w-0">
-            <p className="text-[11.5px] text-black/50">correo</p>
+            <p className="text-[11.5px] text-black/50">Correo</p>
             <a href={`mailto:${CONTACT.email}`} className={`block truncate text-[14px] text-[#0066cc] ${LINK}`}>
               {CONTACT.email}
             </a>
@@ -175,7 +175,7 @@ export default function ContactsWindow({
           </Row>
         )}
         <div className="border-t border-black/[0.09] px-[22px] py-[9px] pb-4">
-          <p className="text-[11.5px] text-black/50">ciudad</p>
+          <p className="text-[11.5px] text-black/50">Ciudad</p>
           <p className="text-[14px] text-black/80">{CONTACT.city}</p>
         </div>
       </div>
