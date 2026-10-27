@@ -1,27 +1,25 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { useReducedMotion } from "framer-motion";
 import { useLocale } from "@/components/LocaleProvider";
 import type { DemoId } from "@/lib/data";
 import { DEMO_DISCLAIMER, DEMO_STEPS, DEMO_UI } from "@/lib/i18n/app-demos";
-import CronogramasMock from "./CronogramasMock";
-import TareasMock from "./TareasMock";
-
-const MOCKS = { tareas: TareasMock, cronogramas: CronogramasMock };
 
 /**
- * "How it works" of an app: a list of steps and, next to it, the screen that step is about
- * (drawn with made-up data). It advances by itself while it is on screen, and the progress bar
- * of the current step is the timer: its animation ending moves to the next step, so pausing the
- * animation pauses everything. It stops for good when someone picks a step or presses Pause,
- * pauses while a mouse is over it or focus is inside, and does not autoplay with reduced motion.
+ * "How it works" of an app: a list of steps and, next to it, a phone showing the screen of the
+ * REAL platform that step is about (screenshots in public/apps/visual, taken on made-up data,
+ * with a blue ring on what to look at). It advances by itself while it is on screen, and the
+ * progress bar of the current step is the timer: its animation ending moves to the next step, so
+ * pausing the animation pauses everything. It stops for good when someone picks a step or presses
+ * Pause, pauses while a mouse is over it or focus is inside, and does not autoplay with reduced
+ * motion.
  */
 export default function AppDemo({ demo }: { demo: DemoId }) {
   const { lang } = useLocale();
   const reduce = useReducedMotion() === true;
   const steps = DEMO_STEPS[demo];
-  const Mock = MOCKS[demo];
 
   const [step, setStep] = useState(0);
   const [inView, setInView] = useState(false);
@@ -50,7 +48,7 @@ export default function AppDemo({ demo }: { demo: DemoId }) {
       onPointerLeave={(e) => e.pointerType === "mouse" && setEngaged(false)}
       onFocusCapture={() => setEngaged(true)}
       onBlurCapture={() => setEngaged(false)}
-      className="grid gap-8 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-10"
+      className="grid gap-8 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-10"
     >
       <div>
         <div className="mb-4 flex items-center justify-between">
@@ -112,7 +110,7 @@ export default function AppDemo({ demo }: { demo: DemoId }) {
                               paused
                                 ? { transform: "scaleX(1)", opacity: 0.25 }
                                 : {
-                                    animation: "demo-progress 7s linear forwards",
+                                    animation: "demo-progress 8s linear forwards",
                                     animationPlayState: running ? "running" : "paused",
                                   }
                             }
@@ -128,9 +126,31 @@ export default function AppDemo({ demo }: { demo: DemoId }) {
           })}
         </ol>
       </div>
+
       <div>
-        <Mock step={step} />
-        <p className="mt-3 text-[11px] leading-snug text-ink/60">{DEMO_DISCLAIMER[lang]}</p>
+        {/* The phone: every step's screenshot is stacked and only the current one is visible, so
+            switching never waits for an image. */}
+        <div className="mx-auto w-[min(100%,330px)] rounded-[2.6rem] bg-[#161618] p-2 shadow-[0_30px_70px_-25px_rgba(0,0,0,0.55)] ring-1 ring-black/40">
+          <div className="relative aspect-[390/800] overflow-hidden rounded-[2.1rem] bg-white">
+            {steps.map((s, i) => (
+              <Image
+                key={s.image}
+                src={`/apps/visual/${s.image}.jpg`}
+                alt={i === step ? `${DEMO_UI.screen[lang]}: ${s.title[lang]}` : ""}
+                aria-hidden={i === step ? undefined : true}
+                fill
+                sizes="330px"
+                quality={75}
+                className={`object-cover object-top ${
+                  reduce ? "" : "transition-opacity duration-300"
+                } ${i === step ? "opacity-100" : "opacity-0"}`}
+              />
+            ))}
+          </div>
+        </div>
+        <p className="mx-auto mt-4 max-w-[330px] text-center text-[11px] leading-snug text-ink/60">
+          {DEMO_DISCLAIMER[lang]}
+        </p>
       </div>
     </div>
   );
