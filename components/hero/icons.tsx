@@ -160,3 +160,21 @@ export function FinderIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function FileGlyph({ className }: IconProps) {
+  return (
+    <svg {...glyph} className={className}>
+      <path d="M7 3.5h6.5L19 9v10a1.5 1.5 0 0 1-1.5 1.5h-10A1.5 1.5 0 0 1 6 19V5a1.5 1.5 0 0 1 1-1.5Z" />
+      <path d="M13.5 3.5V9H19M9 13h6M9 16.5h6" />
+    </svg>
+  );
+}
+
+export function SearchGlyph({ className }: IconProps) {
+  return (
+    <svg {...glyph} className={className}>
+      <circle cx="10.5" cy="10.5" r="6" />
+      <path d="m15 15 5 5" />
+    </svg>
+  );
+}

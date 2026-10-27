@@ -3,6 +3,7 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
+import { openSpotlight } from "@/lib/spotlight";
 
 export type MacMenuLink = { href: string; label: string; active: boolean };
 
@@ -55,18 +56,28 @@ function AppleLogo() {
   );
 }
 
-// A few status icons, like a real menu bar but without the crowd. They only decorate.
-function StatusIcons() {
+// A few status icons, like a real menu bar but without the crowd. Only the magnifier does
+// something: it opens Spotlight (the search window, also on ⌘K).
+function StatusIcons({ hover }: { hover: string }) {
   return (
-    <span className="flex items-center gap-4 max-md:hidden" aria-hidden="true">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="max-lg:hidden">
-        <circle cx="6.8" cy="6.8" r="4.3" />
-        <path d="m10 10 3.6 3.6" />
-      </svg>
-      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor">
+    <span className="flex items-center gap-4 max-md:hidden">
+      <button
+        type="button"
+        onClick={openSpotlight}
+        aria-label="Buscar (⌘K)"
+        title="Buscar (⌘K)"
+        data-cursor-hover
+        className={`-m-1.5 rounded-md p-1.5 transition-colors outline-none ${hover}`}
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
+          <circle cx="6.8" cy="6.8" r="4.3" />
+          <path d="m10 10 3.6 3.6" />
+        </svg>
+      </button>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor" aria-hidden="true">
         <path d="M8 2.2c2 0 3.8.8 5.1 2.1l1.1-1.2A8.9 8.9 0 0 0 8 .6a8.9 8.9 0 0 0-6.2 2.5l1.1 1.2A7.2 7.2 0 0 1 8 2.2Zm0 3.4c1.1 0 2.1.4 2.9 1.2l1.1-1.2A6 6 0 0 0 8 4a6 6 0 0 0-4 1.6l1.1 1.2c.8-.8 1.8-1.2 2.9-1.2Zm0 3.3c.5 0 1 .2 1.4.6L8 11.1 6.6 9.5c.4-.4.9-.6 1.4-.6Z" />
       </svg>
-      <svg width="26" height="12" viewBox="0 0 26 12" fill="none">
+      <svg width="26" height="12" viewBox="0 0 26 12" fill="none" aria-hidden="true">
         <rect x=".5" y=".5" width="22" height="11" rx="3.2" stroke="currentColor" opacity=".45" />
         <rect x="2" y="2" width="16" height="8" rx="1.8" fill="currentColor" />
         <path d="M24 4v4c.8-.3 1.4-1.1 1.4-2S24.8 4.3 24 4Z" fill="currentColor" opacity=".5" />
@@ -131,7 +142,7 @@ export default function MacMenuBar({
         </nav>
 
         <div className="ml-auto flex items-center gap-4 text-[12.5px]">
-          <StatusIcons />
+          <StatusIcons hover={skin.hover} />
           <span className="tabular-nums">{clock}</span>
           <button
             type="button"
@@ -174,6 +185,18 @@ export default function MacMenuBar({
             transition={{ duration: 0.18 }}
             className={`absolute right-2 top-[40px] w-56 rounded-xl border p-1.5 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.5)] backdrop-blur-2xl md:hidden ${skin.menu}`}
           >
+            <li>
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  openSpotlight();
+                }}
+                className="flex h-11 w-full items-center rounded-lg px-3 text-[15px] font-medium"
+              >
+                Buscar
+              </button>
+            </li>
             {links.map((link) => (
               <li key={link.href}>
                 <Link

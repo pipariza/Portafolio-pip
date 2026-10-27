@@ -4,6 +4,7 @@ import "./globals.css";
 import { SectionThemeProvider } from "@/lib/section-theme";
 import CustomCursor from "@/components/CustomCursor";
 import Nav from "@/components/Nav";
+import Spotlight from "@/components/Spotlight";
 import { SITE_URL } from "@/lib/config";
 
 const archivo = Archivo({
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SectionThemeProvider>
           <CustomCursor />
           <Nav />
+          <Spotlight />
           {children}
         </SectionThemeProvider>
       </body>
