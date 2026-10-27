@@ -196,10 +196,11 @@ export default function VideoModal({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
           // --reserve: the height the title, the toolbar and the margins take; the video gets the rest.
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-3 bg-black/35 px-3 backdrop-blur-md [--reserve:9rem] [@media(max-height:520px)]:[--reserve:6rem]"
+          // The title above the window is for phones only: from md up it stays out of the way.
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-3 bg-black/35 px-3 backdrop-blur-md [--reserve:9rem] md:[--reserve:6.5rem] [@media(max-height:520px)]:[--reserve:6rem]"
           onClick={onClose}
         >
-          <h2 className="text-[15px] font-extrabold uppercase leading-none tracking-[0.04em] text-white md:text-[20px] [@media(max-height:520px)]:hidden">
+          <h2 className="text-[15px] font-extrabold uppercase leading-none tracking-[0.04em] text-white md:hidden [@media(max-height:520px)]:hidden">
             Edición de video
           </h2>
 
