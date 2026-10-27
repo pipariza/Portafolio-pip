@@ -441,9 +441,9 @@ function IPhone17({
 
 /* ---------- dock ---------- */
 
-// Every dock icon (projects and minimized windows) has the same size at each breakpoint.
-const DOCK_ICON =
-  "relative h-10 w-10 shrink-0 min-[400px]:h-12 min-[400px]:w-12 sm:h-14 sm:w-14 lg:h-11 lg:w-11 xl:h-16 xl:w-16 [@media(max-height:760px)]:xl:h-14 [@media(max-height:760px)]:xl:w-14";
+// Every dock icon (projects and minimized windows) has the same size at each breakpoint:
+// the sizes of the Apps page's dock, so both docks look like one family.
+const DOCK_ICON = "relative h-8 w-8 shrink-0 min-[400px]:h-9 min-[400px]:w-9 md:h-12 md:w-12";
 
 /** A window sent to the dock: click it to bring it back. */
 type MinimizedWindow = { title: string; thumb?: string };
@@ -477,7 +477,8 @@ function Dock({
     <nav
       ref={navRef}
       aria-label="Proyectos"
-      className={`flex items-end gap-2 rounded-[26px] bg-white/45 px-2.5 pb-2.5 pt-2.5 shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.8),0_0_0_0.5px_rgba(0,0,0,0.12),0_18px_40px_-12px_rgba(30,40,40,0.45)] backdrop-blur-3xl backdrop-saturate-150 min-[400px]:gap-3 min-[400px]:px-3.5 max-lg:fixed max-lg:bottom-[max(0.75rem,env(safe-area-inset-bottom))] max-lg:left-1/2 max-lg:z-[60] max-lg:-translate-x-1/2 max-lg:bg-white/70 max-lg:shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.9),0_0_0_0.5px_rgba(0,0,0,0.14),0_16px_36px_-10px_rgba(20,25,25,0.55)] max-lg:transition-[opacity,translate,visibility] max-lg:duration-300 ${
+      data-theme="light"
+      className={`glass-pill flex items-end gap-1.5 rounded-full border px-3.5 pb-1.5 pt-1.5 md:gap-2 md:px-5 md:pb-2 max-lg:fixed max-lg:bottom-[max(0.75rem,env(safe-area-inset-bottom))] max-lg:left-1/2 max-lg:z-[60] max-lg:w-max max-lg:max-w-[calc(100vw-12px)] max-lg:-translate-x-1/2 max-lg:transition-[opacity,translate,visibility] max-lg:duration-300 ${
         show ? "" : "max-lg:invisible max-lg:translate-y-6 max-lg:opacity-0"
       } ${className}`}
     >
@@ -495,9 +496,9 @@ function Dock({
             className={`group/dock ${DOCK_ICON}`}
           >
             <span
-              className={`absolute inset-0 flex items-center justify-center overflow-hidden rounded-[14px] text-[15px] font-bold tracking-tight shadow-[0_6px_14px_-4px_rgba(0,0,0,0.4),0_0_0_0.5px_rgba(0,0,0,0.18)] transition-transform duration-200 ease-out group-hover/dock:-translate-y-2 group-hover/dock:scale-110 sm:text-[17px] lg:text-[14px] xl:text-[19px] ${
+              className={`absolute inset-0 flex items-center justify-center overflow-hidden rounded-[22%] text-[11px] font-bold tracking-tight shadow-[0_3px_8px_-2px_rgba(0,0,0,0.35),0_0_0_0.5px_rgba(0,0,0,0.15)] transition-transform duration-200 ease-out group-hover/dock:-translate-y-1.5 group-hover/dock:scale-110 min-[400px]:text-[12px] md:text-[16px] ${
                 dock.logo ? "ring-1 ring-black/10" : ""
-              } ${on ? "-translate-y-1.5 scale-105" : ""}`}
+              }`}
               style={{ background: dock.bg, color: dock.fg }}
             >
               {dock.logo ? (
@@ -510,11 +511,12 @@ function Dock({
             {on && (
               <span
                 aria-hidden="true"
-                className="absolute -bottom-2 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-black/60"
+                className="absolute -bottom-1.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-black/60"
               />
             )}
-            <span className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-neutral-800/90 px-2.5 py-1 text-xs text-white opacity-0 transition-opacity group-hover/dock:opacity-100 group-focus-visible/dock:opacity-100 max-lg:hidden">
+            <span className="pointer-events-none absolute bottom-full left-1/2 mb-3 -translate-x-1/2 whitespace-nowrap rounded-lg bg-[#4a3a34]/85 px-3 py-1.5 text-[13px] font-medium text-white opacity-0 backdrop-blur-md transition-opacity duration-150 group-hover/dock:opacity-100 group-focus-visible/dock:opacity-100 max-lg:hidden">
               {p.name}
+              <span className="absolute left-1/2 top-full -mt-1 h-2.5 w-2.5 -translate-x-1/2 rotate-45 bg-[#4a3a34]/85" />
             </span>
           </button>
         );
@@ -527,9 +529,9 @@ function Dock({
             initial={{ opacity: 0, width: 0 }}
             animate={{ opacity: 1, width: "auto", transition: { duration: 0.3, ease: EASE } }}
             exit={{ opacity: 0, width: 0, transition: { duration: 0.2 } }}
-            className="-my-3 flex items-end gap-2 overflow-hidden py-3 min-[400px]:gap-3"
+            className="-my-3 flex items-end gap-1.5 overflow-hidden py-3 md:gap-2"
           >
-            <span aria-hidden="true" className="mb-1 ml-1 h-[70%] w-px shrink-0 self-center bg-black/20" />
+            <span aria-hidden="true" className="mx-0.5 mb-1 h-7 w-px shrink-0 self-center bg-black/20 md:mx-1 md:h-10" />
             <button
               ref={restoreRef}
               type="button"
