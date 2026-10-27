@@ -584,7 +584,8 @@ export const appData: AppData[] = [
     rotation: -3,
     color: "#2e2d2b",
     glyph: "macros",
-    // No `hours` yet (Pip has not said how long it took) and no `demo` until the real interface is captured.
+    hours: 6,
+    // No `demo` until the real interface is captured.
     tools: ["Claude Code", "Next.js", "React", "TypeScript", "Tailwind CSS", "Supabase (Postgres)", "Recharts", "jsPDF", "Gemini API", "Vercel"],
   },
   {
