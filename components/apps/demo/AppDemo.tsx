@@ -141,6 +141,7 @@ export default function AppDemo({ demo }: { demo: DemoId }) {
                 fill
                 sizes="330px"
                 quality={75}
+                priority={i === 0}
                 className={`object-cover object-top ${
                   reduce ? "" : "transition-opacity duration-300"
                 } ${i === step ? "opacity-100" : "opacity-0"}`}
