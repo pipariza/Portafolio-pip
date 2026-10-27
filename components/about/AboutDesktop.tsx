@@ -22,7 +22,7 @@ import { DesktopShortcut, DockTile, MiniDock } from "@/components/mac/dock";
  */
 
 const STATS = [
-  { value: "5+", label: "Años de experiencia" },
+  { value: "3+", label: "Años de experiencia" },
   { value: "20+", label: "Proyectos entregados" },
   { value: "IA", label: "Foco en aplicativos" },
 ];
