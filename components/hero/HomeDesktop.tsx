@@ -150,7 +150,7 @@ function AreaTile({ area, onGo }: { area: Area; onGo: Go }) {
           area.image ? "pr-[38%]" : "pr-3.5 md:pr-4"
         }`}
       >
-        <span className="block text-[15px] font-semibold leading-tight md:text-[16px] xl:text-[18px] 2xl:text-[20px]">{area.title}</span>
+        <span className="block text-[15px] font-semibold leading-tight md:text-[16px] lg:text-[15px] xl:text-[18px] 2xl:text-[20px]">{area.title}</span>
         <span className="mt-0.5 block text-[12px] text-black/60 xl:text-[13px]">{area.sub}</span>
       </span>
     </Link>
@@ -314,11 +314,11 @@ export default function HomeDesktop({
     transition: leaving ? { duration: 0.2 } : { duration: 0.5, ease: EASE },
   };
 
-  // Web has its picture; the others get theirs (`image`) when Pip sends them.
+  // Each area's cover (`image`) is a transparent WebP in public/home, drawn from real work.
   const areas: Area[] = [
     { href: "/work", title: tr("Diseño Web", "Web Design"), sub: tr(`${projectCount} proyectos`, `${projectCount} projects`), image: "/home/web-inicio-6.webp" },
-    { href: "/apps", title: tr("Aplicativos Web", "Web Apps"), sub: tr("Productos con IA", "AI-powered products") },
-    { href: "/video", title: tr("Edición de Video", "Video Editing"), sub: tr(`${clipCount} clips`, `${clipCount} clips`) },
+    { href: "/apps", title: tr("Aplicativos Web", "Web Apps"), sub: tr("Productos con IA", "AI-powered products"), image: "/home/apps-7.webp" },
+    { href: "/video", title: tr("Edición de Video", "Video Editing"), sub: tr(`${clipCount} clips`, `${clipCount} clips`), image: "/home/video-6.webp" },
   ];
 
   return (
