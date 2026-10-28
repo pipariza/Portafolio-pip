@@ -1,44 +1,29 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore, type ComponentType, type MouseEvent, type Ref } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type ComponentType, type MouseEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/components/LocaleProvider";
 import type { Locale } from "@/lib/i18n/config";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import {
-  EASE,
-  TrafficLights,
-  WINDOW_FX,
-  WINDOW_FX_REDUCED,
-  useMacWindow,
-} from "@/components/mac/window";
+import { EASE, WINDOW_FX, WINDOW_FX_REDUCED, type WindowFx } from "@/components/mac/window";
 import { DesktopShortcut } from "@/components/mac/dock";
 import { SOFT_GRAY, wallpaperStyle } from "@/components/mac/wallpaper";
 import { cameFromSection, setZoomOrigin } from "@/lib/zoom";
 import { MailAppIcon } from "@/components/contact/icons";
-import {
-  AppsAppIcon,
-  BrowserGlyph,
-  FilmGlyph,
-  FinderIcon,
-  GridGlyph,
-  HomeGlyph,
-  MailGlyph,
-  UserGlyph,
-  VideoAppIcon,
-  WebAppIcon,
-} from "./icons";
+import { AppsAppIcon, FinderIcon, VideoAppIcon, WebAppIcon } from "./icons";
 
 /*
  * The home page as a macOS desktop, like the rest of the site: the same soft gray
- * wallpaper, a Finder window that works as the real menu (the three areas of work as
- * big icons, the five pages in the sidebar), two desktop widgets (a note with the
- * one-line pitch, the clock) and a dock with every page. The Finder's traffic lights
- * work like the other windows': close leaves the Finder icon on the desktop, minimize
- * sends the window to the dock. Below md it is an iPhone home screen instead: widgets,
- * the three areas as app icons, the dock at the bottom.
+ * wallpaper, two desktop widgets (a note with the one-line pitch, the clock), a dock
+ * with every page and, in the middle, a panel drawn like the macOS stack window: a
+ * close button, "3 ítems" and one big tile per area of work (Web, Apps, Video). The
+ * tile is a picture with the name over it (a flat color until the pictures exist), it
+ * grows a little under the cursor and takes you to its page. The close button leaves
+ * the Finder icon on the desktop (and in the dock) to bring the panel back. Below md it
+ * is an iPhone home screen instead: widgets, the same panel without the close button,
+ * the dock at the bottom.
  */
 
 const WALLPAPER = wallpaperStyle(SOFT_GRAY);
@@ -48,19 +33,13 @@ type Go = (e: MouseEvent<HTMLAnchorElement>, href: string) => void;
 
 type Glyph = ComponentType<{ className?: string }>;
 
+// Closing the panel: it just fades away (the Finder icon takes its place).
+const CLOSE_FX: WindowFx = { kind: "close", x: 0, y: 0 };
+
 // The Notes app icon, the one About's closed window leaves on its desktop.
 function NotesAppIcon({ className }: { className?: string }) {
   return <Image src="/dock/notas.avif" alt="" width={112} height={112} priority className={`object-contain ${className ?? ""}`} />;
 }
-
-// The pages of the Finder's sidebar, in the order of the menu bar (the labels are the menu bar's).
-const PAGES: { href: string; label: string; Glyph: Glyph }[] = [
-  { href: "/work", label: "Work", Glyph: BrowserGlyph },
-  { href: "/apps", label: "Apps", Glyph: GridGlyph },
-  { href: "/video", label: "Video", Glyph: FilmGlyph },
-  { href: "/about", label: "About", Glyph: UserGlyph },
-  { href: "/contacto", label: "Contact", Glyph: MailGlyph },
-];
 
 // The dock: an app icon each. The Notes icon opens the CV note of the Apps desktop (/apps#cv).
 const DOCK_ITEMS: { href: string; label: string; aria: { es: string; en: string }; App: Glyph }[] = [
@@ -150,23 +129,64 @@ function ClockWidget({ className = "" }: { className?: string }) {
 
 /* ---------- the three areas of work ---------- */
 
-type Area = { href: string; title: string; sub: string; Icon: Glyph };
+/** `color` is the tile's background; `image` (a path in /public) goes over it once the pictures exist. */
+type Area = { href: string; title: string; sub: string; color: string; image?: string };
 
-function AreaItem({ area, size, onGo }: { area: Area; size: string; onGo: Go }) {
+// One tile: the picture fills it, the name sits over a soft shade at the bottom, and it grows a touch
+// under the cursor (not with "reduce motion").
+function AreaTile({ area, onGo }: { area: Area; onGo: Go }) {
   const { href } = useLocale();
   return (
     <Link
       href={href(area.href)}
       onClick={(e) => onGo(e, area.href)}
       data-cursor-hover
-      className="group/area flex flex-col items-center gap-2 rounded-xl px-1 py-3 text-center outline-none focus-visible:ring-2 focus-visible:ring-[#0a84ff]"
+      style={{ backgroundColor: area.color }}
+      className="group/area relative block aspect-[4/5] overflow-hidden rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.55),0_10px_24px_-10px_rgba(0,0,0,0.5)] outline-none transition-transform duration-300 ease-out hover:z-10 hover:scale-[1.03] focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-[#0a84ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 motion-reduce:transition-none motion-reduce:hover:scale-100 md:aspect-auto md:h-full"
     >
-      <area.Icon
-        className={`drop-shadow-[0_8px_10px_rgba(30,40,40,0.3)] transition-transform duration-200 ease-out group-hover/area:-translate-y-1 group-hover/area:scale-105 group-focus-visible/area:-translate-y-1 ${size}`}
-      />
-      <span className="text-[14px] font-semibold leading-tight">{area.title}</span>
-      <span className="text-[12px] text-black/60 max-md:hidden">{area.sub}</span>
+      {area.image && <Image src={area.image} alt="" fill sizes="(min-width: 1024px) 320px, 200px" className="object-cover" />}
+      <span className="absolute inset-x-0 bottom-0 block bg-gradient-to-t from-black/50 to-transparent px-3.5 pb-3.5 pt-14 text-white md:px-4 md:pb-4">
+        <span className="block text-[15px] font-semibold leading-tight md:text-[16px] lg:text-[18px] 2xl:text-[20px]">{area.title}</span>
+        <span className="mt-0.5 block text-[12px] text-white/80 lg:text-[13px]">{area.sub}</span>
+      </span>
     </Link>
+  );
+}
+
+// The panel: a dark glass window like the macOS stack, with its close button and the item count.
+// The grid fills what the slot gives it: three tiles in a row on md and up, two columns on a phone.
+function AreasPanel({ areas, onGo, onClose }: { areas: Area[]; onGo: Go; onClose?: () => void }) {
+  const { tr } = useLocale();
+  return (
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-[24px] bg-[rgba(66,63,30,0.78)] shadow-[0_0_0_0.5px_rgba(0,0,0,0.35),inset_0_0_0_0.5px_rgba(255,255,255,0.16),0_40px_80px_-24px_rgba(30,40,40,0.6)] backdrop-blur-[40px] backdrop-saturate-[1.6] md:rounded-[28px]">
+      <div className="flex h-12 shrink-0 items-center gap-3 px-4 md:h-14 md:px-7">
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label={tr("Cerrar", "Close")}
+            data-cursor-hover
+            className="-m-2 rounded-full p-2 outline-none focus-visible:ring-2 focus-visible:ring-[#0a84ff]"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" className="block h-6 w-6">
+              <circle cx="12" cy="12" r="11" className="fill-white/80" />
+              <path d="m8 8 8 8M16 8l-8 8" stroke="rgba(66,63,30,0.9)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+            </svg>
+          </button>
+        )}
+        <p className="text-[17px] font-semibold text-white md:text-[19px]">{tr("3 ítems", "3 items")}</p>
+      </div>
+      <ul
+        aria-label={tr("Áreas de trabajo", "Work areas")}
+        className="grid min-h-0 flex-1 grid-cols-2 content-start gap-3 px-4 pb-4 md:grid-cols-3 md:grid-rows-[minmax(0,1fr)] md:gap-5 md:px-7 md:pb-7"
+      >
+        {areas.map((area) => (
+          <li key={area.href} className="md:h-full">
+            <AreaTile area={area} onGo={onGo} />
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -186,27 +206,20 @@ function DockTooltip({ label }: { label: string }) {
 }
 
 function HomeDock({
-  minimized,
   leaving,
   arriving,
   onGo,
   onOpenFinder,
-  navRef,
-  restoreRef,
 }: {
-  minimized: boolean;
   leaving: boolean;
   /** The home was reached from another page: the dock fades in. */
   arriving: boolean;
   onGo: Go;
   onOpenFinder: () => void;
-  navRef: Ref<HTMLElement>;
-  restoreRef: Ref<HTMLButtonElement>;
 }) {
   const { lang, tr, href: localHref } = useLocale();
   return (
     <motion.nav
-      ref={navRef}
       aria-label={tr("Páginas", "Pages")}
       data-theme="light"
       initial={arriving ? { opacity: 0 } : false}
@@ -247,42 +260,6 @@ function HomeDock({
           </span>
         </Link>
       ))}
-
-      <AnimatePresence initial={false}>
-        {minimized && (
-          <motion.div
-            key="minimized"
-            initial={{ opacity: 0, width: 0 }}
-            animate={{ opacity: 1, width: "auto", transition: { duration: 0.3, ease: EASE } }}
-            exit={{ opacity: 0, width: 0, transition: { duration: 0.2 } }}
-            className="-my-3 flex items-end gap-1.5 overflow-hidden py-3 md:gap-2"
-          >
-            <span aria-hidden="true" className="mx-0.5 mb-1 h-7 w-px shrink-0 self-center bg-black/20 md:mx-1 md:h-10" />
-            <button
-              ref={restoreRef}
-              type="button"
-              onClick={onOpenFinder}
-              aria-label={tr("Restaurar Finder", "Restore Finder")}
-              title="Pip Ariza"
-              data-cursor-hover
-              className={`group/min outline-none ${DOCK_ICON}`}
-            >
-              <span className="absolute inset-0 block overflow-hidden rounded-[10px] bg-white shadow-[0_6px_14px_-4px_rgba(0,0,0,0.4),0_0_0_0.5px_rgba(0,0,0,0.25)] transition-transform duration-200 ease-out group-hover/min:-translate-y-1.5 group-focus-visible/min:ring-2 group-focus-visible/min:ring-[#0078d4]">
-                <span className="absolute inset-x-0 top-0 flex h-[22%] items-center gap-[7%] bg-[#f3f1ee] px-[9%]">
-                  <i className="block h-[22%] w-[9%] rounded-full bg-[#ff5f57]" />
-                  <i className="block h-[22%] w-[9%] rounded-full bg-[#febc2e]" />
-                  <i className="block h-[22%] w-[9%] rounded-full bg-[#28c840]" />
-                </span>
-                <span className="absolute inset-x-[12%] bottom-[16%] top-[42%] flex items-center justify-between">
-                  <i className="block h-[70%] w-[26%] rounded-[3px] bg-black/20" />
-                  <i className="block h-[70%] w-[26%] rounded-[3px] bg-black/20" />
-                  <i className="block h-[70%] w-[26%] rounded-[3px] bg-black/20" />
-                </span>
-              </span>
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.nav>
   );
 }
@@ -303,28 +280,15 @@ export default function HomeDesktop({
   const [leaving, setLeaving] = useState(false);
   // Coming back from a page (menu, Spotlight, the back button): the desktop zooms in softly.
   const [arriving] = useState(cameFromSection);
-  const dockRef = useRef<HTMLElement>(null);
   const shortcutRef = useRef<HTMLButtonElement>(null);
-  const restoreRef = useRef<HTMLButtonElement>(null);
+  const [panelOpen, setPanelOpen] = useState(true);
+  const open = () => setPanelOpen(true);
+  const close = () => setPanelOpen(false);
 
-  // A minimized window flies to the right end of the dock, where its tile appears.
-  const {
-    win,
-    fx,
-    ref: windowRef,
-    close,
-    minimize,
-    open,
-  } = useMacWindow(() => {
-    const dock = dockRef.current?.getBoundingClientRect();
-    return dock ? { x: dock.right, y: dock.top + dock.height / 2 } : null;
-  });
-
-  // Keyboard users lose their place when the window disappears: hand the focus to what replaces it.
+  // Keyboard users lose their place when the panel disappears: hand the focus to the icon that replaces it.
   useEffect(() => {
-    if (win === "closed") shortcutRef.current?.focus({ preventScroll: true });
-    if (win === "minimized") restoreRef.current?.focus({ preventScroll: true });
-  }, [win]);
+    if (!panelOpen) shortcutRef.current?.focus({ preventScroll: true });
+  }, [panelOpen]);
 
   // Clicking an icon: the desktop fades out and the next page grows from that icon (app/template.tsx).
   // A click with a modifier key (new tab) is left alone.
@@ -346,10 +310,11 @@ export default function HomeDesktop({
     transition: leaving ? { duration: 0.2 } : { duration: 0.5, ease: EASE },
   };
 
+  // The colors are placeholders until each area gets its picture (`image`).
   const areas: Area[] = [
-    { href: "/work", title: tr("Diseño Web", "Web Design"), sub: tr(`${projectCount} proyectos`, `${projectCount} projects`), Icon: WebAppIcon },
-    { href: "/apps", title: tr("Aplicativos Web", "Web Apps"), sub: tr("Productos con IA", "AI-powered products"), Icon: AppsAppIcon },
-    { href: "/video", title: tr("Edición de Video", "Video Editing"), sub: tr(`${clipCount} clips`, `${clipCount} clips`), Icon: VideoAppIcon },
+    { href: "/work", title: tr("Diseño Web", "Web Design"), sub: tr(`${projectCount} proyectos`, `${projectCount} projects`), color: "#b5583b" },
+    { href: "/apps", title: tr("Aplicativos Web", "Web Apps"), sub: tr("Productos con IA", "AI-powered products"), color: "#3e7a80" },
+    { href: "/video", title: tr("Edición de Video", "Video Editing"), sub: tr(`${clipCount} clips`, `${clipCount} clips`), color: "#a9822b" },
   ];
 
   return (
@@ -365,85 +330,39 @@ export default function HomeDesktop({
         )}
       </h1>
 
-      {/* Tablet and desktop: widgets and the Finder window. */}
+      {/* Tablet and desktop: widgets and the panel of areas. */}
       <motion.div
         {...blockMotion}
         className="hidden h-full flex-col items-center justify-center gap-4 px-5 pb-[104px] pt-[calc(34px+12px)] md:flex"
       >
-        {/* From lg up the widgets sit in the corners; below, in a row above the window. */}
+        {/* From lg up the widgets sit in the corners; below, in a row above the panel. */}
         <div className="flex w-[min(728px,100%)] items-stretch justify-between gap-4 lg:contents">
           <NotesWidget onGo={go} className="md:w-[220px] lg:absolute lg:left-6 lg:top-[calc(34px+24px)] lg:w-[200px]" />
           <ClockWidget className="md:w-[150px] lg:absolute lg:right-6 lg:top-[calc(34px+24px)]" />
         </div>
 
-        {/* The slot keeps its size when the window is closed or minimized, so nothing shifts. */}
-        <div className="relative shrink-0 md:h-[440px] md:w-[min(728px,100%)] lg:h-[max(400px,min(540px,calc(100vh-290px)))] lg:w-[min(860px,calc(100vw-480px))] 2xl:h-[max(400px,min(640px,calc(100vh-290px)))] 2xl:w-[min(1040px,calc(100vw-480px))]">
-          <AnimatePresence initial={false} custom={fx}>
-            {win === "open" && (
+        {/*
+          The slot keeps its size when the panel is closed, so nothing shifts. Its height follows its width
+          (--w) so the tiles stay 4:5: header 56 + tile rows + 28 of bottom padding.
+        */}
+        <div className="relative shrink-0 [--w:min(728px,calc(100vw-40px))] w-[var(--w)] h-[min(calc(44px+var(--w)*0.41667),max(320px,calc(100vh-290px)))] lg:[--w:min(960px,calc(100vw-480px))] 2xl:[--w:min(1120px,calc(100vw-480px))]">
+          <AnimatePresence initial={false} custom={CLOSE_FX}>
+            {panelOpen && (
               <motion.div
-                key="finder"
-                ref={windowRef}
+                key="areas"
                 variants={reduce ? WINDOW_FX_REDUCED : WINDOW_FX}
-                custom={fx}
+                custom={CLOSE_FX}
                 initial="hidden"
                 animate="shown"
                 exit="gone"
-                className="flex h-full w-full flex-col overflow-hidden rounded-[14px] bg-white/70 shadow-[0_0_0_0.5px_rgba(0,0,0,0.2),0_40px_80px_-24px_rgba(30,40,40,0.5),0_12px_28px_-10px_rgba(30,40,40,0.3)] backdrop-blur-[40px] backdrop-saturate-[1.6]"
+                className="h-full w-full"
               >
-                <div className="relative flex h-[52px] shrink-0 items-center border-b border-black/[0.12] bg-[#f3f1ee]/90 px-4">
-                  <TrafficLights fixedSize canZoom={false} onClose={close} onMinimize={minimize} onZoom={() => {}} />
-                  <p className="pointer-events-none absolute inset-x-0 text-center text-[13px] font-semibold text-black/60">
-                    Pip Ariza
-                  </p>
-                </div>
-
-                <div className="flex min-h-0 flex-1">
-                  <nav
-                    aria-label={tr("Favoritos", "Favorites")}
-                    className="w-[150px] shrink-0 border-r border-black/[0.09] bg-[#f3f1ee]/60 px-2.5 py-3 text-[13px]"
-                  >
-                    <p className="px-2 pb-1.5 text-[11px] font-semibold text-black/60">{tr("Favoritos", "Favorites")}</p>
-                    <ul className="space-y-0.5">
-                      <li>
-                        <span
-                          aria-current="page"
-                          className="flex items-center gap-2 rounded-md bg-black/[0.08] px-2 py-1.5 font-semibold"
-                        >
-                          <HomeGlyph className="h-4 w-4 text-[#0a64d8]" />
-                          {tr("Inicio", "Home")}
-                        </span>
-                      </li>
-                      {PAGES.map(({ href, label, Glyph: PageGlyph }) => (
-                        <li key={href}>
-                          <Link
-                            href={localHref(href)}
-                            onClick={(e) => go(e, href)}
-                            data-cursor-hover
-                            className="flex items-center gap-2 rounded-md px-2 py-1.5 text-black/80 outline-none transition-colors hover:bg-black/[0.06] focus-visible:ring-2 focus-visible:ring-[#0a84ff]"
-                          >
-                            <PageGlyph className="h-4 w-4 text-[#0a64d8]" />
-                            {label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </nav>
-
-                  <div className="grid min-w-0 flex-1 grid-cols-3 content-center gap-1 px-3">
-                    {areas.map((area) => (
-                      <AreaItem key={area.href} area={area} onGo={go} size="h-20 w-20 lg:h-24 lg:w-24 2xl:h-32 2xl:w-32" />
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex h-7 shrink-0 items-center justify-center border-t border-black/[0.09] bg-[#f3f1ee]/80 text-[11.5px] text-black/60">
-                  {tr("3 elementos", "3 items")}
-                </div>
+                <AreasPanel areas={areas} onGo={go} onClose={close} />
               </motion.div>
             )}
           </AnimatePresence>
           <AnimatePresence initial={false}>
-            {win === "closed" && (
+            {!panelOpen && (
               <DesktopShortcut key="shortcut" label="Finder" aria={tr("Abrir el Finder: inicio", "Open Finder: home")} onOpen={open} buttonRef={shortcutRef}>
                 <FinderIcon className="h-full w-full drop-shadow-[0_8px_14px_rgba(30,40,40,0.35)]" />
               </DesktopShortcut>
@@ -458,16 +377,12 @@ export default function HomeDesktop({
           <NotesWidget onGo={go} />
           <ClockWidget className="w-[124px] max-[399px]:hidden" />
         </div>
-        <ul className="mt-10 grid grid-cols-3 gap-x-2">
-          {areas.map((area) => (
-            <li key={area.href}>
-              <AreaItem area={area} onGo={go} size="h-[72px] w-[72px]" />
-            </li>
-          ))}
-        </ul>
+        <div className="mt-6">
+          <AreasPanel areas={areas} onGo={go} />
+        </div>
       </motion.div>
 
-      <HomeDock minimized={win === "minimized"} leaving={leaving} arriving={arriving} onGo={go} onOpenFinder={open} navRef={dockRef} restoreRef={restoreRef} />
+      <HomeDock leaving={leaving} arriving={arriving} onGo={go} onOpenFinder={open} />
     </div>
   );
 }
