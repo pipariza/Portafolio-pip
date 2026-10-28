@@ -316,7 +316,7 @@ export default function HomeDesktop({
 
   // Each area's cover (`image`) is a transparent WebP in public/home, drawn from real work.
   const areas: Area[] = [
-    { href: "/work", title: tr("Diseño Web", "Web Design"), sub: tr(`${projectCount} proyectos`, `${projectCount} projects`), image: "/home/web-inicio-6.webp" },
+    { href: "/work", title: tr("Diseño Web", "Web Design"), sub: tr(`${projectCount} proyectos`, `${projectCount} projects`), image: "/home/web-inicio-7.webp" },
     { href: "/apps", title: tr("Aplicativos Web", "Web Apps"), sub: tr("Productos con IA", "AI-powered products"), image: "/home/apps-8.webp" },
     { href: "/video", title: tr("Edición de Video", "Video Editing"), sub: tr(`${clipCount} clips`, `${clipCount} clips`), image: "/home/video-7.webp" },
   ];
