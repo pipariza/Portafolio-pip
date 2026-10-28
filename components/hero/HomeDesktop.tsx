@@ -143,7 +143,7 @@ function AreaTile({ area, onGo }: { area: Area; onGo: Go }) {
       data-cursor-hover
       className="group/area relative block aspect-[4/5] overflow-hidden rounded-[14px] border border-[rgba(20,19,16,0.2)] outline-none transition duration-300 ease-out hover:z-10 hover:scale-[1.03] hover:border-[rgba(20,19,16,0.32)] focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-[#0a84ff] focus-visible:ring-offset-2 focus-visible:ring-offset-white motion-reduce:transition-none motion-reduce:hover:scale-100 md:aspect-auto md:h-full"
     >
-      {area.image && <Image src={area.image} alt="" fill priority sizes="(min-width: 1024px) 320px, 200px" className="object-cover" />}
+      {area.image && <Image src={area.image} alt="" fill priority quality={90} sizes="(min-width: 1024px) 320px, 200px" className="object-cover" />}
       {/* With a picture, the name stays clear of the phone that sits in its right third. */}
       <span
         className={`absolute inset-x-0 bottom-0 block pb-3.5 pl-3.5 md:pb-4 md:pl-4 ${
@@ -317,8 +317,8 @@ export default function HomeDesktop({
   // Each area's cover (`image`) is a transparent WebP in public/home, drawn from real work.
   const areas: Area[] = [
     { href: "/work", title: tr("Diseño Web", "Web Design"), sub: tr(`${projectCount} proyectos`, `${projectCount} projects`), image: "/home/web-inicio-6.webp" },
-    { href: "/apps", title: tr("Aplicativos Web", "Web Apps"), sub: tr("Productos con IA", "AI-powered products"), image: "/home/apps-7.webp" },
-    { href: "/video", title: tr("Edición de Video", "Video Editing"), sub: tr(`${clipCount} clips`, `${clipCount} clips`), image: "/home/video-6.webp" },
+    { href: "/apps", title: tr("Aplicativos Web", "Web Apps"), sub: tr("Productos con IA", "AI-powered products"), image: "/home/apps-8.webp" },
+    { href: "/video", title: tr("Edición de Video", "Video Editing"), sub: tr(`${clipCount} clips`, `${clipCount} clips`), image: "/home/video-7.webp" },
   ];
 
   return (

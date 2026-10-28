@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     // WebP only: AVIF takes seconds to encode the very tall page captures on
     // the first request, which is what made them slow to appear.
     formats: ["image/webp"],
-    qualities: [60, 75],
+    qualities: [60, 75, 90],
     // Keep optimized images for a week instead of 4 hours.
     minimumCacheTTL: 60 * 60 * 24 * 7,
   },
