@@ -129,11 +129,11 @@ function ClockWidget({ className = "" }: { className?: string }) {
 
 /* ---------- the three areas of work ---------- */
 
-/** `color` is the tile's background; `image` (a path in /public) goes over it and brings its own shade for the text. */
-type Area = { href: string; title: string; sub: string; color: string; image?: string };
+/** `image` (a path in /public, with a see-through background) fills the tile once the area has its picture. */
+type Area = { href: string; title: string; sub: string; image?: string };
 
-// One tile: the picture fills it, the name sits at the bottom (over a soft shade when there is no picture), and it
-// grows a touch under the cursor (not with "reduce motion").
+// One tile: see-through like the panel, with a thin border; the picture (if any) fills it, the name sits at the
+// bottom, and it grows a touch under the cursor (not with "reduce motion").
 function AreaTile({ area, onGo }: { area: Area; onGo: Go }) {
   const { href } = useLocale();
   return (
@@ -141,17 +141,17 @@ function AreaTile({ area, onGo }: { area: Area; onGo: Go }) {
       href={href(area.href)}
       onClick={(e) => onGo(e, area.href)}
       data-cursor-hover
-      style={{ backgroundColor: area.color }}
-      className="group/area relative block aspect-[4/5] overflow-hidden rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.4),0_10px_24px_-10px_rgba(0,0,0,0.45)] outline-none transition-transform duration-300 ease-out hover:z-10 hover:scale-[1.03] focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-[#0a84ff] focus-visible:ring-offset-2 focus-visible:ring-offset-white motion-reduce:transition-none motion-reduce:hover:scale-100 md:aspect-auto md:h-full"
+      className="group/area relative block aspect-[4/5] overflow-hidden rounded-[14px] border border-[rgba(20,19,16,0.2)] outline-none transition duration-300 ease-out hover:z-10 hover:scale-[1.03] hover:border-[rgba(20,19,16,0.32)] focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-[#0a84ff] focus-visible:ring-offset-2 focus-visible:ring-offset-white motion-reduce:transition-none motion-reduce:hover:scale-100 md:aspect-auto md:h-full"
     >
       {area.image && <Image src={area.image} alt="" fill priority sizes="(min-width: 1024px) 320px, 200px" className="object-cover" />}
+      {/* With a picture, the name stays clear of the phone that sits in its right third. */}
       <span
-        className={`absolute inset-x-0 bottom-0 block px-3.5 pb-3.5 pt-14 text-white md:px-4 md:pb-4 ${
-          area.image ? "" : "bg-gradient-to-t from-black/50 to-transparent"
+        className={`absolute inset-x-0 bottom-0 block pb-3.5 pl-3.5 md:pb-4 md:pl-4 ${
+          area.image ? "pr-[38%]" : "pr-3.5 md:pr-4"
         }`}
       >
-        <span className="block text-[15px] font-semibold leading-tight md:text-[16px] lg:text-[18px] 2xl:text-[20px]">{area.title}</span>
-        <span className="mt-0.5 block text-[12px] text-white/80 lg:text-[13px]">{area.sub}</span>
+        <span className="block text-[15px] font-semibold leading-tight md:text-[16px] xl:text-[18px] 2xl:text-[20px]">{area.title}</span>
+        <span className="mt-0.5 block text-[12px] text-black/60 xl:text-[13px]">{area.sub}</span>
       </span>
     </Link>
   );
@@ -182,7 +182,7 @@ function AreasPanel({ areas, onGo, onClose }: { areas: Area[]; onGo: Go; onClose
       </div>
       <ul
         aria-label={tr("Áreas de trabajo", "Work areas")}
-        className="grid min-h-0 flex-1 grid-cols-2 content-start gap-3 px-4 pb-4 md:grid-cols-3 md:grid-rows-[minmax(0,1fr)] md:gap-5 md:px-7 md:pb-7"
+        className="grid min-h-0 flex-1 grid-cols-1 content-start gap-3 min-[360px]:grid-cols-2 px-4 pb-4 md:grid-cols-3 md:grid-rows-[minmax(0,1fr)] md:gap-5 md:px-7 md:pb-7"
       >
         {areas.map((area) => (
           <li key={area.href} className="md:h-full">
@@ -314,11 +314,11 @@ export default function HomeDesktop({
     transition: leaving ? { duration: 0.2 } : { duration: 0.5, ease: EASE },
   };
 
-  // Web has its picture; the colors of the others are placeholders until they get theirs (`image`).
+  // Web has its picture; the others get theirs (`image`) when Pip sends them.
   const areas: Area[] = [
-    { href: "/work", title: tr("Diseño Web", "Web Design"), sub: tr(`${projectCount} proyectos`, `${projectCount} projects`), color: "#8c9298", image: "/home/web-inicio-3.jpg" },
-    { href: "/apps", title: tr("Aplicativos Web", "Web Apps"), sub: tr("Productos con IA", "AI-powered products"), color: "#3e7a80" },
-    { href: "/video", title: tr("Edición de Video", "Video Editing"), sub: tr(`${clipCount} clips`, `${clipCount} clips`), color: "#a9822b" },
+    { href: "/work", title: tr("Diseño Web", "Web Design"), sub: tr(`${projectCount} proyectos`, `${projectCount} projects`), image: "/home/web-inicio-6.webp" },
+    { href: "/apps", title: tr("Aplicativos Web", "Web Apps"), sub: tr("Productos con IA", "AI-powered products") },
+    { href: "/video", title: tr("Edición de Video", "Video Editing"), sub: tr(`${clipCount} clips`, `${clipCount} clips`) },
   ];
 
   return (
