@@ -129,11 +129,11 @@ function ClockWidget({ className = "" }: { className?: string }) {
 
 /* ---------- the three areas of work ---------- */
 
-/** `color` is the tile's background; `image` (a path in /public) goes over it once the pictures exist. */
+/** `color` is the tile's background; `image` (a path in /public) goes over it and brings its own shade for the text. */
 type Area = { href: string; title: string; sub: string; color: string; image?: string };
 
-// One tile: the picture fills it, the name sits over a soft shade at the bottom, and it grows a touch
-// under the cursor (not with "reduce motion").
+// One tile: the picture fills it, the name sits at the bottom (over a soft shade when there is no picture), and it
+// grows a touch under the cursor (not with "reduce motion").
 function AreaTile({ area, onGo }: { area: Area; onGo: Go }) {
   const { href } = useLocale();
   return (
@@ -144,8 +144,12 @@ function AreaTile({ area, onGo }: { area: Area; onGo: Go }) {
       style={{ backgroundColor: area.color }}
       className="group/area relative block aspect-[4/5] overflow-hidden rounded-[14px] shadow-[0_0_0_1px_rgba(0,0,0,0.4),0_10px_24px_-10px_rgba(0,0,0,0.45)] outline-none transition-transform duration-300 ease-out hover:z-10 hover:scale-[1.03] focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-[#0a84ff] focus-visible:ring-offset-2 focus-visible:ring-offset-white motion-reduce:transition-none motion-reduce:hover:scale-100 md:aspect-auto md:h-full"
     >
-      {area.image && <Image src={area.image} alt="" fill sizes="(min-width: 1024px) 320px, 200px" className="object-cover" />}
-      <span className="absolute inset-x-0 bottom-0 block bg-gradient-to-t from-black/50 to-transparent px-3.5 pb-3.5 pt-14 text-white md:px-4 md:pb-4">
+      {area.image && <Image src={area.image} alt="" fill priority sizes="(min-width: 1024px) 320px, 200px" className="object-cover" />}
+      <span
+        className={`absolute inset-x-0 bottom-0 block px-3.5 pb-3.5 pt-14 text-white md:px-4 md:pb-4 ${
+          area.image ? "" : "bg-gradient-to-t from-black/50 to-transparent"
+        }`}
+      >
         <span className="block text-[15px] font-semibold leading-tight md:text-[16px] lg:text-[18px] 2xl:text-[20px]">{area.title}</span>
         <span className="mt-0.5 block text-[12px] text-white/80 lg:text-[13px]">{area.sub}</span>
       </span>
@@ -310,9 +314,9 @@ export default function HomeDesktop({
     transition: leaving ? { duration: 0.2 } : { duration: 0.5, ease: EASE },
   };
 
-  // The colors are placeholders until each area gets its picture (`image`).
+  // Web has its picture; the colors of the others are placeholders until they get theirs (`image`).
   const areas: Area[] = [
-    { href: "/work", title: tr("Diseño Web", "Web Design"), sub: tr(`${projectCount} proyectos`, `${projectCount} projects`), color: "#b5583b" },
+    { href: "/work", title: tr("Diseño Web", "Web Design"), sub: tr(`${projectCount} proyectos`, `${projectCount} projects`), color: "#8c9298", image: "/home/web-inicio-2.jpg" },
     { href: "/apps", title: tr("Aplicativos Web", "Web Apps"), sub: tr("Productos con IA", "AI-powered products"), color: "#3e7a80" },
     { href: "/video", title: tr("Edición de Video", "Video Editing"), sub: tr(`${clipCount} clips`, `${clipCount} clips`), color: "#a9822b" },
   ];
