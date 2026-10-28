@@ -316,7 +316,7 @@ export default function HomeDesktop({
 
   // Web has its picture; the colors of the others are placeholders until they get theirs (`image`).
   const areas: Area[] = [
-    { href: "/work", title: tr("Diseño Web", "Web Design"), sub: tr(`${projectCount} proyectos`, `${projectCount} projects`), color: "#8c9298", image: "/home/web-inicio-2.jpg" },
+    { href: "/work", title: tr("Diseño Web", "Web Design"), sub: tr(`${projectCount} proyectos`, `${projectCount} projects`), color: "#8c9298", image: "/home/web-inicio-3.jpg" },
     { href: "/apps", title: tr("Aplicativos Web", "Web Apps"), sub: tr("Productos con IA", "AI-powered products"), color: "#3e7a80" },
     { href: "/video", title: tr("Edición de Video", "Video Editing"), sub: tr(`${clipCount} clips`, `${clipCount} clips`), color: "#a9822b" },
   ];
