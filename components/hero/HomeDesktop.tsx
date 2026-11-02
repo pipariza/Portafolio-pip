@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore, type ComponentType, type MouseEvent } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type MouseEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -11,8 +11,6 @@ import { EASE, WINDOW_FX, WINDOW_FX_REDUCED, type WindowFx } from "@/components/
 import { DesktopShortcut } from "@/components/mac/dock";
 import { SOFT_GRAY, wallpaperStyle } from "@/components/mac/wallpaper";
 import { cameFromSection, setZoomOrigin } from "@/lib/zoom";
-import { MailAppIcon } from "@/components/contact/icons";
-import { AppsAppIcon, FinderIcon, VideoAppIcon, WebAppIcon } from "./icons";
 
 /*
  * The home page as a macOS desktop, like the rest of the site: the same soft gray
@@ -31,23 +29,22 @@ const WALLPAPER = wallpaperStyle(SOFT_GRAY);
 /** What a link of the desktop does when clicked: the home fades out and the next page grows from the link. */
 type Go = (e: MouseEvent<HTMLAnchorElement>, href: string) => void;
 
-type Glyph = ComponentType<{ className?: string }>;
-
 // Closing the panel: it just fades away (the Finder icon takes its place).
 const CLOSE_FX: WindowFx = { kind: "close", x: 0, y: 0 };
 
-// The Notes app icon, the one About's closed window leaves on its desktop.
-function NotesAppIcon({ className }: { className?: string }) {
-  return <Image src="/dock/notas.avif" alt="" width={112} height={112} priority className={`object-contain ${className ?? ""}`} />;
+// An app icon of the dock: the picture fills its box.
+function DockPicture({ src, className }: { src: string; className?: string }) {
+  return <Image src={src} alt="" width={112} height={112} priority className={`object-contain ${className ?? ""}`} />;
 }
 
-// The dock: an app icon each. The Notes icon opens the CV note of the Apps desktop (/apps#cv).
-const DOCK_ITEMS: { href: string; label: string; aria: { es: string; en: string }; App: Glyph }[] = [
-  { href: "/work", label: "Work", aria: { es: "Work", en: "Work" }, App: WebAppIcon },
-  { href: "/apps", label: "Apps", aria: { es: "Apps", en: "Apps" }, App: AppsAppIcon },
-  { href: "/video", label: "Video", aria: { es: "Video", en: "Video" }, App: VideoAppIcon },
-  { href: "/apps#cv", label: "CV", aria: { es: "Currículum (CV)", en: "Resume (CV)" }, App: NotesAppIcon },
-  { href: "/contacto", label: "Contact", aria: { es: "Contact", en: "Contact" }, App: MailAppIcon },
+// The dock: an app icon each (Safari, Apps and QuickTime for the three areas; Notes and Mail are the
+// ones of the Apps dock). The Notes icon opens the CV note of the Apps desktop (/apps#cv).
+const DOCK_ITEMS: { href: string; label: string; aria: { es: string; en: string }; icon: string }[] = [
+  { href: "/work", label: "Work", aria: { es: "Work", en: "Work" }, icon: "/dock/safari.webp" },
+  { href: "/apps", label: "Apps", aria: { es: "Apps", en: "Apps" }, icon: "/dock/apps.webp" },
+  { href: "/video", label: "Video", aria: { es: "Video", en: "Video" }, icon: "/dock/quicktime.webp" },
+  { href: "/apps#cv", label: "CV", aria: { es: "Currículum (CV)", en: "Resume (CV)" }, icon: "/dock/notas.avif" },
+  { href: "/contacto", label: "Contact", aria: { es: "Contact", en: "Contact" }, icon: "/dock/mail.avif" },
 ];
 
 /* ---------- clock (Bogotá) ---------- */
@@ -241,7 +238,7 @@ function HomeDock({
         className={`group/dock outline-none max-md:hidden ${DOCK_ICON}`}
       >
         <DockTooltip label={tr("Inicio", "Home")} />
-        <FinderIcon className="h-full w-full drop-shadow-[0_3px_5px_rgba(0,0,0,0.25)] transition-transform duration-200 group-hover/dock:-translate-y-1.5 group-hover/dock:scale-110 group-focus-visible/dock:-translate-y-1.5" />
+        <DockPicture src="/dock/finder.webp" className="h-full w-full drop-shadow-[0_3px_5px_rgba(0,0,0,0.25)] transition-transform duration-200 group-hover/dock:-translate-y-1.5 group-hover/dock:scale-110 group-focus-visible/dock:-translate-y-1.5" />
         <span
           aria-hidden="true"
           className="absolute -bottom-1.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-black/60"
@@ -249,7 +246,7 @@ function HomeDock({
       </button>
       <span aria-hidden="true" className="mx-0.5 mb-1 h-7 w-px self-center bg-black/20 max-md:hidden md:mx-1 md:h-10" />
 
-      {DOCK_ITEMS.map(({ href, label, aria, App }) => (
+      {DOCK_ITEMS.map(({ href, label, aria, icon }) => (
         <Link
           key={href}
           href={localHref(href)}
@@ -260,7 +257,7 @@ function HomeDock({
         >
           <DockTooltip label={label} />
           <span className="absolute inset-0 block rounded-[22%] transition-transform duration-200 ease-out group-hover/dock:-translate-y-1.5 group-hover/dock:scale-110 group-focus-visible/dock:-translate-y-1.5 group-focus-visible/dock:ring-2 group-focus-visible/dock:ring-[#0a84ff]">
-            <App className="h-full w-full drop-shadow-[0_3px_5px_rgba(0,0,0,0.3)]" />
+            <DockPicture src={icon} className="h-full w-full drop-shadow-[0_3px_5px_rgba(0,0,0,0.3)]" />
           </span>
         </Link>
       ))}
@@ -368,7 +365,7 @@ export default function HomeDesktop({
           <AnimatePresence initial={false}>
             {!panelOpen && (
               <DesktopShortcut key="shortcut" label="Finder" aria={tr("Abrir el Finder: inicio", "Open Finder: home")} onOpen={open} buttonRef={shortcutRef}>
-                <FinderIcon className="h-full w-full drop-shadow-[0_8px_14px_rgba(30,40,40,0.35)]" />
+                <DockPicture src="/dock/finder.webp" className="h-full w-full drop-shadow-[0_8px_14px_rgba(30,40,40,0.35)]" />
               </DesktopShortcut>
             )}
           </AnimatePresence>
