@@ -530,6 +530,8 @@ export type AppProject = {
   image?: string;
   /** The desktop tile is the see-through glass of the dock instead of the flat `color`. */
   glass?: boolean;
+  /** A wordmark (transparent, under /public) shown instead of the name as the title of the app's page. */
+  logo?: { src: string; width: number; height: number };
   /** The small line above the name on the app's page (e.g. where the app was built). */
   kicker?: string;
   /** Apps with an interactive "how it works" demo on their page (components/apps/demo). */
@@ -602,6 +604,7 @@ export const appData: AppData[] = [
     rotation: 5,
     color: "#ff4fa3",
     glass: true,
+    logo: { src: "/apps/free-spirit/logo.webp", width: 1400, height: 164 },
     glyph: "regional",
     // No `hours` yet (not provided).
     tools: ["Claude Code", "Shopify (Admin API, Storefront API, Functions)", "Liquid", "React Router", "TypeScript", "Prisma (SQLite)", "ExcelJS", "Fly.io"],

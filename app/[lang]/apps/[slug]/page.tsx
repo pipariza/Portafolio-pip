@@ -56,7 +56,21 @@ export default async function AppDetailPage({
           <p className="text-[11px] uppercase tracking-[0.08em] text-ink/60 mb-3">
             {app.kicker ?? pick(lang, "Aplicativo con IA", "AI-powered app")}
           </p>
-          <h1 className="text-[2.5rem] leading-tight min-[400px]:text-5xl md:text-6xl font-medium mb-8">{app.name}</h1>
+          {app.logo ? (
+            <h1 className="mt-5 mb-9">
+              <Image
+                src={app.logo.src}
+                alt={app.name}
+                width={app.logo.width}
+                height={app.logo.height}
+                priority
+                sizes="(min-width: 768px) 512px, 90vw"
+                className="h-auto w-full max-w-[32rem]"
+              />
+            </h1>
+          ) : (
+            <h1 className="text-[2.5rem] leading-tight min-[400px]:text-5xl md:text-6xl font-medium mb-8">{app.name}</h1>
+          )}
           <p className="max-w-xl text-base md:text-lg text-ink/70 mb-10">{app.description}</p>
 
           {app.objective && (
