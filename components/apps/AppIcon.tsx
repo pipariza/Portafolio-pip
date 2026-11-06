@@ -38,7 +38,7 @@ export function DesktopAppIcon({
       data-cursor-hover
     >
       <div
-        className={`relative flex h-[100px] w-20 items-center justify-center overflow-hidden text-white! ${look.className}`}
+        className={`relative flex h-[100px] w-20 items-center justify-center overflow-hidden rounded-[10px] text-white! ${look.className}`}
         {...look.attrs}
       >
         {app.image ? (
@@ -64,7 +64,7 @@ export function GridAppIcon({ app }: { app: AppProject }) {
       data-cursor-hover
     >
       <div
-        className={`relative flex h-20 w-16 items-center justify-center overflow-hidden text-white! ${look.className}`}
+        className={`relative flex h-20 w-16 items-center justify-center overflow-hidden rounded-[10px] text-white! ${look.className}`}
         {...look.attrs}
       >
         {app.image ? (
