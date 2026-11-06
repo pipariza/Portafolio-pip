@@ -606,7 +606,7 @@ export const appData: AppData[] = [
     glass: true,
     logo: { src: "/apps/free-spirit/logo.webp", width: 1400, height: 164 },
     glyph: "regional",
-    // No `hours` yet (not provided).
+    hours: 25,
     tools: ["Claude Code", "Shopify (Admin API, Storefront API, Functions)", "Liquid", "React Router", "TypeScript", "Prisma (SQLite)", "ExcelJS", "Fly.io"],
   },
 ];
