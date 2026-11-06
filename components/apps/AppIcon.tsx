@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useLocale } from "@/components/LocaleProvider";
 import type { AppProject } from "@/lib/data";
+import { AppGlyph } from "./demo/glyphs";
 
 // A tile is a flat color or, with `glass`, the see-through glass of the dock (the wallpaper is light).
 function tileLook(app: AppProject) {
@@ -36,8 +37,15 @@ export function DesktopAppIcon({
       style={{ rotate: app.rotation, ...style }}
       data-cursor-hover
     >
-      <div className={`relative h-[100px] w-20 overflow-hidden ${look.className}`} {...look.attrs}>
-        {app.image && <Image src={app.image} alt={app.name} fill sizes="80px" className="object-cover" />}
+      <div
+        className={`relative flex h-[100px] w-20 items-center justify-center overflow-hidden text-white! ${look.className}`}
+        {...look.attrs}
+      >
+        {app.image ? (
+          <Image src={app.image} alt={app.name} fill sizes="80px" className="object-cover" />
+        ) : (
+          (app.glyph ?? app.demo) && <AppGlyph glyph={(app.glyph ?? app.demo)!} size={36} />
+        )}
       </div>
       <span className="text-[11px] font-medium uppercase tracking-[0.05em] text-ink">
         {app.label}
@@ -55,8 +63,15 @@ export function GridAppIcon({ app }: { app: AppProject }) {
       className="flex flex-col items-center gap-2"
       data-cursor-hover
     >
-      <div className={`relative h-20 w-16 overflow-hidden ${look.className}`} {...look.attrs}>
-        {app.image && <Image src={app.image} alt={app.name} fill sizes="64px" className="object-cover" />}
+      <div
+        className={`relative flex h-20 w-16 items-center justify-center overflow-hidden text-white! ${look.className}`}
+        {...look.attrs}
+      >
+        {app.image ? (
+          <Image src={app.image} alt={app.name} fill sizes="64px" className="object-cover" />
+        ) : (
+          (app.glyph ?? app.demo) && <AppGlyph glyph={(app.glyph ?? app.demo)!} size={30} />
+        )}
       </div>
       <span className="text-[11px] font-medium uppercase tracking-[0.05em] text-ink text-center">
         {app.label}
