@@ -7,6 +7,13 @@ import { motion } from "framer-motion";
 import { useLocale } from "@/components/LocaleProvider";
 import type { AppProject } from "@/lib/data";
 
+// A tile is a flat color or, with `glass`, the see-through glass of the dock (the wallpaper is light).
+function tileLook(app: AppProject) {
+  return app.glass
+    ? { className: "glass-pill border", attrs: { "data-theme": "light" } }
+    : { className: "shadow-lg", attrs: { style: { background: app.color } } };
+}
+
 export function DesktopAppIcon({
   app,
   style,
@@ -16,6 +23,7 @@ export function DesktopAppIcon({
 }) {
   const router = useRouter();
   const { href } = useLocale();
+  const look = tileLook(app);
 
   return (
     <motion.div
@@ -28,7 +36,7 @@ export function DesktopAppIcon({
       style={{ rotate: app.rotation, ...style }}
       data-cursor-hover
     >
-      <div className="relative h-[100px] w-20 overflow-hidden shadow-lg" style={{ background: app.color }}>
+      <div className={`relative h-[100px] w-20 overflow-hidden ${look.className}`} {...look.attrs}>
         {app.image && <Image src={app.image} alt={app.name} fill sizes="80px" className="object-cover" />}
       </div>
       <span className="text-[11px] font-medium uppercase tracking-[0.05em] text-ink">
@@ -40,13 +48,14 @@ export function DesktopAppIcon({
 
 export function GridAppIcon({ app }: { app: AppProject }) {
   const { href } = useLocale();
+  const look = tileLook(app);
   return (
     <Link
       href={href(`/apps/${app.slug}`)}
       className="flex flex-col items-center gap-2"
       data-cursor-hover
     >
-      <div className="relative h-20 w-16 overflow-hidden shadow-lg" style={{ background: app.color }}>
+      <div className={`relative h-20 w-16 overflow-hidden ${look.className}`} {...look.attrs}>
         {app.image && <Image src={app.image} alt={app.name} fill sizes="64px" className="object-cover" />}
       </div>
       <span className="text-[11px] font-medium uppercase tracking-[0.05em] text-ink text-center">

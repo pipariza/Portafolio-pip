@@ -528,6 +528,8 @@ export type AppProject = {
   color: string;
   /** Path under /public, e.g. "/apps/app-uno.jpg". Falls back to `color` when unset. */
   image?: string;
+  /** The desktop tile is the see-through glass of the dock instead of the flat `color`. */
+  glass?: boolean;
   /** The small line above the name on the app's page (e.g. where the app was built). */
   kicker?: string;
   /** Apps with an interactive "how it works" demo on their page (components/apps/demo). */
@@ -583,6 +585,7 @@ export const appData: AppData[] = [
     stack: "Next.js, Supabase, Gemini API",
     rotation: -3,
     color: "#ffffff",
+    glass: true,
     glyph: "macros",
     hours: 6,
     // No `demo` until the real interface is captured.
