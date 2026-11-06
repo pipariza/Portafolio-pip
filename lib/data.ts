@@ -582,7 +582,7 @@ export const appData: AppData[] = [
     year: "2026",
     stack: "Next.js, Supabase, Gemini API",
     rotation: -3,
-    color: "#ffd400",
+    color: "#ffffff",
     glyph: "macros",
     hours: 6,
     // No `demo` until the real interface is captured.
