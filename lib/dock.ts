@@ -145,8 +145,8 @@ export function getDockItems(lang: Locale): DockItem[] {
             ),
             paragraphs: [
               tr(
-                "Texto de prueba: retoque, composición y piezas gráficas.",
-                "Test text: retouching, compositing and graphic pieces.",
+                "Dirección de arte con grano, luz y color: composiciones que parecen otro mundo, empaques que se antojan y piezas para redes hechas para detener el scroll.",
+                "Art direction with grain, light and color: compositions that feel like another world, packaging you want to pick up and social pieces made to stop the scroll.",
               ),
             ],
             listTitle: tr("Lo uso para:", "I use it for:"),
@@ -166,36 +166,53 @@ export function getDockItems(lang: Locale): DockItem[] {
             meta: "02",
             paragraphs: [
               tr(
-                "Arrastra la línea para comparar. (Imagen de prueba: aquí irá un retoque tuyo.)",
-                "Drag the line to compare. (Test image: one of your retouches will go here.)",
+                "Arrastra la línea para comparar: del boceto en grises a la pieza final.",
+                "Drag the line to compare: from the grayscale sketch to the finished piece.",
               ),
             ],
-            beforeAfter: { beforeColor: "#bdb9b0", afterColor: "#f2b63c" },
+            beforeAfter: {
+              before: "/apps/photoshop/boceto.webp",
+              after: "/apps/photoshop/composicion.webp",
+              beforeColor: "#d4d4d2",
+              afterColor: "#5b1a7a",
+            },
           },
           {
             label: tr("Trabajos", "Work"),
             meta: "03",
+            paragraphs: [
+              tr(
+                "Proyectos conceptuales, con marcas inventadas.",
+                "Concept projects, with made-up brands.",
+              ),
+            ],
             works: [
               {
-                title: tr("Retoque de retrato", "Portrait retouching"),
-                caption: tr("Texto de prueba: piel, luz y color.", "Test text: skin, light and color."),
-                color: "#e7d9c4",
+                title: tr("Composición surreal", "Surreal composite"),
+                caption: tr(
+                  "Concepto: un desierto bajo una esfera de cromo. Capas, luz y grano.",
+                  "Concept: a desert under a chrome sphere. Layers, light and grain.",
+                ),
+                image: "/apps/photoshop/composicion.webp",
+                color: "#43157a",
               },
               {
                 title: tr("Mockup de empaque", "Packaging mockup"),
                 caption: tr(
-                  "Texto de prueba: una marca sobre producto real.",
-                  "Test text: a brand on a real product.",
+                  "Concepto: lata de cold brew «Sol Negro», mate con degradado.",
+                  "Concept: «Sol Negro» cold brew can, matte with a gradient.",
                 ),
-                color: "#d9dde3",
+                image: "/apps/photoshop/empaque.webp",
+                color: "#d62d6f",
               },
               {
                 title: tr("Pieza para redes", "Social media piece"),
                 caption: tr(
-                  "Texto de prueba: campaña en formato vertical.",
-                  "Test text: a campaign in vertical format.",
+                  "Concepto: campaña vertical «Acid Summer» en tres historias.",
+                  "Concept: «Acid Summer» vertical campaign in three stories.",
                 ),
-                color: "#e6d3d3",
+                image: "/apps/photoshop/redes.webp",
+                color: "#d9ff3f",
               },
             ],
           },
@@ -219,8 +236,8 @@ export function getDockItems(lang: Locale): DockItem[] {
             ),
             paragraphs: [
               tr(
-                "Texto de prueba: ilustración vectorial, logotipos y sistemas gráficos.",
-                "Test text: vector illustration, logos and graphic systems.",
+                "Marcas, íconos e ilustraciones con formas atrevidas y paletas que no piden permiso: sistemas gráficos pensados para escalar de un sticker a una fachada.",
+                "Brands, icons and illustrations with bold shapes and palettes that don't ask for permission: graphic systems built to scale from a sticker to a storefront.",
               ),
             ],
             listTitle: tr("Lo uso para:", "I use it for:"),
@@ -240,8 +257,8 @@ export function getDockItems(lang: Locale): DockItem[] {
             meta: "02",
             paragraphs: [
               tr(
-                "Alterna entre el diseño terminado y sus trazos. (Dibujo de prueba: aquí irá uno de tus logos.)",
-                "Switch between the finished design and its strokes. (Test drawing: one of your logos will go here.)",
+                "Alterna entre el diseño terminado y sus trazos: la marca de «Pulpa», un concepto de jugos.",
+                "Switch between the finished design and its strokes: the mark for «Pulpa», a juice brand concept.",
               ),
             ],
             vector: true,
@@ -249,30 +266,39 @@ export function getDockItems(lang: Locale): DockItem[] {
           {
             label: tr("Trabajos", "Work"),
             meta: "03",
+            paragraphs: [
+              tr(
+                "Proyectos conceptuales, con marcas inventadas.",
+                "Concept projects, with made-up brands.",
+              ),
+            ],
             works: [
               {
                 title: tr("Logotipo", "Logo"),
                 caption: tr(
-                  "Texto de prueba: identidad para una marca.",
-                  "Test text: identity for a brand.",
+                  "Concepto: identidad de «Pulpa», jugos con carácter.",
+                  "Concept: identity for «Pulpa», juices with character.",
                 ),
-                color: "#e4dcc9",
+                image: "/apps/illustrator/logotipo.webp",
+                color: "#ff6a13",
               },
               {
                 title: tr("Set de íconos", "Icon set"),
                 caption: tr(
-                  "Texto de prueba: una familia de íconos coherente.",
-                  "Test text: a coherent family of icons.",
+                  "Concepto: 12 íconos con trazo grueso y relleno desplazado.",
+                  "Concept: 12 icons with a thick stroke and an offset fill.",
                 ),
-                color: "#d6e2d8",
+                image: "/apps/illustrator/iconos.webp",
+                color: "#fff3dc",
               },
               {
                 title: tr("Ilustración", "Illustration"),
                 caption: tr(
-                  "Texto de prueba: vector con carácter propio.",
-                  "Test text: vector with its own character.",
+                  "Concepto: «Siesta», vector plano de formas y color.",
+                  "Concept: «Siesta», flat vector of shapes and color.",
                 ),
-                color: "#dcd6e6",
+                image: "/apps/illustrator/ilustracion.webp",
+                color: "#f4e3c8",
               },
             ],
           },
