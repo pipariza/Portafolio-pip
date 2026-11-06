@@ -160,6 +160,106 @@ export const APP_FEATURES: Record<string, { title: Bi; text: Bi }[]> = {
       },
     },
   ],
+  "free-spirit": [
+    {
+      title: { es: "Precios por ciudad desde Excel", en: "City prices from Excel" },
+      text: {
+        es: "Se exporta el catálogo, se llena una columna por cada una de las 10 ciudades y se vuelve a importar. Antes de guardar hay una vista previa que pone los errores primero.",
+        en: "The catalog is exported, one column is filled in for each of the 10 cities and it is imported back. Before saving, a preview shows the errors first.",
+      },
+    },
+    {
+      title: { es: "Importación que no pisa cambios", en: "Imports that don't overwrite changes" },
+      text: {
+        es: "Hasta 10.000 variantes por ciudad en segundo plano, con historial. Cada lote se comprueba otra vez contra Shopify antes de escribir; si alguien cambió el precio mientras tanto, no se pisa.",
+        en: "Up to 10,000 variants per city in the background, with a history. Each batch is checked against Shopify again before writing; if someone changed the price in the meantime, it is not overwritten.",
+      },
+    },
+    {
+      title: { es: "Nacional tachado, regional al lado", en: "National struck through, regional beside it" },
+      text: {
+        es: "En producto, colecciones, búsqueda, buscador predictivo, inicio y recomendaciones se ve el precio nacional tachado junto al de la ciudad.",
+        en: "On product pages, collections, search, predictive search, home and recommendations the national price shows struck through next to the city's.",
+      },
+    },
+    {
+      title: { es: "El carrito cobra lo que se ve", en: "The cart charges what you see" },
+      text: {
+        es: "Una función de Shopify (Cart Transform) corre en sus servidores y fija el precio regional de cada línea al pagar; no depende del navegador de quien compra.",
+        en: "A Shopify Function (Cart Transform) runs on Shopify's servers and sets each line's regional price at checkout; it does not depend on the shopper's browser.",
+      },
+    },
+    {
+      title: { es: "Reglas que cuidan el margen", en: "Rules that protect the margin" },
+      text: {
+        es: "Los productos con etiqueta SALE conservan su oferta, y si el precio regional falta o es mayor que el nacional, se cobra el nacional. Solo pesos colombianos enteros.",
+        en: "Products tagged SALE keep their offer, and if the regional price is missing or higher than the national one, the national price is charged. Whole Colombian pesos only.",
+      },
+    },
+    {
+      title: { es: "Contenido por ciudad", en: "Content by city" },
+      text: {
+        es: "Banners que solo ven algunas ciudades, secciones que se ocultan en otras y colecciones propias de cada ciudad que la web usa sola cuando están publicadas.",
+        en: "Banners only some cities see, sections hidden in others and each city's own collections, which the site uses on its own when they are published.",
+      },
+    },
+    {
+      title: { es: "Guía para el equipo de pauta", en: "Guide for the ads team" },
+      text: {
+        es: "Un PDF de 6 páginas que explica cómo armar los anuncios en Meta (catálogo o enlace manual), con los textos listos por ciudad y una lista de revisión.",
+        en: "A 6-page PDF that explains how to build the ads on Meta (catalog or manual link), with ready-made text for each city and a checklist.",
+      },
+    },
+    {
+      title: { es: "Medición por ciudad", en: "Results by city" },
+      text: {
+        es: "La ciudad queda guardada en cada pedido y, con las UTM del anuncio, se comparan las ventas de una ciudad con otra.",
+        en: "The city is saved on every order and, with the ad's UTMs, one city's sales can be compared with another's.",
+      },
+    },
+  ],
 };
 
 export const FEATURES_HEADING: Bi = { es: "Qué hace", en: "What it does" };
+
+/** "How it works" of an app without a demo: numbered steps, in the order things happen. */
+export const APP_FLOW: Record<string, { title: Bi; text: Bi }[]> = {
+  "free-spirit": [
+    {
+      title: { es: "El enlace elige la ciudad", en: "The link picks the city" },
+      text: {
+        es: "No importa dónde esté la persona: cuenta el enlace por el que entra, un subdominio de la ciudad o el parámetro ?fs_campaign=cali. Queda guardado 7 días en el navegador y en el carrito.",
+        en: "Where the person is does not matter: what counts is the link they come in through, a city subdomain or the ?fs_campaign=cali parameter. It is kept for 7 days in the browser and on the cart.",
+      },
+    },
+    {
+      title: { es: "Los precios viven en Shopify", en: "The prices live in Shopify" },
+      text: {
+        es: "Cada variante guarda en un metacampo un pequeño JSON con el precio de cada ciudad. La app lo escribe desde el Excel; no hay otra base de precios que mantener.",
+        en: "Each variant keeps a small JSON with each city's price in a metafield. The app writes it from the Excel; there is no other price database to maintain.",
+      },
+    },
+    {
+      title: { es: "La tienda lo muestra", en: "The store shows it" },
+      text: {
+        es: "Un script del tema lee la ciudad y dibuja el precio nacional tachado con el regional. Lo que carga después de la página, como el buscador, consulta los precios con un acceso público de solo lectura a la API de tienda.",
+        en: "A theme script reads the city and draws the national price struck through with the regional one. What loads after the page, like search, fetches the prices with public read-only access to the Storefront API.",
+      },
+    },
+    {
+      title: { es: "El carrito lo cobra", en: "The cart charges it" },
+      text: {
+        es: "Al pagar, la función del carrito lee la ciudad y el metacampo de cada producto y fija el precio por unidad. Si algo no cuadra, queda el nacional: nunca cobra más que el nacional.",
+        en: "At checkout, the cart function reads the city and each product's metafield and sets the unit price. If anything does not add up, the national price stays: it never charges more than the national one.",
+      },
+    },
+    {
+      title: { es: "Se mide por ciudad", en: "It is measured by city" },
+      text: {
+        es: "La ciudad queda en el pedido y, con las UTM del anuncio, se ve qué ciudad vende más.",
+        en: "The city stays on the order and, with the ad's UTMs, you can see which city sells more.",
+      },
+    },
+  ],
+};
+export const FLOW_HEADING: Bi = { es: "Cómo funciona", en: "How it works" };

@@ -1,6 +1,6 @@
 import type { GlyphId } from "@/lib/data";
 
-/** The white line icon on the desktop tile of each real app (Tareas, Cronogramas, Macros). */
+/** The white line icon on the desktop tile of each real app (Tareas, Cronogramas, Macros, Free Spirit). */
 export function AppGlyph({ glyph, size }: { glyph: GlyphId; size: number }) {
   const common = {
     width: size,
@@ -19,6 +19,13 @@ export function AppGlyph({ glyph, size }: { glyph: GlyphId; size: number }) {
         <path d="M12 3.2a8.8 8.8 0 1 1-8.8 8.8" />
         <path d="M12 7.6a4.4 4.4 0 1 1-4.4 4.4" />
         <circle cx="12" cy="12" r="0.9" fill="currentColor" />
+      </svg>
+    );
+  if (glyph === "regional")
+    return (
+      <svg {...common}>
+        <path d="M12 21s-6.5-5.6-6.5-10.8a6.5 6.5 0 1 1 13 0C18.5 15.4 12 21 12 21Z" />
+        <circle cx="12" cy="10.2" r="2.4" />
       </svg>
     );
   if (glyph === "tareas")

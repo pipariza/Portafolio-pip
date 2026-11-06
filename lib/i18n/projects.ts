@@ -98,6 +98,18 @@ const APP_TEXTS: Record<string, { role: Bi; description: Bi; kicker?: Bi; object
       en: "Help two people eat better without the hassle: count macros without spreadsheets, turn what is in the pantry into recipes and let AI do the heavy lifting, like working out a food's macros or logging a meal just by describing it.",
     },
   },
+  "free-spirit": {
+    kicker: { es: "App de Shopify · Tiendas regionales", en: "Shopify app · Regional stores" },
+    role: { es: "Producto & Desarrollo Full-stack con IA", en: "Product & Full-stack AI Development" },
+    description: {
+      es: "Una sola tienda de Shopify con un precio distinto por ciudad: quien llega desde el anuncio de su ciudad ve, y paga, el precio de esa ciudad, sin duplicar la tienda ni el inventario.",
+      en: "A single Shopify store with a different price for each city: whoever arrives from their city's ad sees, and pays, that city's price, with no duplicated store or inventory.",
+    },
+    objective: {
+      es: "Poder pautar en Meta ciudad por ciudad con precios y colecciones propios, sin montar una tienda aparte por cada una y sin que el equipo tenga que cambiar los precios producto por producto.",
+      en: "Run Meta ads city by city with their own prices and collections, without setting up a separate store for each one and without the team changing prices product by product.",
+    },
+  },
 };
 
 export function getApps(lang: Locale): AppProject[] {

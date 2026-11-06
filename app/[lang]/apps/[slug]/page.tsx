@@ -9,7 +9,7 @@ import { localizeHref } from "@/lib/i18n/routes";
 import { getApps } from "@/lib/i18n/projects";
 import { metadataFor } from "@/lib/seo";
 import AppDemo from "@/components/apps/demo/AppDemo";
-import { APP_FEATURES, FEATURES_HEADING } from "@/lib/i18n/app-demos";
+import { APP_FEATURES, APP_FLOW, FEATURES_HEADING, FLOW_HEADING } from "@/lib/i18n/app-demos";
 
 export function generateStaticParams() {
   return appData.map((app) => ({ slug: app.slug }));
@@ -72,20 +72,51 @@ export default async function AppDetailPage({
               <AppDemo demo={app.demo} />
             </div>
           ) : APP_FEATURES[app.slug] ? (
-            // An app without a step-by-step demo yet: what it does, as short cards.
-            <div className="mb-16">
-              <h2 className="text-[11px] font-medium uppercase tracking-[0.08em] text-ink/60 mb-4">
-                {FEATURES_HEADING[lang]}
-              </h2>
-              <ul className="grid gap-3 sm:grid-cols-2">
-                {APP_FEATURES[app.slug].map((f) => (
-                  <li key={f.title.es} className="rounded-xl border border-ink/15 bg-white/40 p-5">
-                    <h3 className="text-sm font-bold mb-1.5">{f.title[lang]}</h3>
-                    <p className="text-[13px] leading-relaxed text-ink/70">{f.text[lang]}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            // An app without a step-by-step demo yet: what it does, as short cards (and, when it has
+            // them, how it works, as numbered steps).
+            <>
+              <div className="mb-16">
+                <h2 className="text-[11px] font-medium uppercase tracking-[0.08em] text-ink/60 mb-4">
+                  {FEATURES_HEADING[lang]}
+                </h2>
+                <ul className="grid gap-3 sm:grid-cols-2">
+                  {APP_FEATURES[app.slug].map((f) => (
+                    <li key={f.title.es} className="rounded-xl border border-ink/15 bg-white/40 p-5">
+                      <h3 className="text-sm font-bold mb-1.5">{f.title[lang]}</h3>
+                      <p className="text-[13px] leading-relaxed text-ink/70">{f.text[lang]}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              {APP_FLOW[app.slug] && (
+                <div className="mb-16">
+                  <h2 className="text-[11px] font-medium uppercase tracking-[0.08em] text-ink/60 mb-4">
+                    {FLOW_HEADING[lang]}
+                  </h2>
+                  <ol className="max-w-2xl space-y-6">
+                    {APP_FLOW[app.slug].map((step, i) => (
+                      <li key={step.title.es} className="flex gap-4">
+                        <span
+                          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ink text-[11px] font-bold text-bone"
+                          aria-hidden="true"
+                        >
+                          {i + 1}
+                        </span>
+                        <div>
+                          <h3 className="text-sm font-bold mb-1.5">
+                            <span className="sr-only">
+                              {pick(lang, "Paso", "Step")} {i + 1}:{" "}
+                            </span>
+                            {step.title[lang]}
+                          </h3>
+                          <p className="text-[13px] leading-relaxed text-ink/70">{step.text[lang]}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+            </>
           ) : (
             <div
               className="relative w-full h-[45vh] rounded-2xl mb-14 overflow-hidden"
