@@ -106,8 +106,8 @@ const APP_TEXTS: Record<string, { role: Bi; description: Bi; kicker?: Bi; object
       en: "A single Shopify store with a different price for each city: whoever arrives from their city's ad sees, and pays, that city's price, with no duplicated store or inventory.",
     },
     objective: {
-      es: "Que cada región tenga su propia landing, con sus precios y su diseño, y que cambiarlos sea fácil: todo se controla desde una sola página, sin duplicar la tienda.",
-      en: "Give each region its own landing page, with its own prices and design, and make changing them easy: everything is controlled from a single page, with no duplicated store.",
+      es: "Lanzar versiones regionales de la tienda, cada una con sus precios y su diseño, y administrarlas todas desde una sola página alojada en Shopify, sin duplicar la tienda ni el inventario.",
+      en: "Launch regional versions of the store, each with its own prices and design, and manage them all from a single page hosted on Shopify, without duplicating the store or the inventory.",
     },
   },
 };
