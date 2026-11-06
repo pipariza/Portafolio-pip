@@ -41,6 +41,8 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
       description: description[lang],
     },
     twitter: { card: "summary", title: title[lang], description: description[lang] },
+    // iPhone/iPad: opens full screen from the home screen and names the icon "Pip Ariza" (not the long title).
+    appleWebApp: { capable: true, title: "Pip Ariza", statusBarStyle: "default" },
   };
 }
 
