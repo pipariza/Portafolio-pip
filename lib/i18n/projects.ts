@@ -98,20 +98,6 @@ const APP_TEXTS: Record<string, { role: Bi; description: Bi; kicker?: Bi; object
       en: "Help two people eat better without the hassle: count macros without spreadsheets, turn what is in the pantry into recipes and let AI do the heavy lifting, like working out a food's macros or logging a meal just by describing it.",
     },
   },
-  "app-cuatro": {
-    role: { es: "Desarrollo Front-end", en: "Front-end Development" },
-    description: {
-      es: "Dashboard de analítica con resúmenes generados por IA.",
-      en: "Analytics dashboard with AI-generated summaries.",
-    },
-  },
-  "app-cinco": {
-    role: { es: "Producto & Desarrollo", en: "Product & Development" },
-    description: {
-      es: "Herramienta de clasificación automática de contenido.",
-      en: "Automatic content classification tool.",
-    },
-  },
 };
 
 export function getApps(lang: Locale): AppProject[] {

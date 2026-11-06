@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useLocale } from "@/components/LocaleProvider";
 import type { AppProject } from "@/lib/data";
-import { AppGlyph } from "./demo/glyphs";
 
 export function DesktopAppIcon({
   app,
@@ -29,17 +28,8 @@ export function DesktopAppIcon({
       style={{ rotate: app.rotation, ...style }}
       data-cursor-hover
     >
-      <div
-        className="relative h-20 w-20 overflow-hidden shadow-lg flex items-center justify-center text-bone/80 text-base font-medium"
-        style={{ background: app.color }}
-      >
-        {app.image ? (
-          <Image src={app.image} alt={app.name} fill sizes="80px" className="object-cover" />
-        ) : (app.glyph ?? app.demo) ? (
-          <AppGlyph glyph={(app.glyph ?? app.demo)!} size={36} />
-        ) : (
-          app.name.slice(0, 2).toUpperCase()
-        )}
+      <div className="relative h-20 w-20 overflow-hidden shadow-lg" style={{ background: app.color }}>
+        {app.image && <Image src={app.image} alt={app.name} fill sizes="80px" className="object-cover" />}
       </div>
       <span className="text-[11px] font-medium uppercase tracking-[0.05em] text-ink">
         {app.label}
@@ -56,17 +46,8 @@ export function GridAppIcon({ app }: { app: AppProject }) {
       className="flex flex-col items-center gap-2"
       data-cursor-hover
     >
-      <div
-        className="relative h-16 w-16 overflow-hidden shadow-lg flex items-center justify-center text-bone/80 text-sm font-medium"
-        style={{ background: app.color }}
-      >
-        {app.image ? (
-          <Image src={app.image} alt={app.name} fill sizes="64px" className="object-cover" />
-        ) : (app.glyph ?? app.demo) ? (
-          <AppGlyph glyph={(app.glyph ?? app.demo)!} size={30} />
-        ) : (
-          app.name.slice(0, 2).toUpperCase()
-        )}
+      <div className="relative h-16 w-16 overflow-hidden shadow-lg" style={{ background: app.color }}>
+        {app.image && <Image src={app.image} alt={app.name} fill sizes="64px" className="object-cover" />}
       </div>
       <span className="text-[11px] font-medium uppercase tracking-[0.05em] text-ink text-center">
         {app.label}
