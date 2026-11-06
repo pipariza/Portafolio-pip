@@ -199,10 +199,10 @@ export function getDockItems(lang: Locale): DockItem[] {
               {
                 title: tr("Mockup de empaque", "Packaging mockup"),
                 caption: tr(
-                  "Concepto: lata de cold brew «Sol Negro», mate con degradado.",
-                  "Concept: «Sol Negro» cold brew can, matte with a gradient.",
+                  "Concepto: lata de cold brew «Sol Negro», aluminio mate con gotas de condensación.",
+                  "Concept: «Sol Negro» cold brew can, matte aluminium with condensation droplets.",
                 ),
-                image: "/apps/photoshop/empaque.webp",
+                image: "/apps/photoshop/empaque-2.webp",
                 color: "#d62d6f",
               },
               {
