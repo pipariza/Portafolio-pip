@@ -263,3 +263,115 @@ export const APP_FLOW: Record<string, { title: Bi; text: Bi }[]> = {
   ],
 };
 export const FLOW_HEADING: Bi = { es: "Cómo funciona", en: "How it works" };
+
+/** A screen of an app without a step-by-step demo: a capture with its caption (components/apps/AppShots). */
+export type Shot = {
+  group: "panel" | "store";
+  title: Bi;
+  text: Bi;
+  alt: Bi;
+  /** The window's title bar (not translated: it is what the screen itself says). */
+  label: string;
+  /** Under /public. Windows are 4:3; the phone is 390:844. */
+  src: string;
+  frame: "window" | "phone";
+};
+
+export const APP_SHOTS: Record<string, Shot[]> = {
+  "free-spirit": [
+    {
+      group: "panel",
+      title: { es: "Precios por ciudad", en: "Prices by city" },
+      text: {
+        es: "El panel de la app dentro de Shopify: eliges la ciudad, buscas un producto o un SKU y ves el precio nacional junto al regional, que se edita al momento.",
+        en: "The app's admin inside Shopify: pick the city, search a product or a SKU and see the national price next to the regional one, which you can edit on the spot.",
+      },
+      alt: { es: "Panel de precios regionales con la tabla de variantes", en: "Regional prices admin with the variants table" },
+      label: "Free Spirit | Precios regionales",
+      src: "/apps/free-spirit/panel-precios.webp",
+      frame: "window",
+    },
+    {
+      group: "panel",
+      title: { es: "Importar el Excel", en: "Importing the Excel" },
+      text: {
+        es: "Se sube el Excel de una ciudad (o de todas). La app lo valida antes de tocar nada: 15 cambios, 9 sin cambio, 0 errores; solo entonces se confirma.",
+        en: "The Excel for one city (or all of them) is uploaded. The app validates it before touching anything: 15 changes, 9 unchanged, 0 errors; only then is it confirmed.",
+      },
+      alt: { es: "Vista previa de la importación con los cambios de precio", en: "Import preview with the price changes" },
+      label: "Importar precios por ciudad",
+      src: "/apps/free-spirit/panel-importar.webp",
+      frame: "window",
+    },
+    {
+      group: "panel",
+      title: { es: "Historial de importaciones", en: "Import history" },
+      text: {
+        es: "Cada importación queda registrada con su archivo, su estado y cuántas variantes se guardaron. Si algo falla, se ve cuál y por qué.",
+        en: "Every import is recorded with its file, its status and how many variants were saved. If something fails, you can see which one and why.",
+      },
+      alt: { es: "Historial de importaciones con su estado", en: "Import history with each one's status" },
+      label: "Historial de importaciones",
+      src: "/apps/free-spirit/panel-historial.webp",
+      frame: "window",
+    },
+    {
+      group: "store",
+      title: { es: "Colección con los precios de la ciudad", en: "Collection with the city's prices" },
+      text: {
+        es: "Con la campaña activa aparece el banner de la ciudad y cada tarjeta muestra el precio nacional tachado y el regional. Lo que está en SALE conserva su oferta.",
+        en: "With the campaign on, the city banner appears and each card shows the national price struck through and the regional one. Anything on SALE keeps its offer.",
+      },
+      alt: { es: "Colección de la tienda con precios regionales", en: "Store collection with regional prices" },
+      label: "Tienda de ejemplo · ?fs_campaign=barranquilla",
+      src: "/apps/free-spirit/tienda-coleccion.webp",
+      frame: "window",
+    },
+    {
+      group: "store",
+      title: { es: "Página de producto", en: "Product page" },
+      text: {
+        es: "El mismo precio nacional tachado y el regional en la página del producto, para la variante elegida.",
+        en: "The same struck-through national price and the regional one on the product page, for the chosen variant.",
+      },
+      alt: { es: "Página de producto con precio regional", en: "Product page with regional price" },
+      label: "Tienda de ejemplo · ?fs_campaign=barranquilla",
+      src: "/apps/free-spirit/tienda-producto.webp",
+      frame: "window",
+    },
+    {
+      group: "store",
+      title: { es: "En el celular", en: "On a phone" },
+      text: {
+        es: "Así llega quien entra desde el anuncio de Instagram o Facebook: lo mismo, en pantalla de celular.",
+        en: "How it looks for someone coming from an Instagram or Facebook ad: the same, on a phone screen.",
+      },
+      alt: { es: "Página de producto en el celular con precio regional", en: "Product page on a phone with regional price" },
+      label: "",
+      src: "/apps/free-spirit/tienda-movil.webp",
+      frame: "phone",
+    },
+    {
+      group: "store",
+      title: { es: "El carrito", en: "The cart" },
+      text: {
+        es: "Maqueta del resultado: al pagar, la función de Shopify deja cada línea al precio de la ciudad; lo que se vio es lo que se cobra.",
+        en: "Mock-up of the result: at checkout, the Shopify function leaves each line at the city's price; what was shown is what is charged.",
+      },
+      alt: { es: "Carrito con los precios de la ciudad", en: "Cart with the city's prices" },
+      label: "Tienda de ejemplo · carrito",
+      src: "/apps/free-spirit/tienda-carrito.webp",
+      frame: "window",
+    },
+  ],
+};
+
+export const SHOTS_UI = {
+  heading: { es: "Así se ve", en: "How it looks" } satisfies Bi,
+  panel: { es: "En el panel de la app", en: "In the app's admin" } satisfies Bi,
+  store: { es: "En la tienda", en: "In the store" } satisfies Bi,
+  disclaimer: {
+    es: "Panel: capturas de la app real con datos inventados. Tienda: una tienda de ejemplo («Alba», con productos y precios inventados) que corre el script real de la extensión; el carrito es una maqueta del resultado. No se muestra la tienda ni los precios de Free Spirit.",
+    en: "Admin: screens of the real app with made-up data. Store: an example store (\"Alba\", with invented products and prices) running the extension's real script; the cart is a mock-up of the result. Free Spirit's own store and prices are not shown. The admin's interface is in Spanish.",
+  } satisfies Bi,
+};

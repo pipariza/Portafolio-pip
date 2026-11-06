@@ -9,7 +9,8 @@ import { localizeHref } from "@/lib/i18n/routes";
 import { getApps } from "@/lib/i18n/projects";
 import { metadataFor } from "@/lib/seo";
 import AppDemo from "@/components/apps/demo/AppDemo";
-import { APP_FEATURES, APP_FLOW, FEATURES_HEADING, FLOW_HEADING } from "@/lib/i18n/app-demos";
+import AppShots from "@/components/apps/AppShots";
+import { APP_FEATURES, APP_FLOW, APP_SHOTS, FEATURES_HEADING, FLOW_HEADING } from "@/lib/i18n/app-demos";
 
 export function generateStaticParams() {
   return appData.map((app) => ({ slug: app.slug }));
@@ -75,6 +76,11 @@ export default async function AppDetailPage({
             // An app without a step-by-step demo yet: what it does, as short cards (and, when it has
             // them, how it works, as numbered steps).
             <>
+              {APP_SHOTS[app.slug] && (
+                <div className="mb-16">
+                  <AppShots shots={APP_SHOTS[app.slug]} />
+                </div>
+              )}
               <div className="mb-16">
                 <h2 className="text-[11px] font-medium uppercase tracking-[0.08em] text-ink/60 mb-4">
                   {FEATURES_HEADING[lang]}
