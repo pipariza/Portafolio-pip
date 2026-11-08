@@ -1,4 +1,5 @@
 import type { DemoId } from "@/lib/data";
+import { MACROS_FRAMES } from "@/lib/macros-frames";
 import { VISUAL_FRAMES, type DemoFrame } from "@/lib/visual-frames";
 import type { Bi } from "./config";
 
@@ -9,7 +10,8 @@ import type { Bi } from "./config";
  * (typing, tapping, dragging) or a full page that scrolls slowly. They were captured from a
  * throwaway copy of Visual running on made-up data (invented brand, people and dates); a blue ring
  * marks what each step is about. The platform's interface is in Spanish, so the screens are the
- * same in both languages.
+ * same in both languages. Macros is the same idea with its own frames (lib/macros-frames.ts, files in
+ * public/apps/macros): an isolated copy of the app with a fake database and invented people and meals.
  */
 export type DemoStep = { title: Bi; text: Bi; frames: DemoFrame[] };
 
@@ -90,12 +92,72 @@ export const DEMO_STEPS: Record<DemoId, DemoStep[]> = {
       },
     },
   ],
+  macros: [
+    {
+      frames: MACROS_FRAMES["macros-1"],
+      title: { es: "Entras con un código de casa", en: "You get in with a house code" },
+      text: {
+        es: "Sin contraseñas ni correos: la casa se crea con un código y la otra persona entra con el mismo. El panel muestra el día de cada una frente a su meta de calorías y macros, que se calcula con la fórmula de Mifflin-St Jeor a partir de su perfil.",
+        en: "No passwords or emails: the house is created with a code and the other person joins with the same one. The dashboard shows each person's day against their calorie and macro goal, worked out with the Mifflin-St Jeor formula from their profile.",
+      },
+    },
+    {
+      frames: MACROS_FRAMES["macros-2"],
+      title: { es: "Describes lo que comiste y la IA lo registra", en: "You describe what you ate and AI logs it" },
+      text: {
+        es: "Se escribe la comida con palabras normales. La IA la separa en alimentos y estima gramos y macros; se corrige lo que haga falta, se registra todo y el panel se actualiza al instante.",
+        en: "The meal is written in plain words. AI splits it into foods and estimates grams and macros; anything can be corrected, everything is logged and the dashboard updates right away.",
+      },
+    },
+    {
+      frames: MACROS_FRAMES["macros-3"],
+      title: { es: "La IA calcula un alimento nuevo", en: "AI works out a new food" },
+      text: {
+        es: "Si un alimento no está en el banco, basta con su nombre: la IA estima calorías, proteína, carbohidratos y grasa por cada 100 g, se revisan y queda guardado para usarlo en comidas y recetas.",
+        en: "If a food is not in the bank, its name is enough: AI estimates calories, protein, carbs and fat per 100 g, they are reviewed and it is saved to use in meals and recipes.",
+      },
+    },
+    {
+      frames: MACROS_FRAMES["macros-4"],
+      title: { es: "¿Qué cocino hoy?", en: "What should we cook today?" },
+      text: {
+        es: "Las recetas se ordenan según lo que hay en la despensa y se ve qué ingredientes faltan. Al marcar una como cocinada, la despensa se descuenta sola y el orden se actualiza.",
+        en: "Recipes are ranked by what is in the pantry and the missing ingredients are shown. Marking one as cooked takes it out of the pantry by itself and the ranking updates.",
+      },
+    },
+    {
+      frames: MACROS_FRAMES["macros-5"],
+      title: { es: "Plan de la semana y lista de compras", en: "The week's plan and the shopping list" },
+      text: {
+        es: "Se asigna una receta a cada comida de cada día. Con un toque se suma lo que piden las recetas de la semana, se resta lo que ya hay en la despensa y queda la lista de compras.",
+        en: "A recipe is assigned to each meal of each day. With one tap, what the week's recipes need is added up, what is already in the pantry is taken off, and the shopping list is ready.",
+      },
+    },
+    {
+      frames: MACROS_FRAMES["macros-6"],
+      title: { es: "Progreso y reportes", en: "Progress and reports" },
+      text: {
+        es: "El peso y la adherencia a los macros de cada persona, a 7, 30 o 90 días. Los reportes de la semana o del mes comparan el promedio diario con el objetivo y se descargan en PDF o CSV.",
+        en: "Each person's weight and macro adherence over 7, 30 or 90 days. The week or month reports compare the daily average with the goal and download as PDF or CSV.",
+      },
+    },
+  ],
 };
 
 /** The note under every demo: the screens are real, the data is not. */
-export const DEMO_DISCLAIMER: Bi = {
-  es: "Pantallas de la plataforma real con datos ficticios (marca, personas y fechas inventadas): la plataforma es privada y guarda información de clientes.",
-  en: "Screens of the real platform with made-up data (invented brand, people and dates): the platform is private and holds clients' information. Its interface is in Spanish.",
+export const DEMO_DISCLAIMER: Record<DemoId, Bi> = {
+  tareas: {
+    es: "Pantallas de la plataforma real con datos ficticios (marca, personas y fechas inventadas): la plataforma es privada y guarda información de clientes.",
+    en: "Screens of the real platform with made-up data (invented brand, people and dates): the platform is private and holds clients' information. Its interface is in Spanish.",
+  },
+  cronogramas: {
+    es: "Pantallas de la plataforma real con datos ficticios (marca, personas y fechas inventadas): la plataforma es privada y guarda información de clientes.",
+    en: "Screens of the real platform with made-up data (invented brand, people and dates): the platform is private and holds clients' information. Its interface is in Spanish.",
+  },
+  macros: {
+    es: "Pantallas de la app real con datos ficticios (personas, comidas y fechas inventadas): se capturaron en una copia aislada, sin tocar los datos de ningún hogar.",
+    en: "Screens of the real app with made-up data (invented people, meals and dates): captured on an isolated copy, without touching any household's data. Its interface is in Spanish.",
+  },
 };
 
 export const DEMO_UI = {
@@ -104,62 +166,11 @@ export const DEMO_UI = {
   play: { es: "Reproducir", en: "Play" } satisfies Bi,
   step: { es: "Paso", en: "Step" } satisfies Bi,
   of: { es: "de", en: "of" } satisfies Bi,
-  screen: { es: "Pantalla de la plataforma", en: "Platform screen" } satisfies Bi,
+  screen: { es: "Pantalla de la app", en: "App screen" } satisfies Bi,
 };
 
 /** What an app does, as short cards, for the apps that do not have a step-by-step demo yet. */
 export const APP_FEATURES: Record<string, { title: Bi; text: Bi }[]> = {
-  macros: [
-    {
-      title: { es: "Registro diario", en: "Daily log" },
-      text: {
-        es: "Busca un alimento o una receta, pon los gramos y los macros se calculan y se guardan.",
-        en: "Search a food or a recipe, enter the grams and the macros are worked out and saved.",
-      },
-    },
-    {
-      title: { es: "Los macros del día", en: "Today's macros" },
-      text: {
-        es: "Calorías, proteína, carbohidratos y grasa de cada persona, lado a lado, con anillos de progreso.",
-        en: "Calories, protein, carbs and fat for each person, side by side, with progress rings.",
-      },
-    },
-    {
-      title: { es: "Recetas y despensa", en: "Recipes and pantry" },
-      text: {
-        es: "Recetas con macros calculados al instante y sugerencias según lo que hay en la despensa.",
-        en: "Recipes with instantly calculated macros and suggestions based on what is in the pantry.",
-      },
-    },
-    {
-      title: { es: "Plan semanal y compras", en: "Weekly plan and shopping" },
-      text: {
-        es: "La semana planeada y una lista de compras para no improvisar.",
-        en: "The week planned out and a shopping list so nothing is improvised.",
-      },
-    },
-    {
-      title: { es: "IA que ayuda", en: "AI that helps" },
-      text: {
-        es: "Calcula los macros de un alimento con su nombre, registra una comida describiéndola y propone los ingredientes de una receta.",
-        en: "Works out a food's macros from its name, logs a meal from a description and drafts a recipe's ingredients.",
-      },
-    },
-    {
-      title: { es: "Progreso y reportes", en: "Progress and reports" },
-      text: {
-        es: "Historial con gráficas y reportes en PDF y CSV.",
-        en: "History with charts and reports in PDF and CSV.",
-      },
-    },
-    {
-      title: { es: "Sin contraseñas", en: "No passwords" },
-      text: {
-        es: "Un código de casa compartido entra a los dos. Se instala como app y se puede consultar sin conexión.",
-        en: "A shared household code gets both people in. It installs as an app and can be read offline.",
-      },
-    },
-  ],
   "free-spirit": [
     {
       title: { es: "Precios por ciudad desde Excel", en: "City prices from Excel" },

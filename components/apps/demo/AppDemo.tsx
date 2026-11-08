@@ -324,7 +324,7 @@ export default function AppDemo({ demo }: { demo: DemoId }) {
           </div>
         </div>
         <p className="mx-auto mt-4 max-w-[330px] text-center text-[11px] leading-snug text-ink/60">
-          {DEMO_DISCLAIMER[lang]}
+          {DEMO_DISCLAIMER[demo][lang]}
         </p>
       </div>
     </div>

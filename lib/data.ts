@@ -547,9 +547,9 @@ export type AppProject = {
 };
 
 /** The apps that have a step-by-step demo; their steps live in lib/i18n/app-demos.ts. */
-export type DemoId = "tareas" | "cronogramas";
+export type DemoId = "tareas" | "cronogramas" | "macros";
 /** The line icons of the desktop tiles (components/apps/demo/glyphs.tsx). */
-export type GlyphId = DemoId | "macros" | "regional";
+export type GlyphId = DemoId | "regional";
 
 /** The apps' own data; their role and description are in lib/i18n/projects.ts (`getApps(lang)`). */
 export type AppData = Omit<AppProject, "role" | "description" | "kicker" | "objective">;
@@ -592,7 +592,7 @@ export const appData: AppData[] = [
     glass: true,
     glyph: "macros",
     hours: 6,
-    // No `demo` until the real interface is captured.
+    demo: "macros",
     tools: ["Claude Code", "Next.js", "React", "TypeScript", "Tailwind CSS", "Supabase (Postgres)", "Recharts", "jsPDF", "Gemini API", "Vercel"],
   },
   {
