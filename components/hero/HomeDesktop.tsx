@@ -11,6 +11,7 @@ import { EASE, WINDOW_FX, WINDOW_FX_REDUCED, type WindowFx } from "@/components/
 import { DesktopShortcut } from "@/components/mac/dock";
 import { SOFT_GRAY, wallpaperStyle } from "@/components/mac/wallpaper";
 import { cameFromSection, setZoomOrigin } from "@/lib/zoom";
+import { MUSIC } from "@/lib/config";
 
 /*
  * The home page as a macOS desktop, like the rest of the site: the same soft gray
@@ -78,8 +79,9 @@ function clockStamp(lang: Locale) {
 /* ---------- widgets ---------- */
 
 // The same glass as the dock and the Work cards: a faint dark tint, a hairline border, a soft blur.
-const WIDGET =
-  "rounded-[18px] border border-[rgba(20,19,16,0.08)] bg-[rgba(20,19,16,0.05)] p-4 backdrop-blur-[18px]";
+const GLASS = "rounded-[18px] border border-[rgba(20,19,16,0.08)] bg-[rgba(20,19,16,0.05)] backdrop-blur-[18px]";
+const WIDGET = `${GLASS} p-4`;
+const WIDGET_LABEL = "text-[11px] font-semibold uppercase tracking-[0.08em] text-black/60";
 
 function NotesWidget({ className = "", onGo }: { className?: string; onGo: Go }) {
   const { tr, href } = useLocale();
@@ -122,6 +124,91 @@ function ClockWidget({ className = "" }: { className?: string }) {
       <p className="mt-1 min-h-[1.2em] text-[12px] text-black/60">{date}</p>
     </div>
   );
+}
+
+/* ---------- music (YouTube) ---------- */
+
+// The address of the YouTube player: a playlist, or a few videos one after the other. "nocookie" is YouTube's
+// privacy mode (no cookies until something plays); autoplay is fine because it only loads after a click.
+function musicSrc() {
+  const base = "https://www.youtube-nocookie.com/embed";
+  const options = "autoplay=1&playsinline=1&rel=0";
+  if (MUSIC.playlistId) return `${base}/videoseries?list=${encodeURIComponent(MUSIC.playlistId)}&${options}`;
+  const [first, ...rest] = MUSIC.videoIds;
+  return `${base}/${first}?${rest.length ? `playlist=${rest.join(",")}&` : ""}${options}`;
+}
+
+/*
+ * The music widget starts as a small play button that loads nothing from YouTube, so the home stays fast and
+ * nothing ever plays on its own. A click opens the real YouTube player inside the widget (YouTube asks for a
+ * visible player of at least 200 x 200, so it is never hidden or reduced to custom buttons); the cross closes
+ * it and stops the music. Each place of the home gives it its own size, closed and open.
+ */
+function MusicWidget({ closedClassName = "", openClassName = "" }: { closedClassName?: string; openClassName?: string }) {
+  const { tr } = useLocale();
+  const [open, setOpen] = useState(false);
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        data-cursor-hover
+        aria-label={tr("Abrir el reproductor de música", "Open the music player")}
+        // On a narrow phone the card is a slim row (play button, then the words) so it does not push the panel down.
+        className={`${WIDGET} flex flex-col items-center text-center outline-none focus-visible:ring-2 focus-visible:ring-[#0a84ff] max-[399px]:flex-row max-[399px]:justify-center max-[399px]:gap-3 max-[399px]:py-2.5 ${closedClassName}`}
+      >
+        <span className={WIDGET_LABEL}>{tr("Música", "Music")}</span>
+        <span
+          aria-hidden="true"
+          className="mt-2 grid h-10 w-10 place-items-center rounded-full bg-[#141310] text-white max-[399px]:order-first max-[399px]:mt-0 max-[399px]:h-9 max-[399px]:w-9"
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 translate-x-px">
+            <path d="M8 5.5v13l11-6.5z" />
+          </svg>
+        </span>
+        <span className="mt-2 text-[12px] text-black/60 max-[399px]:mt-0">{tr("Dale play", "Press play")}</span>
+      </button>
+    );
+  }
+
+  return (
+    // p-1.5 (not p-2) so the player inside the 216 px widget is 202 px wide: YouTube asks for at least 200.
+    <div className={`${GLASS} p-1.5 ${openClassName}`}>
+      <div className="flex h-8 items-center justify-between pl-2">
+        <p className={WIDGET_LABEL}>{tr("Música", "Music")}</p>
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          data-cursor-hover
+          aria-label={tr("Cerrar el reproductor", "Close the player")}
+          className="grid h-8 w-8 place-items-center rounded-full text-[18px] leading-none text-black/60 outline-none hover:text-black focus-visible:ring-2 focus-visible:ring-[#0a84ff]"
+        >
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      {/* YouTube takes a few seconds to appear: the word waits behind the player, which covers it once it loads. */}
+      <div className="relative h-[200px] overflow-hidden rounded-[12px] bg-black">
+        <span aria-hidden="true" className="absolute inset-0 grid place-items-center text-[12px] text-white/60">
+          {tr("Cargando…", "Loading…")}
+        </span>
+        <iframe
+          src={musicSrc()}
+          title={tr("Reproductor de música (YouTube)", "Music player (YouTube)")}
+          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+          allowFullScreen
+          referrerPolicy="strict-origin-when-cross-origin"
+          className="relative block h-full w-full"
+        />
+      </div>
+    </div>
+  );
+}
+
+// The widget of the right: the music player once there is a playlist (config), the clock until then.
+function RightWidget({ clock, music, musicOpen }: { clock: string; music: string; musicOpen: string }) {
+  if (MUSIC.playlistId || MUSIC.videoIds.length > 0) return <MusicWidget closedClassName={music} openClassName={musicOpen} />;
+  return <ClockWidget className={clock} />;
 }
 
 /* ---------- the three areas of work ---------- */
@@ -339,7 +426,11 @@ export default function HomeDesktop({
         {/* From lg up the widgets sit in the corners; below, in a row above the panel. */}
         <div className="flex w-[min(728px,100%)] items-stretch justify-between gap-4 lg:contents">
           <NotesWidget onGo={go} className="md:w-[220px] lg:absolute lg:left-6 lg:top-[calc(34px+24px)] lg:w-[200px]" />
-          <ClockWidget className="md:w-[150px] lg:absolute lg:right-6 lg:top-[calc(34px+24px)]" />
+          <RightWidget
+            clock="md:w-[150px] lg:absolute lg:right-6 lg:top-[calc(34px+24px)]"
+            music="md:w-[150px] lg:absolute lg:right-6 lg:top-[calc(34px+24px)]"
+            musicOpen="md:w-[216px] md:self-start lg:absolute lg:right-6 lg:top-[calc(34px+24px)] lg:w-[216px]"
+          />
         </div>
 
         {/*
@@ -376,7 +467,11 @@ export default function HomeDesktop({
       <motion.div {...blockMotion} className="px-5 pb-28 pt-[calc(34px+18px)] md:hidden">
         <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-[1fr_auto]">
           <NotesWidget onGo={go} />
-          <ClockWidget className="w-[124px] max-[399px]:hidden" />
+          <RightWidget
+            clock="w-[124px] max-[399px]:hidden"
+            music="w-[124px] max-[399px]:w-full"
+            musicOpen="col-span-full w-full"
+          />
         </div>
         <div className="mt-6">
           <AreasPanel areas={areas} onGo={go} />

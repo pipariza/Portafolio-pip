@@ -10,7 +10,17 @@ export const NAME = {
   full: "Duvan Felipe Colmenares Ariza",
 };
 
-export const FORMSPREE_ENDPOINT = "https://formspree.io/f/moeqjekg";
+/**
+ * The music player of the home (YouTube). Fill in ONE of these and the Music widget replaces the clock:
+ * the id of a playlist (the part after "list=" in its link) or the ids of some videos (the part after "v=").
+ * While both are empty the home keeps the clock.
+ */
+export const MUSIC: { playlistId: string | null; videoIds: string[] } = {
+  playlistId: null,
+  videoIds: [],
+};
+
+export const FORMSPREE_ENDPOINT ="https://formspree.io/f/moeqjekg";
 
 export const CONTACT = {
   // The Contacts card leaves the LinkedIn button and row out while this is null.
