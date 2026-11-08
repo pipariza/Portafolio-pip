@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/components/LocaleProvider";
-import type { Locale } from "@/lib/i18n/config";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { EASE, WINDOW_FX, WINDOW_FX_REDUCED, type WindowFx } from "@/components/mac/window";
 import { DesktopShortcut } from "@/components/mac/dock";
@@ -15,7 +14,7 @@ import { MUSIC } from "@/lib/config";
 
 /*
  * The home page as a macOS desktop, like the rest of the site: the same soft gray
- * wallpaper, two desktop widgets (a note with the one-line pitch, the clock), a dock
+ * wallpaper, two desktop widgets (a note with the one-line pitch, a cat that follows the cursor), a dock
  * with every page and, in the middle, a panel drawn like the macOS stack window: a
  * close button, "3 ítems" and one big tile per area of work (Web, Apps, Video). The
  * tile is a picture with the name over it (a flat color until the pictures exist), it
@@ -47,34 +46,6 @@ const DOCK_ITEMS: { href: string; label: string; aria: { es: string; en: string 
   { href: "/apps#cv", label: "CV", aria: { es: "Currículum (CV)", en: "Resume (CV)" }, icon: "/dock/notas.avif" },
   { href: "/contacto", label: "Contact", aria: { es: "Contact", en: "Contact" }, icon: "/dock/mail.avif" },
 ];
-
-/* ---------- clock (Bogotá) ---------- */
-
-function subscribeClock(onChange: () => void) {
-  const id = window.setInterval(onChange, 10_000);
-  return () => window.clearInterval(id);
-}
-
-// One string so the snapshot is stable between ticks of the same minute.
-function clockStamp(lang: Locale) {
-  const now = new Date();
-  const locale = lang === "en" ? "en-US" : "es-CO";
-  const time = new Intl.DateTimeFormat(locale, {
-    timeZone: "America/Bogota",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: lang === "en",
-  }).format(now);
-  const date = new Intl.DateTimeFormat(locale, {
-    timeZone: "America/Bogota",
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  })
-    .format(now)
-    .replace(",", "");
-  return `${time}|${date}`;
-}
 
 /* ---------- widgets ---------- */
 
@@ -113,16 +84,159 @@ function NotesWidget({ className = "", onGo }: { className?: string; onGo: Go })
   );
 }
 
-function ClockWidget({ className = "" }: { className?: string }) {
-  const { lang } = useLocale();
-  const stamp = useSyncExternalStore(subscribeClock, () => clockStamp(lang), () => "");
-  const [time = "", date = ""] = stamp.split("|");
+/* ---------- the cat ---------- */
+
+const INK = "#141310";
+// How far a pupil can move inside its eye (in the units of the drawing).
+const PUPIL_REACH = 4;
+
+/*
+ * A line-drawn cat peeking over the bottom edge of the widget (Pip is a cat lover). Its eyes follow the cursor
+ * (or the last touch), it blinks now and then, and a click / tap pets it: happy eyes, a little shake of the head
+ * and "Prrr…" in place of its name for a moment. With "reduce motion" it does not follow, blink or shake: the
+ * click only swaps the eyes. The whole widget is one button so the keyboard can pet it too.
+ */
+function CatWidget({ className = "" }: { className?: string }) {
+  const { tr } = useLocale();
+  const reduce = useReducedMotion();
+  const whites = useRef<(SVGEllipseElement | null)[]>([null, null]);
+  const pupils = useRef<(SVGGElement | null)[]>([null, null]);
+  const petTimer = useRef(0);
+  const [blink, setBlink] = useState(false);
+  const [happy, setHappy] = useState(false);
+
+  // The pupils look toward the pointer, a little more the farther it is. Moved by hand (no re-render per move).
+  useEffect(() => {
+    if (reduce) return;
+    let frame = 0;
+    const lookAt = (x: number | null, y: number | null) => {
+      whites.current.forEach((white, i) => {
+        const pupil = pupils.current[i];
+        if (!white || !pupil) return;
+        const box = white.getBoundingClientRect();
+        if (box.width === 0) return; // the copy of the home that is hidden at this screen size
+        let dx = 0;
+        let dy = 0;
+        if (x !== null && y !== null) {
+          const vx = x - (box.left + box.width / 2);
+          const vy = y - (box.top + box.height / 2);
+          const dist = Math.hypot(vx, vy) || 1;
+          const reach = Math.min(1, dist / 140) * PUPIL_REACH;
+          dx = (vx / dist) * reach;
+          dy = (vy / dist) * reach;
+        }
+        pupil.setAttribute("transform", `translate(${dx.toFixed(2)} ${dy.toFixed(2)})`);
+      });
+    };
+    const onPointer = (e: PointerEvent) => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => lookAt(e.clientX, e.clientY));
+    };
+    const onLeave = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => lookAt(null, null));
+    };
+    window.addEventListener("pointermove", onPointer, { passive: true });
+    window.addEventListener("pointerdown", onPointer, { passive: true });
+    document.documentElement.addEventListener("pointerleave", onLeave);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("pointermove", onPointer);
+      window.removeEventListener("pointerdown", onPointer);
+      document.documentElement.removeEventListener("pointerleave", onLeave);
+    };
+  }, [reduce]);
+
+  // A quick blink every few seconds, never on a fixed beat.
+  useEffect(() => {
+    if (reduce) return;
+    let timer = 0;
+    const schedule = () => {
+      timer = window.setTimeout(() => {
+        setBlink(true);
+        timer = window.setTimeout(() => {
+          setBlink(false);
+          schedule();
+        }, 140);
+      }, 2500 + Math.random() * 3500);
+    };
+    schedule();
+    return () => window.clearTimeout(timer);
+  }, [reduce]);
+
+  useEffect(() => () => window.clearTimeout(petTimer.current), []);
+
+  const pet = () => {
+    setHappy(true);
+    window.clearTimeout(petTimer.current);
+    petTimer.current = window.setTimeout(() => setHappy(false), 1600);
+  };
+
+  const eye = (cx: number, i: number) => (
+    <g
+      style={{
+        transformBox: "fill-box",
+        transformOrigin: "center",
+        transform: blink ? "scaleY(0.08)" : "scaleY(1)",
+        transition: "transform 80ms ease-out",
+      }}
+    >
+      <ellipse ref={(el) => void (whites.current[i] = el)} cx={cx} cy={58} rx={11} ry={12.5} fill="#fff" stroke={INK} strokeWidth={2.4} />
+      <g ref={(el) => void (pupils.current[i] = el)}>
+        <circle cx={cx} cy={60} r={6.2} fill={INK} />
+        <circle cx={cx + 2.2} cy={57.6} r={1.9} fill="#fff" />
+      </g>
+    </g>
+  );
+
   return (
-    <div className={`${WIDGET} text-center ${className}`}>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-black/60">Bogotá</p>
-      <p className="mt-1 min-h-[1.1em] text-[34px] font-medium leading-[1.1] tabular-nums">{time}</p>
-      <p className="mt-1 min-h-[1.2em] text-[12px] text-black/60">{date}</p>
-    </div>
+    <button
+      type="button"
+      onClick={pet}
+      data-cursor-hover
+      aria-label={tr("Acariciar al gato", "Pet the cat")}
+      // On a narrow phone the card is a slim bar: the name on the left, the cat on the right.
+      className={`${WIDGET} relative block h-[132px] overflow-hidden text-center outline-none focus-visible:ring-2 focus-visible:ring-[#0a84ff] max-[399px]:h-[76px] max-[399px]:text-left ${className}`}
+    >
+      <span className={`${WIDGET_LABEL} absolute inset-x-0 top-4 block max-[399px]:inset-x-auto max-[399px]:left-4 max-[399px]:top-1/2 max-[399px]:-translate-y-1/2`}>
+        {happy ? "Prrr…" : tr("Michi", "Kitty")}
+      </span>
+      <span role="status" className="sr-only">
+        {happy ? tr("El gato ronronea", "The cat purrs") : ""}
+      </span>
+      <span className="absolute bottom-0 left-1/2 block w-[112px] -translate-x-1/2 max-[399px]:left-auto max-[399px]:right-5 max-[399px]:w-[84px] max-[399px]:translate-x-0">
+        <svg
+          viewBox="0 0 120 100"
+          aria-hidden="true"
+          className={`block w-full ${happy && !reduce ? "animate-[cat-purr_0.2s_ease-in-out_infinite]" : ""}`}
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {/* Head and ears in one line; it runs off the bottom edge of the widget. */}
+          <path
+            d="M17 104 C11 86 11 64 19 46 L17 13 L43 29 C53 26 67 26 77 29 L103 13 L101 46 C109 64 109 86 103 104"
+            fill="rgba(255,255,255,0.6)"
+            stroke={INK}
+            strokeWidth={2.6}
+          />
+          <path d="M25 31 L26 22 L35 28 M95 31 L94 22 L85 28" stroke={INK} strokeWidth={1.8} />
+          {happy ? (
+            <path d="M33 62 Q44 50 55 62 M65 62 Q76 50 87 62" stroke={INK} strokeWidth={2.8} />
+          ) : (
+            <>
+              {eye(44, 0)}
+              {eye(76, 1)}
+            </>
+          )}
+          <path d="M55.5 72 L64.5 72 L60 78 Z" fill={INK} stroke={INK} strokeWidth={1.5} />
+          <path d="M60 78 V80 M60 80 C60 85 54 86.5 51 83 M60 80 C60 85 66 86.5 69 83" stroke={INK} strokeWidth={2} />
+          <path d="M33 73 L9 68 M33 79 L9 82 M87 73 L111 68 M87 79 L111 82" stroke={INK} strokeWidth={1.6} />
+          {/* Two paws on the edge. */}
+          <path d="M28 101 C28 91 46 91 46 101 M74 101 C74 91 92 91 92 101" fill="#fff" stroke={INK} strokeWidth={2.4} />
+        </svg>
+      </span>
+    </button>
   );
 }
 
@@ -205,10 +319,10 @@ function MusicWidget({ closedClassName = "", openClassName = "" }: { closedClass
   );
 }
 
-// The widget of the right: the music player once there is a playlist (config), the clock until then.
-function RightWidget({ clock, music, musicOpen }: { clock: string; music: string; musicOpen: string }) {
+// The widget of the right: the cat; the music player takes its place once there is a playlist (config).
+function RightWidget({ cat, music, musicOpen }: { cat: string; music: string; musicOpen: string }) {
   if (MUSIC.playlistId || MUSIC.videoIds.length > 0) return <MusicWidget closedClassName={music} openClassName={musicOpen} />;
-  return <ClockWidget className={clock} />;
+  return <CatWidget className={cat} />;
 }
 
 /* ---------- the three areas of work ---------- */
@@ -427,7 +541,7 @@ export default function HomeDesktop({
         <div className="flex w-[min(728px,100%)] items-stretch justify-between gap-4 lg:contents">
           <NotesWidget onGo={go} className="md:w-[220px] lg:absolute lg:left-6 lg:top-[calc(34px+24px)] lg:w-[200px]" />
           <RightWidget
-            clock="md:w-[150px] lg:absolute lg:right-6 lg:top-[calc(34px+24px)]"
+            cat="md:w-[150px] lg:absolute lg:right-6 lg:top-[calc(34px+24px)]"
             music="md:w-[150px] lg:absolute lg:right-6 lg:top-[calc(34px+24px)]"
             musicOpen="md:w-[216px] md:self-start lg:absolute lg:right-6 lg:top-[calc(34px+24px)] lg:w-[216px]"
           />
@@ -468,7 +582,7 @@ export default function HomeDesktop({
         <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-[1fr_auto]">
           <NotesWidget onGo={go} />
           <RightWidget
-            clock="w-[124px] max-[399px]:hidden"
+            cat="w-[124px] max-[399px]:w-full"
             music="w-[124px] max-[399px]:w-full"
             musicOpen="col-span-full w-full"
           />

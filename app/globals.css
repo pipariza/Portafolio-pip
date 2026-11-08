@@ -130,6 +130,20 @@ body {
   }
 }
 
+/* The cat of the home (components/hero/HomeDesktop): a tiny shake of the head while it purrs. */
+@keyframes cat-purr {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(-0.8px, 0) rotate(-1.4deg);
+  }
+  75% {
+    transform: translate(0.8px, 0) rotate(1.4deg);
+  }
+}
+
 /* The screens of an app without a demo (components/apps/AppShots): the next capture fades in. */
 @keyframes app-shot-in {
   from {
