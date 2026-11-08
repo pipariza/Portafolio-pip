@@ -16,7 +16,7 @@ export const CONTACT = {
   // The Contacts card leaves the LinkedIn button and row out while this is null.
   linkedin: {
     label: "LinkedIn",
-    href: "https://www.linkedin.com/in/duvan-felipe-colmenares-ariza-22800b258/",
+    href: "https://www.linkedin.com/in/duvancolmenares",
   } as { label: string; href: string } | null,
   instagram: { label: "Instagram", href: "https://instagram.com/pipariza" },
   email: "pipariza27@gmail.com",
