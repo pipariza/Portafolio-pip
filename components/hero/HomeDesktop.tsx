@@ -11,10 +11,11 @@ import { DesktopShortcut } from "@/components/mac/dock";
 import { SOFT_GRAY, wallpaperStyle } from "@/components/mac/wallpaper";
 import { cameFromSection, setZoomOrigin } from "@/lib/zoom";
 import { MUSIC } from "@/lib/config";
+import type { Weather } from "@/lib/weather";
 
 /*
  * The home page as a macOS desktop, like the rest of the site: the same soft gray
- * wallpaper, two desktop widgets (a note with the one-line pitch, a cat that follows the cursor), a dock
+ * wallpaper, two desktop widgets (a note with the one-line pitch, the weather of Bogotá), a dock
  * with every page and, in the middle, a panel drawn like the macOS stack window: a
  * close button, "3 ítems" and one big tile per area of work (Web, Apps, Video). The
  * tile is a picture with the name over it (a flat color until the pictures exist), it
@@ -84,159 +85,171 @@ function NotesWidget({ className = "", onGo }: { className?: string; onGo: Go })
   );
 }
 
-/* ---------- the cat ---------- */
+/* ---------- weather (Bogotá) ---------- */
 
-const INK = "#141310";
-// How far a pupil can move inside its eye (in the units of the drawing).
-const PUPIL_REACH = 4;
+// The sky behind the card, like the Weather widget of macOS: night and the usual grey-blue of Bogotá (the
+// reference #1e1f32 -> #2d364f), a clear blue by day, and darker slate when it rains.
+function weatherSky(w: Weather) {
+  const rainy = (w.code >= 51 && w.code <= 67) || (w.code >= 80 && w.code <= 82) || w.code >= 95;
+  const clear = w.isDay && w.code <= 2;
+  const [top, bottom] = rainy ? ["#232938", "#3a4760"] : clear ? ["#2f6fd6", "#5aa5ec"] : ["#1e1f32", "#2d364f"];
+  return `linear-gradient(180deg, ${top}, ${bottom})`;
+}
 
-/*
- * A line-drawn cat peeking over the bottom edge of the widget (Pip is a cat lover). Its eyes follow the cursor
- * (or the last touch), it blinks now and then, and a click / tap pets it: happy eyes, a little shake of the head
- * and "Prrr…" in place of its name for a moment. With "reduce motion" it does not follow, blink or shake: the
- * click only swaps the eyes. The whole widget is one button so the keyboard can pet it too.
- */
-function CatWidget({ className = "" }: { className?: string }) {
-  const { tr } = useLocale();
-  const reduce = useReducedMotion();
-  const whites = useRef<(SVGEllipseElement | null)[]>([null, null]);
-  const pupils = useRef<(SVGGElement | null)[]>([null, null]);
-  const petTimer = useRef(0);
-  const [blink, setBlink] = useState(false);
-  const [happy, setHappy] = useState(false);
+const CLOUD = (
+  <g fill="#f4f6fa">
+    <circle cx="8" cy="15" r="3.6" />
+    <circle cx="13" cy="11.5" r="5" />
+    <circle cx="17.4" cy="15" r="3.6" />
+    <rect x="8" y="15" width="9.4" height="3.6" />
+  </g>
+);
 
-  // The pupils look toward the pointer, a little more the farther it is. Moved by hand (no re-render per move).
-  useEffect(() => {
-    if (reduce) return;
-    let frame = 0;
-    const lookAt = (x: number | null, y: number | null) => {
-      whites.current.forEach((white, i) => {
-        const pupil = pupils.current[i];
-        if (!white || !pupil) return;
-        const box = white.getBoundingClientRect();
-        if (box.width === 0) return; // the copy of the home that is hidden at this screen size
-        let dx = 0;
-        let dy = 0;
-        if (x !== null && y !== null) {
-          const vx = x - (box.left + box.width / 2);
-          const vy = y - (box.top + box.height / 2);
-          const dist = Math.hypot(vx, vy) || 1;
-          const reach = Math.min(1, dist / 140) * PUPIL_REACH;
-          dx = (vx / dist) * reach;
-          dy = (vy / dist) * reach;
-        }
-        pupil.setAttribute("transform", `translate(${dx.toFixed(2)} ${dy.toFixed(2)})`);
-      });
-    };
-    const onPointer = (e: PointerEvent) => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => lookAt(e.clientX, e.clientY));
-    };
-    const onLeave = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => lookAt(null, null));
-    };
-    window.addEventListener("pointermove", onPointer, { passive: true });
-    window.addEventListener("pointerdown", onPointer, { passive: true });
-    document.documentElement.addEventListener("pointerleave", onLeave);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("pointermove", onPointer);
-      window.removeEventListener("pointerdown", onPointer);
-      document.documentElement.removeEventListener("pointerleave", onLeave);
-    };
-  }, [reduce]);
-
-  // A quick blink every few seconds, never on a fixed beat.
-  useEffect(() => {
-    if (reduce) return;
-    let timer = 0;
-    const schedule = () => {
-      timer = window.setTimeout(() => {
-        setBlink(true);
-        timer = window.setTimeout(() => {
-          setBlink(false);
-          schedule();
-        }, 140);
-      }, 2500 + Math.random() * 3500);
-    };
-    schedule();
-    return () => window.clearTimeout(timer);
-  }, [reduce]);
-
-  useEffect(() => () => window.clearTimeout(petTimer.current), []);
-
-  const pet = () => {
-    setHappy(true);
-    window.clearTimeout(petTimer.current);
-    petTimer.current = window.setTimeout(() => setHappy(false), 1600);
-  };
-
-  const eye = (cx: number, i: number) => (
-    <g
-      style={{
-        transformBox: "fill-box",
-        transformOrigin: "center",
-        transform: blink ? "scaleY(0.08)" : "scaleY(1)",
-        transition: "transform 80ms ease-out",
-      }}
-    >
-      <ellipse ref={(el) => void (whites.current[i] = el)} cx={cx} cy={58} rx={11} ry={12.5} fill="#fff" stroke={INK} strokeWidth={2.4} />
-      <g ref={(el) => void (pupils.current[i] = el)}>
-        <circle cx={cx} cy={60} r={6.2} fill={INK} />
-        <circle cx={cx + 2.2} cy={57.6} r={1.9} fill="#fff" />
-      </g>
+// A small flat icon of the weather now (a sun or a moon, a cloud, rain, a storm, fog or snow).
+function WeatherIcon({ code, isDay, className }: { code: number; isDay: boolean; className?: string }) {
+  const sun = (
+    <g>
+      <circle cx="12" cy="12" r="4.6" fill="#ffcf4a" />
+      <path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M18.7 5.3 17 7M7 17l-1.7 1.7" stroke="#ffcf4a" strokeWidth="1.8" strokeLinecap="round" />
     </g>
   );
+  const moon = <path d="M16.5 14.8A6.6 6.6 0 0 1 9.2 6.2a6.6 6.6 0 1 0 7.3 8.6Z" fill="#e8ecff" />;
+  let body;
+  if (code === 0 || code === 1) body = isDay ? sun : moon;
+  else if (code === 2)
+    body = (
+      <g>
+        <g transform="translate(-1.4 -1.6) scale(.72)">{isDay ? sun : moon}</g>
+        <g transform="translate(1.6 2.4) scale(.8)">{CLOUD}</g>
+      </g>
+    );
+  else if (code === 45 || code === 48)
+    body = (
+      <g>
+        <g transform="translate(0 -2.4)">{CLOUD}</g>
+        <path d="M6 19.6h12M8 22h8" stroke="#cfd6e4" strokeWidth="1.6" strokeLinecap="round" />
+      </g>
+    );
+  else if (code >= 95)
+    body = (
+      <g>
+        <g transform="translate(0 -3)">{CLOUD}</g>
+        <path d="m12.8 15.4-2.8 4.2h2.4l-1.2 3.4 3.8-4.8h-2.4Z" fill="#ffcf4a" />
+      </g>
+    );
+  else if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82))
+    body = (
+      <g>
+        <g transform="translate(0 -3)">{CLOUD}</g>
+        <path d="M8.6 18.6 7.6 21.4M12.6 18.6l-1 2.8M16.6 18.6l-1 2.8" stroke="#8cc8ff" strokeWidth="1.8" strokeLinecap="round" />
+      </g>
+    );
+  else if (code >= 71 && code <= 77)
+    body = (
+      <g>
+        <g transform="translate(0 -3)">{CLOUD}</g>
+        <g fill="#fff">
+          <circle cx="8.4" cy="20" r="1.2" />
+          <circle cx="12.4" cy="21.2" r="1.2" />
+          <circle cx="16.4" cy="20" r="1.2" />
+        </g>
+      </g>
+    );
+  else body = CLOUD;
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={className}>
+      {body}
+    </svg>
+  );
+}
+
+const DROP = (
+  <svg viewBox="0 0 24 24" aria-hidden="true" className="h-3 w-3 shrink-0">
+    <path d="M12 2.8c3.2 4.2 5.4 6.9 5.4 9.6a5.4 5.4 0 0 1-10.8 0c0-2.7 2.2-5.4 5.4-9.6Z" fill="#8cc8ff" />
+  </svg>
+);
+
+/*
+ * The weather of Bogotá, drawn like the macOS Weather widget: the place and the temperature now, an icon with
+ * today's high and low, and the chance of rain. It is a plain card (nothing to click) with a small credit to
+ * Open-Meteo, which asks for it. The data arrives with the page (lib/weather.ts, refreshed every 15 minutes);
+ * if it could not be fetched the numbers show as dashes. Below 400 px it is a slim bar.
+ */
+function WeatherWidget({ weather, className = "" }: { weather: Weather | null; className?: string }) {
+  const { tr } = useLocale();
+  const w = weather;
+  const label = w
+    ? tr(
+        `Clima en Bogotá: ${w.temp} grados, máxima ${w.max}, mínima ${w.min}, probabilidad de lluvia ${w.rain}%`,
+        `Weather in Bogotá: ${w.temp} degrees, high ${w.max}, low ${w.min}, ${w.rain}% chance of rain`,
+      )
+    : tr("Clima en Bogotá no disponible", "Weather in Bogotá unavailable");
+  const temp = w ? `${w.temp}°` : "--°";
+  const icon = w ? (
+    <WeatherIcon code={w.code} isDay={w.isDay} className="h-[26px] w-[26px] shrink-0" />
+  ) : null;
+  const range = w ? (
+    <>
+      <span>↑{w.max}°</span>
+      <span>↓{w.min}°</span>
+    </>
+  ) : null;
+  const rain = tr(`${w?.rain ?? "--"}% hoy`, `${w?.rain ?? "--"}% today`);
 
   return (
-    <button
-      type="button"
-      onClick={pet}
-      data-cursor-hover
-      aria-label={tr("Acariciar al gato", "Pet the cat")}
-      // On a narrow phone the card is a slim bar: the name on the left, the cat on the right.
-      className={`${WIDGET} relative block h-[132px] overflow-hidden text-center outline-none focus-visible:ring-2 focus-visible:ring-[#0a84ff] max-[399px]:h-[76px] max-[399px]:text-left ${className}`}
+    <div
+      role="group"
+      aria-label={label}
+      className={`relative overflow-hidden rounded-[18px] border border-white/10 p-3.5 pb-6 text-white shadow-[0_6px_18px_rgba(20,19,16,0.12)] ${className}`}
+      style={{ background: w ? weatherSky(w) : "linear-gradient(180deg, #1e1f32, #2d364f)" }}
     >
-      <span className={`${WIDGET_LABEL} absolute inset-x-0 top-4 block max-[399px]:inset-x-auto max-[399px]:left-4 max-[399px]:top-1/2 max-[399px]:-translate-y-1/2`}>
-        {happy ? "Prrr…" : tr("Michi", "Kitty")}
-      </span>
-      <span role="status" className="sr-only">
-        {happy ? tr("El gato ronronea", "The cat purrs") : ""}
-      </span>
-      <span className="absolute bottom-0 left-1/2 block w-[112px] -translate-x-1/2 max-[399px]:left-auto max-[399px]:right-5 max-[399px]:w-[84px] max-[399px]:translate-x-0">
-        <svg
-          viewBox="0 0 120 100"
-          aria-hidden="true"
-          className={`block w-full ${happy && !reduce ? "animate-[cat-purr_0.2s_ease-in-out_infinite]" : ""}`}
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          {/* Head and ears in one line; it runs off the bottom edge of the widget. */}
-          <path
-            d="M17 104 C11 86 11 64 19 46 L17 13 L43 29 C53 26 67 26 77 29 L103 13 L101 46 C109 64 109 86 103 104"
-            fill="rgba(255,255,255,0.6)"
-            stroke={INK}
-            strokeWidth={2.6}
-          />
-          <path d="M25 31 L26 22 L35 28 M95 31 L94 22 L85 28" stroke={INK} strokeWidth={1.8} />
-          {happy ? (
-            <path d="M33 62 Q44 50 55 62 M65 62 Q76 50 87 62" stroke={INK} strokeWidth={2.8} />
-          ) : (
-            <>
-              {eye(44, 0)}
-              {eye(76, 1)}
-            </>
-          )}
-          <path d="M55.5 72 L64.5 72 L60 78 Z" fill={INK} stroke={INK} strokeWidth={1.5} />
-          <path d="M60 78 V80 M60 80 C60 85 54 86.5 51 83 M60 80 C60 85 66 86.5 69 83" stroke={INK} strokeWidth={2} />
-          <path d="M33 73 L9 68 M33 79 L9 82 M87 73 L111 68 M87 79 L111 82" stroke={INK} strokeWidth={1.6} />
-          {/* Two paws on the edge. */}
-          <path d="M28 101 C28 91 46 91 46 101 M74 101 C74 91 92 91 92 101" fill="#fff" stroke={INK} strokeWidth={2.4} />
-        </svg>
-      </span>
-    </button>
+      {/* Wide: the place and the temperature, the icon and the range on the right, then the rain. */}
+      <div className="max-[399px]:hidden">
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <p className="text-[13px] font-semibold leading-none">Bogotá</p>
+            <p className="mt-1.5 text-[34px] font-light leading-none tabular-nums">{temp}</p>
+          </div>
+          <div className="flex flex-col items-end gap-0.5 text-[11px] font-medium leading-tight tabular-nums">
+            {icon}
+            {range}
+          </div>
+        </div>
+        <p className="mt-3.5 text-[11px] font-semibold leading-none">{tr("Precipitaciones", "Precipitation")}</p>
+        <p className="mt-1.5 flex items-center gap-1 text-[11.5px] leading-none text-white/85">
+          {DROP}
+          {rain}
+        </p>
+      </div>
+
+      {/* Narrow phone: one slim row. */}
+      <div className="hidden items-center justify-between gap-3 max-[399px]:flex">
+        <div className="flex items-center gap-3">
+          <div>
+            <p className="text-[12px] font-semibold leading-none">Bogotá</p>
+            <p className="mt-1 text-[30px] font-light leading-none tabular-nums">{temp}</p>
+          </div>
+          {icon}
+        </div>
+        <div className="flex flex-col items-end gap-1 text-[11.5px] font-medium leading-none tabular-nums">
+          <span className="flex gap-2">{range}</span>
+          <span className="flex items-center gap-1 text-white/85">
+            {DROP}
+            {rain}
+          </span>
+        </div>
+      </div>
+
+      <a
+        href="https://open-meteo.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        data-cursor-hover
+        className="absolute bottom-1.5 right-3.5 rounded text-[9px] leading-none text-white/75 underline-offset-2 outline-none hover:text-white hover:underline focus-visible:ring-2 focus-visible:ring-white"
+      >
+        Open-Meteo
+      </a>
+    </div>
   );
 }
 
@@ -319,10 +332,20 @@ function MusicWidget({ closedClassName = "", openClassName = "" }: { closedClass
   );
 }
 
-// The widget of the right: the cat; the music player takes its place once there is a playlist (config).
-function RightWidget({ cat, music, musicOpen }: { cat: string; music: string; musicOpen: string }) {
+// The widget of the right: the weather of Bogotá; the music player takes its place once there is a playlist (config).
+function RightWidget({
+  weather,
+  place,
+  music,
+  musicOpen,
+}: {
+  weather: Weather | null;
+  place: string;
+  music: string;
+  musicOpen: string;
+}) {
   if (MUSIC.playlistId || MUSIC.videoIds.length > 0) return <MusicWidget closedClassName={music} openClassName={musicOpen} />;
-  return <CatWidget className={cat} />;
+  return <WeatherWidget weather={weather} className={place} />;
 }
 
 /* ---------- the three areas of work ---------- */
@@ -471,9 +494,12 @@ function HomeDock({
 export default function HomeDesktop({
   projectCount,
   clipCount,
+  weather,
 }: {
   projectCount: number;
   clipCount: number;
+  /** The weather of Bogotá for the widget (null if it could not be fetched). */
+  weather: Weather | null;
 }) {
   const reduce = useReducedMotion();
   const router = useRouter();
@@ -541,7 +567,8 @@ export default function HomeDesktop({
         <div className="flex w-[min(728px,100%)] items-stretch justify-between gap-4 lg:contents">
           <NotesWidget onGo={go} className="md:w-[220px] lg:absolute lg:left-6 lg:top-[calc(34px+24px)] lg:w-[200px]" />
           <RightWidget
-            cat="md:w-[150px] lg:absolute lg:right-6 lg:top-[calc(34px+24px)]"
+            weather={weather}
+            place="md:w-[150px] lg:absolute lg:right-6 lg:top-[calc(34px+24px)]"
             music="md:w-[150px] lg:absolute lg:right-6 lg:top-[calc(34px+24px)]"
             musicOpen="md:w-[216px] md:self-start lg:absolute lg:right-6 lg:top-[calc(34px+24px)] lg:w-[216px]"
           />
@@ -582,7 +609,8 @@ export default function HomeDesktop({
         <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-[1fr_auto]">
           <NotesWidget onGo={go} />
           <RightWidget
-            cat="w-[124px] max-[399px]:w-full"
+            weather={weather}
+            place="w-[124px] max-[399px]:w-full"
             music="w-[124px] max-[399px]:w-full"
             musicOpen="col-span-full w-full"
           />
