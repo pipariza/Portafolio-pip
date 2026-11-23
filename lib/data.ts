@@ -218,7 +218,7 @@ export const projectData: ProjectData[] = [
         label: "Inicio",
         path: "",
         desktop: {
-          src: "/work/el-departamento/inicio-desktop-2.jpg",
+          src: "/work/el-departamento/inicio-desktop-3.jpg",
           blur: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAsAA4DASIAAhEBAxEB/8QAGgAAAQUBAAAAAAAAAAAAAAAAAwABAgQFBv/EACMQAAICAgEDBQEAAAAAAAAAAAECAxEABBIhIkETFFFhccH/xAAWAQEBAQAAAAAAAAAAAAAAAAABAwD/xAAYEQADAQEAAAAAAAAAAAAAAAAAAREhA//aAAwDAQACEQMRAD8AxtUx6s7HYDOsi8VauRU9PH5lxtCB4I5Nbc9FGHUyyqAT8ADyPOc/GJZDZDvX3kHDKxBBGWfXagauGwjvForEsTlpAGDjuBFfAypuSbDrzkrua7VawHvNghR7h+0UKNVim3J5YwjzMyg2B0yTjGh43gKxkQhaQBiWBsj6xt6WN9aJUjRXB68QP5gi7OSWNk+fzIMbwpj/2Q==",
           width: 1440,
           height: 4478,
@@ -238,7 +238,7 @@ export const projectData: ProjectData[] = [
           ],
         },
         mobile: {
-          src: "/work/el-departamento/inicio-mobile-2.jpg",
+          src: "/work/el-departamento/inicio-mobile-3.jpg",
           blur: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCADnAA4DASIAAhEBAxEB/8QAGgAAAgMBAQAAAAAAAAAAAAAAAgMBBAUABv/EAC8QAAIBAwMDAgUCBwAAAAAAAAECAwAEERIhMQUiQRNRMmFxkaEjgUJSkrHB0eH/xAAXAQADAQAAAAAAAAAAAAAAAAAAAQID/8QAHhEAAgICAwEBAAAAAAAAAAAAAAECEQMhEhMiQSP/2gAMAwEAAhEDEQA/ACKMbNArrJuQCNtqiFJIFX18hWBI+9WHEEUxUPpRd8D80bypJao3Pdit0g4xqqPOTzgTtkkg01OqSJaKmQQG9qq9TurWWYGFu0D+EVntMCMA7ZqW6Y7BjCYywBz7g0MgUHK7fLG1SspCgb7ULvqA5rIRqDprxplXgkj1Y16c+M0m6sWR11MmSOEXj61oQSgW/oiMuHAdznGgjY5pt3NbFiZpH9UncKMkbedqbx5E9oTkkJaPqAncRsVY7kIcAkeP+UyS/wCsOzsZt1IViAOcU2yvmchWcsyphBpx8ySfrRzKsz5WN4lI7ssDlqXbL6WoL4dBbSIkWiMH9Jgx8hs7CoVZIoUNyChPg70kdUTTgTRqPYNvS7jqSPgl45MeC3+qzasaMU2s+ARE5B9lJoTBKOYn/pNeul6mPVMKvoRQXBHv7VQub95UjcHJxg71tSugca2XJQ6W2GDEg7dgH+KRAifytk77Y4/cV59Z5cDXLKQeAJKBppQcrLIAeO/NTi/N2Vky81VAjGF+Dzzn80J4HFGrfANR2zwucUB4HP2oMgkRmA0qx+h5oWVl2YEVtWzWzWcQS3keUL3Nk4FJ6xJHJFDpj9Nl2IxjPzq3BpWQppuiLS8jSBUd3yBwo4pXUbmOdVVCThs71Z6VbpIoaWPUrdq/XzVXqcDQOFZQM7jBzS5t+bL6Yr0W7C6hS2RXcArwCeKq9UuVncBDlVO32rXsrW2NhAzwoHZN3wp/vWd1iGKGNRGo1atzpAPHBxUtJbEpt6LnT/Tks4vUk04XGKpdYdMrHE5ZFPn3pM9nLaRxM5QiQZXtyfyPnVdl1YyQMeygUCi01aHMSAoIznYZ3pco07ZH7Cjc9q/KlyMWxmgYZIYbnFCQPfNdXUDP/9k=",
           width: 600,
           height: 9900,
@@ -264,7 +264,7 @@ export const projectData: ProjectData[] = [
         label: "Caso",
         path: "/cien-anos-de-soledad/",
         desktop: {
-          src: "/work/el-departamento/caso-desktop-2.jpg",
+          src: "/work/el-departamento/caso-desktop-3.jpg",
           blur: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAuAA4DASIAAhEBAxEB/8QAGAAAAwEBAAAAAAAAAAAAAAAAAQMEAgX/xAAjEAACAgIBBAIDAAAAAAAAAAABAgMRAAQSITFRYQUTQbHw/8QAFgEAAwAAAAAAAAAAAAAAAAAAAAEC/8QAFhEBAQEAAAAAAAAAAAAAAAAAABEh/9oADAMBAAIRAxEAPwDhjZ4d0JPsYHmiYdiPWRQrsSsFjDuzdhZxTvJfVmHq8mKq7RO80FazngDXGx1P8cn+Q154Jr2K5v1sfnG6uk8sH2iRFHgmj+8n2keN+MjA14NjHlJTBBC+vGTJLza7UAEVid2GGJl+iQyA+RWCkJPFOPq8wyr4wguP/9k=",
           width: 1440,
           height: 4729,
@@ -277,7 +277,7 @@ export const projectData: ProjectData[] = [
           ],
         },
         mobile: {
-          src: "/work/el-departamento/caso-mobile-2.jpg",
+          src: "/work/el-departamento/caso-mobile-3.jpg",
           blur: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCACYAA4DASIAAhEBAxEB/8QAGQAAAwEBAQAAAAAAAAAAAAAAAgMEBQAB/8QAKhAAAgEDAwMDAwUAAAAAAAAAAQIDAAQREiExE0FhInGBMpHRFFJyocH/xAAYAQADAQEAAAAAAAAAAAAAAAAAAQIDBP/EABoRAQEBAQADAAAAAAAAAAAAAAABESECQVH/2gAMAwEAAhEDEQA/AMO4X9QYmaZXwNOF7AUqS8uQdJfbsABtRKLHOepOp/iPzXjizY7TTe5Qfmu3Z8ZTkxXHZWfQXNyNWkn5rMCnOyhhxnFLV9LZ5+DVC3ZVdK6AB+5aylk9rktKX6R7UubgGiAXA2HFBLp2xj4rnU9WONsAdUsewQfmlMMMcZx55rTt794AOnBDqwPXuG+4qK6fqSmTQqajnCnalLQLhM5Q4HGsUl5CwxjFWW9xbpCEltmc53YHkZor25t51TpQNERz5phOPpHtQTfSPenraXEkavEhCY5Jz/lTypIhxJkGjQqW7uVhEaS6VAwAKnuJJZMGWQufNM0OIwwBbYYAVt/6pMokwNUbKPIpcC5b6TRErNJpRe2Nz2pV5fSXCqJRkjvS5raeFY2k9IcZXBG4pRRm5bNLIc8tnFMsruqLKzPpGFDNxSZAV7AfOaN29KeKCRtRziqTJgj6gOB70JXz9q6uoN//2Q==",
           width: 600,
           height: 6504,
