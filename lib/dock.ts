@@ -549,26 +549,6 @@ export function getDockItems(lang: Locale): DockItem[] {
       },
     },
     {
-      id: "fotos",
-      label: tr("Fotos", "Photos"),
-      icon: "/dock/imagenes.avif",
-      group: 1,
-      window: {
-        title: tr("Fotos", "Photos"),
-        tabs: [
-          {
-            label: tr("Fotos", "Photos"),
-            paragraphs: [
-              tr(
-                "Texto de prueba: aquí irá una selección de fotografías y detrás de cámaras.",
-                "Test text: a selection of photographs and behind the scenes will go here.",
-              ),
-            ],
-          },
-        ],
-      },
-    },
-    {
       id: "instagram",
       label: "Instagram",
       icon: "/dock/instagram.avif",
