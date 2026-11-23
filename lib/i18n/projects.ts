@@ -1,4 +1,5 @@
 import { appData, projectData, type AppProject, type Project } from "@/lib/data";
+import { PROTOTYPES } from "@/lib/prototypes";
 import type { Bi, Locale } from "./config";
 
 /*
@@ -53,7 +54,7 @@ const PROJECT_TEXTS: Record<string, { role: Bi; summary: Bi }> = {
 export function getProjects(lang: Locale): Project[] {
   return projectData.map((p) => {
     const text = PROJECT_TEXTS[p.slug];
-    return { ...p, role: text.role[lang], summary: text.summary[lang], note: CREDIT[lang] };
+    return { ...p, prototypes: PROTOTYPES[p.slug], role: text.role[lang], summary: text.summary[lang], note: CREDIT[lang] };
   });
 }
 

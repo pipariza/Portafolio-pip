@@ -12,7 +12,7 @@ import {
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useLocale } from "@/components/LocaleProvider";
-import { projectData as projects, type Project, type ProjectScreen } from "@/lib/data";
+import { projectData as projects, type Fidelity, type Project, type ProjectScreen } from "@/lib/data";
 import {
   EASE,
   TrafficLights,
@@ -153,6 +153,7 @@ function SafariWindow({
   screens,
   active,
   onSelect,
+  fidelity,
   host,
   name,
   accent,
@@ -170,6 +171,8 @@ function SafariWindow({
   screens: ProjectScreen[];
   active: number;
   onSelect: (i: number) => void;
+  /** "final": the published site; "baja" / "media": a prototype of it (the address bar says so). */
+  fidelity: Fidelity;
   host: string;
   name: string;
   /** Color of the little site icon on each tab (the project's dock color). */
@@ -238,13 +241,28 @@ function SafariWindow({
               : "h-[4.2cqw] gap-[0.8cqw] rounded-[1.2cqw] px-[1.4cqw] text-[max(6.5px,2.3cqw)] lg:h-[30px] lg:max-w-[26rem] lg:gap-1.5 lg:rounded-[9px] lg:px-3 lg:text-[13px]"
           }`}
         >
-          <svg viewBox="0 0 9 11" fill="currentColor" className={`w-auto shrink-0 text-black/60 ${z ? "h-[11px]" : "h-[max(5px,1.8cqw)] lg:h-[11px]"}`} aria-hidden="true">
-            <path d="M4.5 0a2.7 2.7 0 0 0-2.7 2.7V4H1a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-.8V2.7A2.7 2.7 0 0 0 4.5 0Zm-1.5 2.7a1.5 1.5 0 0 1 3 0V4H3V2.7Z" />
-          </svg>
-          <span className="truncate">
-            {host}
-            <span className="text-black/60">{screen.path}</span>
-          </span>
+          {fidelity === "final" ? (
+            <>
+              <svg viewBox="0 0 9 11" fill="currentColor" className={`w-auto shrink-0 text-black/60 ${z ? "h-[11px]" : "h-[max(5px,1.8cqw)] lg:h-[11px]"}`} aria-hidden="true">
+                <path d="M4.5 0a2.7 2.7 0 0 0-2.7 2.7V4H1a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-.8V2.7A2.7 2.7 0 0 0 4.5 0Zm-1.5 2.7a1.5 1.5 0 0 1 3 0V4H3V2.7Z" />
+              </svg>
+              <span className="truncate">
+                {host}
+                <span className="text-black/60">{screen.path}</span>
+              </span>
+            </>
+          ) : (
+            // A prototype is not the published site: the bar names what it is instead of showing the address.
+            <>
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className={`w-auto shrink-0 text-black/60 ${z ? "h-[12px]" : "h-[max(5.5px,2cqw)] lg:h-[12px]"}`} aria-hidden="true">
+                {fidelity === "baja" ? <path d="M2 10l.6-2.4L8.4 1.8a1 1 0 0 1 1.4 0l.4.4a1 1 0 0 1 0 1.4L4.4 9.4 2 10Z" /> : <path d="M1.5 1.5h9v9h-9zM1.5 5h9M5 5v5.5" />}
+              </svg>
+              <span className="truncate">
+                {fidelity === "baja" ? tr("Bocetos · baja fidelidad", "Sketches · low fidelity") : tr("Wireframes · media fidelidad", "Wireframes · mid fidelity")}
+                <span className="text-black/60"> · {screen.label}</span>
+              </span>
+            </>
+          )}
         </div>
         <svg width="16" height="18" viewBox="0 0 16 18" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className={`text-black/60 ${z ? "" : "max-lg:hidden"}`} aria-hidden="true">
           <path d="M8 1v10M4.5 4.5 8 1l3.5 3.5M3 7.5H2.5a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1H13" />
@@ -284,17 +302,17 @@ function SafariWindow({
 
       <div className="relative min-h-0 flex-1 bg-white">
         <AnimatePresence initial={false}>
-          <motion.div key={screen.id} {...fade} className="absolute inset-0">
+          <motion.div key={`${fidelity}-${screen.id}`} {...fade} className="absolute inset-0">
             <ScrollShot
               shot={screen.desktop}
-              alt={tr(`${name}: ${screen.label}, en escritorio`, `${name}: ${screen.label}, on desktop`)}
+              alt={tr(`${name}: ${screen.label}, en escritorio${protoAlt(fidelity, "es")}`, `${name}: ${screen.label}, on desktop${protoAlt(fidelity, "en")}`)}
               viewportRatio={DESKTOP_RATIO}
               pageWidth={DESKTOP_PAGE_WIDTH}
               pace={pace}
               sizes={DESKTOP_SIZES}
-              priority={priority && active === 0}
+              priority={priority && active === 0 && fidelity === "final"}
               inView={inView}
-              onLoaded={active === 0 ? onFirstLoaded : undefined}
+              onLoaded={active === 0 && fidelity === "final" ? onFirstLoaded : undefined}
             />
           </motion.div>
         </AnimatePresence>
@@ -367,6 +385,7 @@ const TITANIUM = "bg-gradient-to-b from-[#7d8087] via-[#3a3c41] to-[#6a6d74]";
 function IPhone17({
   screens,
   active,
+  fidelity,
   name,
   pace,
   priority,
@@ -375,6 +394,7 @@ function IPhone17({
 }: {
   screens: ProjectScreen[];
   active: number;
+  fidelity: Fidelity;
   name: string;
   pace: number;
   priority: boolean;
@@ -424,15 +444,15 @@ function IPhone17({
             </div>
             <div className="absolute inset-x-0 bottom-0 top-[11.5cqw]">
               <AnimatePresence initial={false}>
-                <motion.div key={screen.id} {...fade} className="absolute inset-0">
+                <motion.div key={`${fidelity}-${screen.id}`} {...fade} className="absolute inset-0">
                   <ScrollShot
                     shot={screen.mobile}
-                    alt={tr(`${name}: ${screen.label}, en celular`, `${name}: ${screen.label}, on mobile`)}
+                    alt={tr(`${name}: ${screen.label}, en celular${protoAlt(fidelity, "es")}`, `${name}: ${screen.label}, on mobile${protoAlt(fidelity, "en")}`)}
                     viewportRatio={PHONE_RATIO}
                     pageWidth={MOBILE_PAGE_WIDTH}
                     pace={pace}
                     sizes={PHONE_SIZES}
-                    priority={priority && active === 0}
+                    priority={priority && active === 0 && fidelity === "final"}
                     inView={inView}
                   />
                 </motion.div>
@@ -568,6 +588,69 @@ function Dock({
   );
 }
 
+/* ---------- prototypes ---------- */
+
+/** What a prototype adds to the alt text, so a screen reader never takes a sketch for the published site. */
+function protoAlt(f: Fidelity, lang: "es" | "en") {
+  if (f === "final") return "";
+  if (f === "baja") return lang === "es" ? " (boceto a mano)" : " (hand sketch)";
+  return " (wireframe)";
+}
+
+// The order of the process: sketch, wireframe, finished site.
+const FIDELITIES: Fidelity[] = ["baja", "media", "final"];
+
+/**
+ * The switch under the windows: "Fidelidad · Baja · Media · Final". It changes what Safari and the iPhone show for
+ * the page that is open (the sketch, the wireframe or the published site) and, for the two prototypes, says in one
+ * line what they are, including that they were rebuilt from the finished site.
+ */
+function FidelityBar({ value, onChange }: { value: Fidelity; onChange: (f: Fidelity) => void }) {
+  const { tr } = useLocale();
+  const names: Record<Fidelity, string> = { baja: tr("Baja", "Low"), media: tr("Media", "Mid"), final: "Final" };
+  const caption =
+    value === "baja"
+      ? tr(
+          "Bocetos a mano para decidir la estructura y el orden de cada página. Reconstruidos a partir del sitio final.",
+          "Hand sketches to decide the structure and order of each page. Rebuilt from the final site.",
+        )
+      : value === "media"
+        ? tr(
+            "Wireframes en grises con el contenido real: retícula de columnas, jerarquía y llamados a la acción. Reconstruidos a partir del sitio final.",
+            "Grey wireframes with the real content: a column grid, hierarchy and calls to action. Rebuilt from the final site.",
+          )
+        : "";
+  return (
+    <div className="flex shrink-0 flex-wrap items-center justify-center gap-x-4 gap-y-2 lg:justify-start">
+      <div
+        role="radiogroup"
+        aria-label={tr("Fidelidad del prototipo", "Prototype fidelity")}
+        className="flex items-center gap-1 rounded-full bg-white/55 p-1 shadow-[0_0_0_0.5px_rgba(0,0,0,0.12)] backdrop-blur-xl"
+      >
+        <span className="pl-3 pr-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-black/60">
+          {tr("Fidelidad", "Fidelity")}
+        </span>
+        {FIDELITIES.map((f) => (
+          <button
+            key={f}
+            type="button"
+            role="radio"
+            aria-checked={f === value}
+            onClick={() => onChange(f)}
+            data-cursor-hover
+            className={`min-h-9 rounded-full px-3.5 text-[13px] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#0a84ff] ${
+              f === value ? "bg-[#1d1d1f] font-semibold text-white" : "text-black/65 hover:bg-black/[0.06]"
+            }`}
+          >
+            {names[f]}
+          </button>
+        ))}
+      </div>
+      {caption && <p className="max-w-[34rem] text-center text-[12px] leading-snug text-black/65 lg:text-left">{caption}</p>}
+    </div>
+  );
+}
+
 /** Safari-style tabs below the windows, for the sizes where the real ones are too small. */
 function PillTabs({
   screens,
@@ -628,6 +711,10 @@ export default function ProjectMac({
   priority?: boolean;
 }) {
   const [active, setActive] = useState(0);
+  // The published site or one of its prototypes (sketch / wireframe), when the project has them.
+  const [fidelity, setFidelity] = useState<Fidelity>("final");
+  const protos = project.prototypes;
+  const shown = fidelity === "final" || !protos ? screens : protos[fidelity];
   // Safari's window: open, closed (a Safari icon stays on the desktop) or
   // minimized (a thumbnail waits in the dock, at its right end); zoomed is full screen.
   const dockRef = useRef<HTMLElement>(null);
@@ -685,8 +772,8 @@ export default function ProjectMac({
 
   useEffect(() => {
     if (!firstLoaded || !visible) return;
-    return prefetchScreens(screens, 0);
-  }, [firstLoaded, visible, screens]);
+    return prefetchScreens(shown, fidelity === "final" ? 0 : active);
+  }, [firstLoaded, visible, shown, fidelity, active]);
 
   // ← / → move between projects while this desktop is the one on screen.
   useEffect(() => {
@@ -728,9 +815,10 @@ export default function ProjectMac({
                 {win === "open" && (
                   <SafariWindow
                     key="safari"
-                    screens={screens}
+                    screens={shown}
                     active={active}
                     onSelect={setActive}
+                    fidelity={fidelity}
                     host={host}
                     name={project.name}
                     accent={project.dock?.bg ?? "#8aa5a2"}
@@ -753,8 +841,9 @@ export default function ProjectMac({
             </div>
             <div className="w-[28cqw] shrink-0 lg:flex lg:w-auto lg:items-end">
               <IPhone17
-                screens={screens}
+                screens={shown}
                 active={active}
+                fidelity={fidelity}
                 name={project.name}
                 pace={pace}
                 priority={first}
@@ -764,7 +853,9 @@ export default function ProjectMac({
             </div>
           </div>
 
-          <PillTabs screens={screens} active={active} onSelect={setActive} />
+          {protos && <FidelityBar value={fidelity} onChange={setFidelity} />}
+
+          <PillTabs screens={shown} active={active} onSelect={setActive} />
 
           {/* Information below; from xl the dock sits between the two cards */}
           <div className="grid shrink-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:items-stretch lg:gap-4 xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] xl:gap-5">
@@ -780,7 +871,7 @@ export default function ProjectMac({
               show={dockOn}
               minimized={
                 win === "minimized"
-                  ? { title: `Safari: ${host}`, thumb: screens[active].desktop.blur }
+                  ? { title: `Safari: ${host}`, thumb: shown[active].desktop.blur }
                   : null
               }
               onRestore={openWindow}

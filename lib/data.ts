@@ -32,6 +32,9 @@ export type ShotImage = {
   videos?: ShotVideo[];
 };
 
+/** What the Safari and iPhone windows show: the published site, or a prototype of it. */
+export type Fidelity = "baja" | "media" | "final";
+
 export type ProjectScreen = {
   id: string;
   /** Tab label. */
@@ -59,6 +62,12 @@ export type Project = {
    * cover image.
    */
   screens?: ProjectScreen[];
+  /**
+   * Prototypes of the same pages, in the same order and with the same ids as `screens`: hand sketches (low
+   * fidelity) and grey wireframes (mid fidelity). They are rebuilt from the structure of the finished site
+   * (see lib/prototypes.ts) and shown with the "Fidelidad" switch of the Mac layout.
+   */
+  prototypes?: { baja: ProjectScreen[]; media: ProjectScreen[] };
   /** Live site, shown as a "Ver sitio" link and in the browser bar. */
   url?: string;
   /** Multiplies how long the slow tour of each capture takes (default 1; higher is calmer). */
