@@ -5,6 +5,22 @@ import { localizeHref } from "@/lib/i18n/routes";
 
 const OG_LOCALE: Record<Locale, string> = { es: "es_CO", en: "en_US" };
 
+/**
+ * The preview picture of a shared link (LinkedIn, WhatsApp, X…), 1200×630 JPG in each language
+ * (`public/og/`). One for the whole site on purpose: the pages share the same look. If it
+ * changes, give the file a NEW name: the networks cache the old one for weeks.
+ */
+const OG_IMAGE: Record<Locale, string> = { es: "/og/pip-ariza-es.jpg", en: "/og/pip-ariza-en.jpg" };
+const OG_ALT: Record<Locale, string> = {
+  es: "Pip Ariza, diseño y desarrollo web: portada del portafolio con diseño web, aplicativos y edición de video",
+  en: "Pip Ariza, web design and development: portfolio home with web design, apps and video editing",
+};
+
+/** The `images` of Open Graph and Twitter (relative: `metadataBase` in the layout makes them absolute). */
+export function shareImages(lang: Locale) {
+  return [{ url: OG_IMAGE[lang], width: 1200, height: 630, alt: OG_ALT[lang] }];
+}
+
 /** Title and description of each page, in both languages (the text a search engine and a shared link show). */
 export const PAGES = {
   home: {
@@ -83,8 +99,9 @@ export function metadataFor(lang: Locale, path: string, title: string, descripti
       title,
       description,
       url,
+      images: shareImages(lang),
     },
-    twitter: { card: "summary", title, description },
+    twitter: { card: "summary_large_image", title, description, images: shareImages(lang) },
   };
 }
 

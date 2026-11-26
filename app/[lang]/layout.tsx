@@ -10,7 +10,7 @@ import { LocaleProvider } from "@/components/LocaleProvider";
 import { CONTACT, NAME, SITE_URL } from "@/lib/config";
 import { projectData } from "@/lib/data";
 import { isLocale, locales, pick } from "@/lib/i18n/config";
-import { PAGES } from "@/lib/seo";
+import { PAGES, shareImages } from "@/lib/seo";
 
 const archivo = Archivo({
   variable: "--font-archivo",
@@ -39,8 +39,9 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
       siteName: "Pip Ariza",
       title: title[lang],
       description: description[lang],
+      images: shareImages(lang),
     },
-    twitter: { card: "summary", title: title[lang], description: description[lang] },
+    twitter: { card: "summary_large_image", title: title[lang], description: description[lang], images: shareImages(lang) },
     // iPhone/iPad: opens full screen from the home screen and names the icon "Pip Ariza" (not the long title).
     appleWebApp: { capable: true, title: "Pip Ariza", statusBarStyle: "default" },
   };
